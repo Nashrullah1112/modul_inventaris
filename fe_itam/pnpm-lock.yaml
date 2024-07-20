@@ -8,12 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@vueuse/core':
+        specifier: ^10.11.0
+        version: 10.11.0(vue@3.4.32(typescript@5.5.3))
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      lucide:
+        specifier: ^0.408.0
+        version: 0.408.0
       lucide-vue-next:
         specifier: ^0.408.0
         version: 0.408.0(vue@3.4.32(typescript@5.5.3))
@@ -2291,6 +2297,9 @@ packages:
     resolution: {integrity: sha512-X2w4IDKs6O/R+vPdyMl5VvXS0mhuTqXtw6/NQOOIfCHvMz6vWa1Q2XvYT3oQGzyU94uVZw16jcdC1LwI5XbOdg==}
     peerDependencies:
       vue: '>=3.0.1'
+
+  lucide@0.408.0:
+    resolution: {integrity: sha512-6pDkMOt468x+KS9CWCms9dTQcHbnhkl1z9E0rvSxAhpD0JDin+PeJFuLDQP1b9+ErD34gX2DmjFtXt9fKDMw3A==}
 
   magic-string-ast@0.6.2:
     resolution: {integrity: sha512-oN3Bcd7ZVt+0VGEs7402qR/tjgjbM7kPlH/z7ufJnzTLVBzXJITRHOJiwMmmYMgZfdoWQsfQcY+iKlxiBppnMA==}
@@ -5985,6 +5994,8 @@ snapshots:
   lucide-vue-next@0.408.0(vue@3.4.32(typescript@5.5.3)):
     dependencies:
       vue: 3.4.32(typescript@5.5.3)
+
+  lucide@0.408.0: {}
 
   magic-string-ast@0.6.2:
     dependencies:
