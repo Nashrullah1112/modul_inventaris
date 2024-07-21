@@ -5,7 +5,6 @@ import { buttonVariants } from "@/components/ui/button";
 </script>
 
 <template>
-  <!-- <nuxt-link to="/login">Go to Login</nuxt-link> -->
   <div class="md:hidden">
     <VPImage
       alt="Authentication"
