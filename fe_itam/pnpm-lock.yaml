@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@radix-icons/vue':
+        specifier: ^1.0.0
+        version: 1.0.0(vue@3.4.32(typescript@5.5.3))
+      '@vee-validate/zod':
+        specifier: ^4.13.2
+        version: 4.13.2(vue@3.4.32(typescript@5.5.3))
       '@vueuse/core':
         specifier: ^10.11.0
         version: 10.11.0(vue@3.4.32(typescript@5.5.3))
@@ -38,9 +44,15 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.6)
+      vee-validate:
+        specifier: ^4.13.2
+        version: 4.13.2(vue@3.4.32(typescript@5.5.3))
       vue:
         specifier: latest
         version: 3.4.32(typescript@5.5.3)
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
     devDependencies:
       '@nuxtjs/tailwindcss':
         specifier: ^6.12.1
@@ -885,6 +897,11 @@ packages:
   '@polka/url@1.0.0-next.25':
     resolution: {integrity: sha512-j7P6Rgr3mmtdkeDGTe0E/aYyWEWVtc5yFXtHCRHs28/jptDEWfaVOc5T7cblqy1XKPPfCxJc/8DwQ5YgLOZOVQ==}
 
+  '@radix-icons/vue@1.0.0':
+    resolution: {integrity: sha512-gKWWk9tTK/laDRRNe5KLLR8A0qUwx4q4+DN8Fq48hJ904u78R82ayAO3TrxbNLgyn2D0h6rRiGdLzQWj7rPcvA==}
+    peerDependencies:
+      vue: '>= 3'
+
   '@rollup/plugin-alias@5.1.0':
     resolution: {integrity: sha512-lpA3RZ9PdIG7qqhEfv79tBffNaoDuukFDrmhLqg9ifv99u/ehn+lOg30x2zmhf8AQqQUZaMk/B9fZraQ6/acDQ==}
     engines: {node: '>=14.0.0'}
@@ -1091,6 +1108,9 @@ packages:
     resolution: {integrity: sha512-kpMWWwm8cOwo4gw4An43pz30l2CqNtmJpX5Xsu79rwf6Viq8jHAjk6BGqyKy220M2bpa0Va4fnR532SgGO1YgQ==}
     peerDependencies:
       vue: '>=2.7 || >=3'
+
+  '@vee-validate/zod@4.13.2':
+    resolution: {integrity: sha512-y1aqelutD6btX2ayZk3w8udClAykptphlGLwu0vlCqY2r9mrJqMn1EKqtcwXAvEom+ceTcHJOwGr2FUA7i+ZEg==}
 
   '@vercel/nft@0.26.5':
     resolution: {integrity: sha512-NHxohEqad6Ra/r4lGknO52uc/GrWILXAMs1BB4401GTqww0fw1bAqzpG1XHuDO+dprg4GvsD9ZLLSsdo78p9hQ==}
@@ -3260,6 +3280,10 @@ packages:
     resolution: {integrity: sha512-tLq3bSNx+xSpwvAJnzrK0Ep5CLNWjvFTOp71URMaAEWBfRb9nnJiBoUe0tF8bI4ZFO3omgBR6NvnbzVUT3Ly4g==}
     engines: {node: '>=14.16'}
 
+  type-fest@4.22.1:
+    resolution: {integrity: sha512-9tHNEa0Ov81YOopiVkcCJVz5TM6AEQ+CHHjFIktqPnE3NV0AHIkx+gh9tiCl58m/66wWxkOC9eltpa75J4lQPA==}
+    engines: {node: '>=16'}
+
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
     engines: {node: '>= 0.6'}
@@ -3390,6 +3414,11 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+
+  vee-validate@4.13.2:
+    resolution: {integrity: sha512-HlpR/6MJ92TW9f135umMZKUqdd/tFQTxLNSf2ImbU4Y/MlLVAUpF1l64VdjTOhbClAqPjCb5p/SqHDxLpUHXrw==}
+    peerDependencies:
+      vue: ^3.4.26
 
   vite-hot-client@0.2.3:
     resolution: {integrity: sha512-rOGAV7rUlUHX89fP2p2v0A2WWvV3QMX2UYq0fRqsWSvFvev4atHWqjwGoKaZT1VTKyLGk533ecu3eyd0o59CAg==}
@@ -3614,6 +3643,9 @@ packages:
   zip-stream@6.0.1:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
+
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
 snapshots:
 
@@ -4486,6 +4518,10 @@ snapshots:
 
   '@polka/url@1.0.0-next.25': {}
 
+  '@radix-icons/vue@1.0.0(vue@3.4.32(typescript@5.5.3))':
+    dependencies:
+      vue: 3.4.32(typescript@5.5.3)
+
   '@rollup/plugin-alias@5.1.0(rollup@4.18.1)':
     dependencies:
       slash: 4.0.0
@@ -4659,6 +4695,14 @@ snapshots:
       hookable: 5.5.3
       unhead: 1.9.16
       vue: 3.4.32(typescript@5.5.3)
+
+  '@vee-validate/zod@4.13.2(vue@3.4.32(typescript@5.5.3))':
+    dependencies:
+      type-fest: 4.22.1
+      vee-validate: 4.13.2(vue@3.4.32(typescript@5.5.3))
+      zod: 3.23.8
+    transitivePeerDependencies:
+      - vue
 
   '@vercel/nft@0.26.5':
     dependencies:
@@ -7129,6 +7173,8 @@ snapshots:
 
   type-fest@3.13.1: {}
 
+  type-fest@4.22.1: {}
+
   type-is@1.6.18:
     dependencies:
       media-typer: 0.3.0
@@ -7277,6 +7323,12 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   vary@1.1.2: {}
+
+  vee-validate@4.13.2(vue@3.4.32(typescript@5.5.3)):
+    dependencies:
+      '@vue/devtools-api': 6.6.3
+      type-fest: 4.22.1
+      vue: 3.4.32(typescript@5.5.3)
 
   vite-hot-client@0.2.3(vite@5.3.4(@types/node@20.14.11)(terser@5.31.3)):
     dependencies:
@@ -7478,3 +7530,5 @@ snapshots:
       archiver-utils: 5.0.2
       compress-commons: 6.0.2
       readable-stream: 4.5.2
+
+  zod@3.23.8: {}
