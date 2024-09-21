@@ -33,8 +33,8 @@ const sidebarItem = {
       icon: "",
     },
     {
-      title: "Registrasi Aset",
-      url: "#",
+      title: "Asset",
+      url: "/eg/asset",
       icon: "",
     },
     {
