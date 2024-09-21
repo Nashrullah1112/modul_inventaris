@@ -34,7 +34,12 @@ const sidebarItem = {
     },
     {
       title: "Registrasi Aset",
-      url: "/",
+      url: "#",
+      icon: "",
+    },
+    {
+      title: "DataTable Example",
+      url: "/eg/datatable",
       icon: "",
     },
   ],
