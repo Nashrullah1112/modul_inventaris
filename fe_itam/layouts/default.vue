@@ -17,10 +17,10 @@ const isOpen = useState("is-sidebar-open");
 
         <!-- footer -->
         <div
-          v-if="true"
+          v-if="false"
           class="flex justify-end py-2 px-3 w-full border-t text-slate-300"
         >
-          <span class="text-xs">&copy; noovproject 2024</span>
+          <span class="text-xs">&copy; 2024</span>
         </div>
       </div>
     </div>

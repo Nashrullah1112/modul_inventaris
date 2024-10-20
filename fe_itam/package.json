@@ -10,6 +10,8 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/js": "^7.4.47",
     "@radix-icons/vue": "^1.0.0",
     "@tanstack/vue-table": "^8.20.5",
     "@vee-validate/zod": "^4.13.2",

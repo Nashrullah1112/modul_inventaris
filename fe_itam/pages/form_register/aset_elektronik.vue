@@ -1,8 +1,8 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 import UserAuthForm from "@/components/UserAuthForm.vue";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-</script>
+</script> -->
 
 <template>
   <div class="max-w-lg mx-auto p-8 bg-white shadow-lg rounded-lg">
