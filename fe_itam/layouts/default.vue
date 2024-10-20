@@ -8,7 +8,7 @@ const isOpen = useState("is-sidebar-open");
     <LayoutsSidebar></LayoutsSidebar>
 
     <!-- main container -->
-    <div class="pt-14 h-screen" :class="isOpen ? 'xl:ml-64' : ''">
+    <div class="pt-14 h-screen" :class="isOpen ? 'lg:ml-64' : ''">
       <div class="flex flex-col h-full overflow-y-auto bg-white">
         <!-- content -->
         <div class="px-6 py-4 flex-1">

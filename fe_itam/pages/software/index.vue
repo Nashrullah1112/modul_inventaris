@@ -25,7 +25,7 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "assetName",
+    accessorKey: "NomorAsset",
     header: ({ column }) => {
       return h(
         Button,
@@ -33,30 +33,30 @@ const columns = [
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Asset Name", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+        () => ["Nomor Asset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
       );
     },
     cell: ({ row }) =>
-      h("div", { class: "capitalize" }, row.getValue("assetName")),
+      h("div", { class: "capitalize" }, row.getValue("Nomor Asset")),
   },
   {
-    accessorKey: "assetCategory",
-    header: () => h("div", {}, "Asset Category"),
-    cell: ({ row }) => h("div", {}, row.getValue("assetCategory")),
+    accessorKey: "SerialNumber",
+    header: () => h("div", {}, "Serial Number"),
+    cell: ({ row }) => h("div", {}, row.getValue("Serial Number")),
   },
   {
-    accessorKey: "brand",
-    header: () => h("div", {}, "Brand"),
-    cell: ({ row }) => h("div", {}, row.getValue("brand")),
+    accessorKey: "Pengguna",
+    header: () => h("div", {}, "Pengguna"),
+    cell: ({ row }) => h("div", {}, row.getValue("Pengguna")),
   },
   {
-    accessorKey: "description",
-    header: () => h("div", {}, "Description"),
-    cell: ({ row }) => h("div", {}, row.getValue("description")),
+    accessorKey: "CetakBarcode",
+    header: () => h("div", {}, "Cetak Barcode"),
+    cell: ({ row }) => h("div", {}, row.getValue("Cetak Barcode")),
   },
   {
     accessorKey: "year",
-    header: () => h("div", {}, "Year"),
+    header: () => h("div", {}, "year"),
     cell: ({ row }) => h("div", {}, row.getValue("year")),
   },
   {
@@ -111,64 +111,64 @@ async function getData(): Promise<Payment[]> {
   // Fetch data from your API here.
   return [
     {
-      assetName: "Laptop X1",
-      assetCategory: "Electronics",
-      brand: "Brand A",
-      description: "High-performance laptop for professionals.",
+      NomorAsset: "Laptop X1",
+      SerialNumber: "Electronics",
+      Pengguna: "Pengguna A",
+      CetakBarcode: "High-performance laptop for professionals.",
       year: 2021,
       status: "active",
       price: 12000000, // 12 juta
     },
     {
-      assetName: "Smartphone Y2",
-      assetCategory: "Electronics",
-      brand: "Brand B",
-      description: "Latest smartphone with advanced features.",
+      NomorAsset: "Smartphone Y2",
+      SerialNumber: "Electronics",
+      Pengguna: "Pengguna B",
+      CetakBarcode: "Latest smartphone with advanced features.",
       year: 2023,
       status: "active",
       price: 8000000, // 8 juta
     },
     {
-      assetName: "Office Chair Z3",
-      assetCategory: "Furniture",
-      brand: "Brand C",
-      description: "Ergonomic office chair for comfort.",
+      NomorAsset: "Office Chair Z3",
+      SerialNumber: "Furniture",
+      Pengguna: "Pengguna C",
+      CetakBarcode: "Ergonomic office chair for comfort.",
       year: 2020,
       status: "active",
       price: 2500000, // 2.5 juta
     },
     {
-      assetName: "Projector Q4",
-      assetCategory: "Electronics",
-      brand: "Brand D",
-      description: "Portable projector for presentations.",
+      NomorAsset: "Projector Q4",
+      SerialNumber: "Electronics",
+      Pengguna: "Pengguna D",
+      CetakBarcode: "Portable projector for presentations.",
       year: 2022,
       status: "non active",
       price: 6000000, // 6 juta
     },
     {
-      assetName: "Desktop PC R5",
-      assetCategory: "Electronics",
-      brand: "Brand E",
-      description: "Powerful desktop for gaming and work.",
+      NomorAsset: "Desktop PC R5",
+      SerialNumber: "Electronics",
+      Pengguna: "Pengguna E",
+      CetakBarcode: "Powerful desktop for gaming and work.",
       year: 2020,
       status: "active",
       price: 15000000, // 15 juta
     },
     {
-      assetName: "Printer S6",
-      assetCategory: "Electronics",
-      brand: "Brand F",
-      description: "All-in-one printer with scanning capabilities.",
+      NomorAsset: "Printer S6",
+      SerialNumber: "Electronics",
+      Pengguna: "Pengguna F",
+      CetakBarcode: "All-in-one printer with scanning capabilities.",
       year: 2019,
-      status: "non active",
+      status: "non acCetak Barcode",
       price: 3000000, // 3 juta
     },
     {
-      assetName: "Conference Table T7",
-      assetCategory: "Furniture",
-      brand: "Brand G",
-      description: "Spacious table for meetings.",
+      NomorAsset: "Conference Table T7",
+      SerialNumber: "Furniture",
+      Pengguna: "Pengguna G",
+      CetakBarcode: "Spacious table for meetings.",
       year: 2021,
       status: "active",
       price: 8000000, // 8 juta
