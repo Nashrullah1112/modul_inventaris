@@ -1,4 +1,4 @@
-package web
+package Web
 
 type BarangResponse struct {
 	Id       int64  `json:"id"`

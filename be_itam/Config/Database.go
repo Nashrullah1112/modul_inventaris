@@ -2,11 +2,12 @@ package Config
 
 import (
 	"fmt"
+	"os"
+
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gen"
 	"gorm.io/gorm"
-	"os"
 )
 
 //func NewDB() *sql.DB {
@@ -54,7 +55,7 @@ func InitDB() {
 	// don't generate unused Database
 
 	// Generates All Table in Database
-	g.GenerateAllTable()
+	// g.GenerateAllTable()
 
 	// Generate Specify Table in Database
 	//g.GenerateModel("master_type_schedules")

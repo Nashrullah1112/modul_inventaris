@@ -2,11 +2,11 @@ package Constant
 
 import (
 	"itam/Model/Database"
-	"itam/Model/web"
+	"itam/Model/Web"
 )
 
-func ToBarangResponse(barang Database.Barang) web.BarangResponse {
-	return web.BarangResponse{
+func ToBarangResponse(barang Database.Barang) Web.BarangResponse {
+	return Web.BarangResponse{
 		Id:       barang.ID,
 		Name:     barang.Name,
 		Category: barang.Category,
@@ -14,8 +14,8 @@ func ToBarangResponse(barang Database.Barang) web.BarangResponse {
 	}
 }
 
-func ToBarangResponses(barangs []Database.Barang) []web.BarangResponse {
-	var barangResponses []web.BarangResponse
+func ToBarangResponses(barangs []Database.Barang) []Web.BarangResponse {
+	var barangResponses []Web.BarangResponse
 	for _, barang := range barangs {
 		barangResponses = append(barangResponses, ToBarangResponse(barang))
 	}

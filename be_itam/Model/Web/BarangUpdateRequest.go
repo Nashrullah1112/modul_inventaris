@@ -1,4 +1,4 @@
-package web
+package Web
 
 type BarangUpdateRequest struct {
 	Id       int64  `validate:"required"`
