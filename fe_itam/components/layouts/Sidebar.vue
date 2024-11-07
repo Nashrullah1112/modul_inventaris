@@ -7,6 +7,10 @@ import {
   HomeIcon,
   TableIcon,
   StackIcon,
+  PersonIcon,
+  ArchiveIcon,
+  GearIcon,
+  LayersIcon,
 } from "@radix-icons/vue";
 
 const route = useRoute();
@@ -37,7 +41,7 @@ watch(windowWidth, (newVal) => {
 const sidebarItem = {
   top: [
     {
-      title: "Home",
+      title: "Dashboard",
       url: "/",
       icon: HomeIcon,
     },
@@ -45,26 +49,74 @@ const sidebarItem = {
       title: "Registrasi Inventaris",
       icon: StackIcon,
       dropdown: true,
+      children: [
+        {
+          title: "Perangkat Elektronik",
+          url: "/electronic/form",
+        },
+        {
+          title: "Hardware",
+          url: "/hardware/form",
+        },
+        {
+          title: "Software Lisensi",
+          url: "/software_license/form",
+        },
+        {
+          title: "Software Aplikasi",
+          url: "/software/form",
+        },
+      ],
     },
     {
-      title: "Perangkat Elektronik",
-      url: "/electronic/form",
-      icon: StackIcon,
+      title: "Storage",
+      icon: ArchiveIcon,
+      dropdown: true,
+      children: [
+        {
+          title: "Data Perangkat Elektronik",
+          url: "/electronic/data",
+        },
+        {
+          title: "Data Hardware",
+          url: "/hardware/data",
+        },
+        {
+          title: "Data Software Lisensi",
+          url: "/software_license/data",
+        },
+        {
+          title: "Data Software Aplikasi",
+          url: "/software/data",
+        },
+        {
+          title: "Approval",
+          url: "/approval",
+        },
+        {
+          title: "Tambah Pengguna",
+          url: "/users/add",
+        },
+        {
+          title: "Tambah Vendor",
+          url: "/vendors/add",
+        },
+      ],
     },
     {
-      title: "DataTable Example",
-      url: "/eg/datatable",
-      icon: StackIcon,
-    },
-    {
-      title: "Hardware",
-      url: "/hardware",
-      icon: TableIcon,
-    },
-    {
-      title: "Software",
-      url: "/software/form",
-      icon: TableIcon,
+      title: "Pegawai",
+      icon: PersonIcon,
+      dropdown: true,
+      children: [
+        {
+          title: "Tambah Pegawai",
+          url: "/employee/add",
+        },
+        {
+          title: "Data Pegawai",
+          url: "/employee/data",
+        },
+      ],
     },
   ],
   bottom: [
@@ -103,22 +155,46 @@ const isActive = (url: string) => {
       <HamburgerMenuIcon class="size-4" />
     </Button>
 
-    <div class="w-full text-xl text-center">
-      <h1>Modul Inventaris</h1>
+    <div
+      class="w-full text-xl text-center flex items-center justify-center gap-2"
+    >
+      <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+      <h1>IT Asset Management</h1>
     </div>
 
     <div class="flex flex-col flex-1 gap-2 mt-10">
       <div class="flex flex-col flex-1">
-        <Button
-          :variant="isActive(item.url) ? 'default' : 'ghost'"
-          class="justify-start"
-          v-for="item in sidebarItem.top"
-          @click="navigateTo(item.url) || '#'"
-        >
-          <component :is="item.icon" class="size-4 mr-2" />
-          {{ item.title }}
-        </Button>
+        <template v-for="item in sidebarItem.top">
+          <Button
+            v-if="!item.dropdown"
+            :variant="isActive(item.url) ? 'default' : 'ghost'"
+            class="justify-start"
+            @click="navigateTo(item.url) || '#'"
+          >
+            <component :is="item.icon" class="size-4 mr-2" />
+            {{ item.title }}
+          </Button>
+
+          <div v-else class="mb-2">
+            <Button variant="ghost" class="justify-start w-full">
+              <component :is="item.icon" class="size-4 mr-2" />
+              {{ item.title }}
+            </Button>
+
+            <div class="ml-6 flex flex-col gap-1">
+              <Button
+                v-for="child in item.children"
+                :variant="isActive(child.url) ? 'default' : 'ghost'"
+                class="justify-start"
+                @click="navigateTo(child.url)"
+              >
+                {{ child.title }}
+              </Button>
+            </div>
+          </div>
+        </template>
       </div>
+
       <div class="flex flex-col">
         <Button
           :variant="isActive(item.url) ? 'default' : 'ghost'"
