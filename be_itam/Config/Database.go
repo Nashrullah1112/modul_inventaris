@@ -2,11 +2,12 @@ package Config
 
 import (
 	"fmt"
+	"os"
+
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gen"
 	"gorm.io/gorm"
-	"os"
 )
 
 //func NewDB() *sql.DB {
