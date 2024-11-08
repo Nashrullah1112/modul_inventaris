@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import SvgIcon from "@jamescoyle/vue-icon";
 import { mdiAccount, mdiLogout } from "@mdi/js";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,17 +14,21 @@ import {
 
 const route = useRoute();
 
+// State management
 const isOpen = useState("is-sidebar-open", () => false);
 const windowWidth = ref(0);
 
+// Fungsi toggle sidebar
 const toggleSidebar = () => (isOpen.value = !isOpen.value);
 
+// Fungsi untuk update lebar window
 const updateWidth = () => {
   windowWidth.value = window.innerWidth;
 };
 
+// Lifecycle hooks
 onMounted(() => {
-  windowWidth.value = window.innerWidth;
+  updateWidth();
   window.addEventListener("resize", updateWidth);
 });
 
@@ -33,26 +36,29 @@ onUnmounted(() => {
   window.removeEventListener("resize", updateWidth);
 });
 
-watch(windowWidth, (newVal) => {
-  if (windowWidth.value >= 1280) isOpen.value = true;
-  else isOpen.value = false;
+// Watch perubahan lebar window untuk responsive sidebar
+watch(windowWidth, () => {
+  isOpen.value = windowWidth.value >= 1280;
 });
 
-const sidebarItem = {
+// Data struktur menu sidebar yang lebih dinamis
+const sidebarItem = reactive({
   top: [
     {
       title: "Dashboard",
       url: "/",
       icon: HomeIcon,
+      dropdown: false,
     },
     {
       title: "Registrasi Inventaris",
       icon: StackIcon,
       dropdown: true,
+      isOpen: ref(false),
       children: [
         {
           title: "Perangkat Elektronik",
-          url: "/electronic/form",
+          url: "/electronic/",
         },
         {
           title: "Hardware",
@@ -64,7 +70,7 @@ const sidebarItem = {
         },
         {
           title: "Software Aplikasi",
-          url: "/software/form",
+          url: "/aplikasi/form",
         },
       ],
     },
@@ -72,6 +78,7 @@ const sidebarItem = {
       title: "Storage",
       icon: ArchiveIcon,
       dropdown: true,
+      isOpen: ref(false),
       children: [
         {
           title: "Data Perangkat Elektronik",
@@ -90,10 +97,6 @@ const sidebarItem = {
           url: "/software/data",
         },
         {
-          title: "Approval",
-          url: "/approval",
-        },
-        {
           title: "Tambah Pengguna",
           url: "/users/add",
         },
@@ -104,9 +107,16 @@ const sidebarItem = {
       ],
     },
     {
+      title: "Approval",
+      url: "/approval",
+      icon: GearIcon,
+      dropdown: false,
+    },
+    {
       title: "Pegawai",
       icon: PersonIcon,
       dropdown: true,
+      isOpen: ref(false),
       children: [
         {
           title: "Tambah Pegawai",
@@ -122,71 +132,89 @@ const sidebarItem = {
   bottom: [
     {
       title: "Profile",
-      url: "#",
+      url: "/profile",
       icon: mdiAccount,
     },
     {
       title: "Logout",
-      url: "#",
+      url: "/logout",
       icon: mdiLogout,
     },
   ],
+});
+
+// Helper functions
+const isActive = (url: string): boolean => {
+  return route.path === url;
 };
 
-const isActive = (url: string) => {
-  return route.path === url;
+const handleNavigation = (url: string) => {
+  if (url) navigateTo(url);
+};
+
+const toggleDropdown = (item: any) => {
+  if (item.dropdown) {
+    item.isOpen = !item.isOpen;
+  }
 };
 </script>
 
 <template>
-  <div class="fixed top-0 left-0 right-0 h-14 shadow z-10"></div>
+  <nav
+    class="fixed top-0 left-0 right-0 h-14 border-b bg-background z-10"
+  ></nav>
 
-  <div
-    class="fixed flex flex-col top-0 left-0 h-screen w-64 bg-white p-4 shadow-xl z-20 transition-transform"
-    :class="!isOpen ? '-translate-x-64' : ''"
+  <aside
+    class="fixed flex flex-col top-0 left-0 h-screen w-64 bg-background border-r p-4 z-20 transition-transform duration-300"
+    :class="{ '-translate-x-64': !isOpen }"
   >
-    <!-- sidebar toggle btn -->
+    <!-- Toggle Button -->
     <Button
       variant="ghost"
       size="icon"
-      class="absolute top-2.5 -right-14"
+      class="absolute top-2.5 -right-14 hover:bg-primary hover:text-primary-foreground"
       @click="toggleSidebar"
     >
-      <HamburgerMenuIcon class="size-4" />
+      <HamburgerMenuIcon class="h-4 w-4" />
     </Button>
 
-    <div
-      class="w-full text-xl text-center flex items-center justify-center gap-2"
-    >
-      <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-      <h1>IT Asset Management</h1>
+    <!-- Logo -->
+    <div class="flex items-center justify-center gap-2">
+      <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+      <h1 class="text-xl font-semibold">IT Asset Management</h1>
     </div>
 
+    <!-- Menu Items -->
     <div class="flex flex-col flex-1 gap-2 mt-10">
       <div class="flex flex-col flex-1">
-        <template v-for="item in sidebarItem.top">
+        <template v-for="item in sidebarItem.top" :key="item.title">
           <Button
             v-if="!item.dropdown"
-            :variant="isActive(item.url) ? 'default' : 'ghost'"
-            class="justify-start"
-            @click="navigateTo(item.url) || '#'"
+            :variant="isActive(item.url!) ? 'default' : 'ghost'"
+            class="justify-start hover:bg-primary hover:text-primary-foreground"
+            @click="handleNavigation(item.url!)"
           >
-            <component :is="item.icon" class="size-4 mr-2" />
+            <component :is="item.icon" class="h-4 w-4 mr-2" />
             {{ item.title }}
           </Button>
 
           <div v-else class="mb-2">
-            <Button variant="ghost" class="justify-start w-full">
-              <component :is="item.icon" class="size-4 mr-2" />
+            <Button
+              variant="ghost"
+              class="justify-start w-full hover:bg-primary hover:text-primary-foreground"
+              @click="toggleDropdown(item)"
+            >
+              <component :is="item.icon" class="h-4 w-4 mr-2" />
               {{ item.title }}
             </Button>
 
-            <div class="ml-6 flex flex-col gap-1">
+            <div v-show="item.isOpen" class="ml-6 flex flex-col gap-1">
               <Button
                 v-for="child in item.children"
+                :key="child.title"
                 :variant="isActive(child.url) ? 'default' : 'ghost'"
-                class="justify-start"
-                @click="navigateTo(child.url)"
+                class="justify-start hover:bg-primary hover:text-primary-foreground"
+                @click="handleNavigation(child.url)"
               >
                 {{ child.title }}
               </Button>
@@ -195,17 +223,19 @@ const isActive = (url: string) => {
         </template>
       </div>
 
+      <!-- Bottom Menu -->
       <div class="flex flex-col">
         <Button
-          :variant="isActive(item.url) ? 'default' : 'ghost'"
-          class="justify-start"
           v-for="item in sidebarItem.bottom"
-          @click="navigateTo(item.url) || '#'"
+          :key="item.title"
+          :variant="isActive(item.url) ? 'default' : 'ghost'"
+          class="justify-start hover:bg-primary hover:text-primary-foreground"
+          @click="handleNavigation(item.url)"
         >
-          <SvgIcon type="mdi" :path="item.icon" class="size-4 mr-2" />
+          <SvgIcon type="mdi" :path="item.icon" class="h-4 w-4 mr-2" />
           {{ item.title }}
         </Button>
       </div>
     </div>
-  </div>
+  </aside>
 </template>
