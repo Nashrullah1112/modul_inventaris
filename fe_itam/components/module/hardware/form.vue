@@ -1,3 +1,11 @@
+<script setup lang="ts">
+
+const props = defineProps<{
+  type: string,
+  data: any[],
+}>()
+</script>
+
 <template>
   <div class="p-8 bg-white shadow-lg rounded-lg">
     <h1 class="text-2xl font-bold mb-6">Registrasi Aset Hardware</h1>
@@ -152,7 +160,7 @@
   </div>
 </template>
 
-<script>
+<!-- <script>
 export default {
   data() {
     return {
@@ -186,4 +194,4 @@ export default {
     },
   },
 };
-</script>
+</script> -->

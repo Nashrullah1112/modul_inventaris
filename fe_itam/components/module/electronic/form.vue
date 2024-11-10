@@ -1,12 +1,14 @@
-<!-- <script setup lang="ts">
-import UserAuthForm from "@/components/UserAuthForm.vue";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-</script> -->
+<script setup lang="ts">
+
+const props = defineProps<{
+  type: string,
+  data: any[],
+}>()
+</script>
 
 <template>
   <div class="p-8 bg-white shadow-lg rounded-lg">
-    <h1 class="text-2xl font-bold mb-6">Registrasi Aset Elektronik</h1>
+    <h1 class="text-2xl font-bold mb-6">Registrasi Aset Elektronik kwontol</h1>
     <form @submit.prevent="registerAsset">
       <!-- Begi 2 sisi -->
       <div class="grid grid-cols-2 gap-x-4">
@@ -69,20 +71,6 @@ import { buttonVariants } from "@/components/ui/button";
             required
           />
         </div>
-        <!-- <div class="mb-4">
-          <label
-            for="achievedDate"
-            class="block text-sm font-medium text-gray-700"
-            >Tanggal Penerimaan</label
-          >
-          <input
-            type="date"
-            id="achievedDate"
-            v-model="achievedDate"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-          />
-        </div> -->
         <div class="mb-4">
           <label
             for="kondisi asset"
@@ -452,30 +440,6 @@ import { buttonVariants } from "@/components/ui/button";
     </form>
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      supplierName: "",
-      assetType: "",
-      achievedDate: "",
-      status: "",
-    };
-  },
-  methods: {
-    registerAsset() {
-      // Logika untuk mendaftarkan aset
-      console.log({
-        supplierName: this.supplierName,
-        assetType: this.assetType,
-        achievedDate: this.achievedDate,
-        status: this.status,
-      });
-    },
-  },
-};
-</script>
 
 <style scoped>
 /* Tambahkan style kustom jika diperlukan */

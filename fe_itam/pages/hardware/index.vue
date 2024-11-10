@@ -8,6 +8,6 @@ const route = useRoute()
   <div class="flex mb-2">
     <Button @click="navigateTo(route.path + '/add')">Tambah</Button>
   </div>
-  
-  <h1>Tampilan tabel</h1>
+
+  <p>Tabel Data Hardware</p>
 </template>

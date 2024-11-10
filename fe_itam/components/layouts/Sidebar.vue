@@ -58,11 +58,11 @@ const sidebarItem = reactive({
       children: [
         {
           title: "Perangkat Elektronik",
-          url: "/electronic/",
+          url: "/electronic",
         },
         {
           title: "Hardware",
-          url: "/hardware/form",
+          url: "/hardware",
         },
         {
           title: "Software Lisensi",
