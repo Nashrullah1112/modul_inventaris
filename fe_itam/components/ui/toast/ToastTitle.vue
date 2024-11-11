@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { cn } from '@/lib/utils'
-import { SelectGroup, type SelectGroupProps } from 'radix-vue'
+import { ToastTitle, type ToastTitleProps } from 'radix-vue'
 import { computed, type HTMLAttributes } from 'vue'
 
-const props = defineProps<SelectGroupProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<ToastTitleProps & { class?: HTMLAttributes['class'] }>()
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props
@@ -13,7 +13,7 @@ const delegatedProps = computed(() => {
 </script>
 
 <template>
-  <SelectGroup :class="cn('p-1 w-full', props.class)" v-bind="delegatedProps">
+  <ToastTitle v-bind="delegatedProps" :class="cn('text-sm font-semibold [&+div]:text-xs', props.class)">
     <slot />
-  </SelectGroup>
+  </ToastTitle>
 </template>

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { type HTMLAttributes, computed } from 'vue'
-import { CalendarNext, type CalendarNextProps, useForwardProps } from 'radix-vue'
-import { ChevronRight } from 'lucide-vue-next'
-import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { ChevronRightIcon } from '@radix-icons/vue'
+import { CalendarNext, type CalendarNextProps, useForwardProps } from 'radix-vue'
+import { computed, type HTMLAttributes } from 'vue'
 
 const props = defineProps<CalendarNextProps & { class?: HTMLAttributes['class'] }>()
 
@@ -26,7 +26,7 @@ const forwardedProps = useForwardProps(delegatedProps)
     v-bind="forwardedProps"
   >
     <slot>
-      <ChevronRight class="h-4 w-4" />
+      <ChevronRightIcon class="h-4 w-4" />
     </slot>
   </CalendarNext>
 </template>
