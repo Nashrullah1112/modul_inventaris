@@ -8,7 +8,7 @@ const props = defineProps<{
 
 <template>
   <div class="p-8 bg-white shadow-lg rounded-lg">
-    <h1 class="text-2xl font-bold mb-6">Registrasi Aset Elektronik kwontol</h1>
+    <h1 class="text-2xl font-bold mb-6">Registrasi Aset Elektronik</h1>
     <form @submit.prevent="registerAsset">
       <!-- Begi 2 sisi -->
       <div class="grid grid-cols-2 gap-x-4">
