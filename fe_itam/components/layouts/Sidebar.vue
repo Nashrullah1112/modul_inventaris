@@ -46,7 +46,7 @@ const sidebarItem = reactive({
   top: [
     {
       title: "Dashboard",
-      url: "/",
+      url: "/dashboard/Dashboard",
       icon: HomeIcon,
       dropdown: false,
     },
@@ -58,19 +58,19 @@ const sidebarItem = reactive({
       children: [
         {
           title: "Perangkat Elektronik",
-          url: "/electronic/",
+          url: "/electronic/add",
         },
         {
           title: "Hardware",
-          url: "/hardware/form",
+          url: "/hardware/add",
         },
         {
           title: "Software Lisensi",
-          url: "/software_license/form",
+          url: "/software_license/add",
         },
         {
           title: "Software Aplikasi",
-          url: "/aplikasi/form",
+          url: "/aplikasi/add",
         },
       ],
     },
@@ -82,23 +82,19 @@ const sidebarItem = reactive({
       children: [
         {
           title: "Data Perangkat Elektronik",
-          url: "/electronic/data",
+          url: "/electronic/",
         },
         {
           title: "Data Hardware",
-          url: "/hardware/data",
+          url: "/hardware/",
         },
         {
           title: "Data Software Lisensi",
-          url: "/software_license/data",
+          url: "/software_license/",
         },
         {
           title: "Data Software Aplikasi",
-          url: "/software/data",
-        },
-        {
-          title: "Tambah Pengguna",
-          url: "/users/add",
+          url: "/aplikasi/",
         },
         {
           title: "Tambah Vendor",
@@ -108,7 +104,7 @@ const sidebarItem = reactive({
     },
     {
       title: "Approval",
-      url: "/approval",
+      url: "/inspection/inspeksi",
       icon: GearIcon,
       dropdown: false,
     },
@@ -124,7 +120,7 @@ const sidebarItem = reactive({
         },
         {
           title: "Data Pegawai",
-          url: "/employee/data",
+          url: "/employee/",
         },
       ],
     },

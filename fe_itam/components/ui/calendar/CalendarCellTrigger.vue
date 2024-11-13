@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { type HTMLAttributes, computed } from 'vue'
-import { CalendarCellTrigger, type CalendarCellTriggerProps, useForwardProps } from 'radix-vue'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { CalendarCellTrigger, type CalendarCellTriggerProps, useForwardProps } from 'radix-vue'
+import { computed, type HTMLAttributes } from 'vue'
 
 const props = defineProps<CalendarCellTriggerProps & { class?: HTMLAttributes['class'] }>()
 
@@ -28,7 +28,7 @@ const forwardedProps = useForwardProps(delegatedProps)
       // Unavailable
       'data-[unavailable]:text-slate-50 data-[unavailable]:line-through dark:data-[unavailable]:text-slate-50',
       // Outside months
-      'data-[outside-month]:pointer-events-none data-[outside-month]:text-slate-500 data-[outside-month]:opacity-50 [&[data-outside-month][data-selected]]:bg-slate-100/50 [&[data-outside-month][data-selected]]:text-slate-500 [&[data-outside-month][data-selected]]:opacity-30 dark:data-[outside-month]:text-slate-400 dark:[&[data-outside-month][data-selected]]:bg-slate-800/50 dark:[&[data-outside-month][data-selected]]:text-slate-400',
+      'data-[outside-view]:text-slate-500 data-[outside-view]:opacity-50 [&[data-outside-view][data-selected]]:bg-slate-100/50 [&[data-outside-view][data-selected]]:text-slate-500 [&[data-outside-view][data-selected]]:opacity-30 dark:data-[outside-view]:text-slate-400 dark:[&[data-outside-view][data-selected]]:bg-slate-800/50 dark:[&[data-outside-view][data-selected]]:text-slate-400',
       props.class,
     )"
     v-bind="forwardedProps"

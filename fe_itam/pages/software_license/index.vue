@@ -1,21 +1,37 @@
 <script setup lang="ts">
-import { h } from "vue";
-import DropdownAction from "@/components/DataTableDropDown.vue";
+import { h, ref } from "vue";
 import DataTable from "@/components/DataTable.vue";
-import { ArrowUpDown, ChevronDown } from "lucide-vue-next";
+import { ArrowUpDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+
+interface TableRow {
+  getIsSelected: () => boolean;
+  toggleSelected: (value: boolean) => void;
+  getValue: (key: string) => any;
+  original: any;
+}
+
+interface TableHeader {
+  getIsAllPageRowsSelected: () => boolean;
+  toggleAllPageRowsSelected: (value: boolean) => void;
+}
+
+interface Column {
+  getIsSorted: () => string;
+  toggleSorting: (asc: boolean) => void;
+}
 
 const columns = [
   {
     id: "select",
-    header: ({ table }) =>
+    header: ({ table }: { table: TableHeader }) =>
       h(Checkbox, {
         checked: table.getIsAllPageRowsSelected(),
         "onUpdate:checked": (value) => table.toggleAllPageRowsSelected(!!value),
         ariaLabel: "Select all",
       }),
-    cell: ({ row }) =>
+    cell: ({ row }: { row: TableRow }) =>
       h(Checkbox, {
         checked: row.getIsSelected(),
         "onUpdate:checked": (value) => row.toggleSelected(!!value),
@@ -25,164 +41,113 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "NomorAsset",
-    header: ({ column }) => {
+    accessorKey: "appName",
+    header: ({ column }: { column: Column }) => {
       return h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Nomor Asset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+        () => ["Nama Aplikasi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
       );
     },
-    cell: ({ row }) =>
-      h("div", { class: "capitalize" }, row.getValue("Nomor Asset")),
+    cell: ({ row }: { row: TableRow }) =>
+      h("div", { class: "capitalize" }, row.getValue("appName")),
   },
   {
-    accessorKey: "SerialNumber",
-    header: () => h("div", {}, "Serial Number"),
-    cell: ({ row }) => h("div", {}, row.getValue("Serial Number")),
-  },
-  {
-    accessorKey: "Pengguna",
-    header: () => h("div", {}, "Pengguna"),
-    cell: ({ row }) => h("div", {}, row.getValue("Pengguna")),
-  },
-  {
-    accessorKey: "CetakBarcode",
-    header: () => h("div", {}, "Cetak Barcode"),
-    cell: ({ row }) => h("div", {}, row.getValue("Cetak Barcode")),
-  },
-  {
-    accessorKey: "year",
-    header: () => h("div", {}, "year"),
-    cell: ({ row }) => h("div", {}, row.getValue("year")),
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
+    accessorKey: "platform",
+    header: ({ column }: { column: Column }) => {
       return h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Status", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+        () => ["Platform", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
       );
     },
-    cell: ({ row }) =>
-      h("div", { class: "capitalize" }, row.getValue("status")),
+    cell: ({ row }: { row: TableRow }) =>
+      h("div", {}, row.getValue("platform")),
   },
   {
-    accessorKey: "price",
-    header: () => h("div", { class: "text-right" }, "Price"),
-    cell: ({ row }) => {
-      const price = row.getValue("price");
-      const formatted = new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-      }).format(price);
-
-      return h("div", { class: "text-right font-medium" }, formatted);
-    },
+    accessorKey: "expiryDate",
+    header: () => h("div", {}, "Tanggal Berakhir"),
+    cell: ({ row }: { row: TableRow }) =>
+      h("div", {}, row.getValue("expiryDate")),
+  },
+  {
+    accessorKey: "userCount",
+    header: () => h("div", {}, "Jumlah Pengguna"),
+    cell: ({ row }: { row: TableRow }) =>
+      h("div", {}, row.getValue("userCount")),
+  },
+  {
+    accessorKey: "deviceCount",
+    header: () => h("div", {}, "Jumlah Perangkat"),
+    cell: ({ row }: { row: TableRow }) =>
+      h("div", {}, row.getValue("deviceCount")),
   },
   {
     id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const asset = row.original;
-
-      return h(
-        "div",
-        { class: "relative" },
-        h(DropdownAction, {
-          asset,
-          onExpand: row.toggleExpanded,
-        })
-      );
+    header: () => h("div", {}, "Aksi"),
+    cell: ({ row }: { row: TableRow }) => {
+      return h("div", { class: "flex gap-2" }, [
+        h(
+          Button,
+          {
+            variant: "default",
+            class: "bg-blue-500 hover:bg-blue-600",
+            onClick: () => console.log("Update", row.original.id),
+          },
+          () => "Update"
+        ),
+        h(
+          Button,
+          {
+            variant: "default",
+            class: "bg-red-500 hover:bg-red-600",
+            onClick: () => console.log("Delete", row.original.id),
+          },
+          () => "Delete"
+        ),
+      ]);
     },
   },
 ];
 
-const data = ref<Payment[]>([]);
+const softwareLicenses = ref([
+  {
+    id: 1,
+    appName: "Microsoft Office 365",
+    platform: "Desktop/Cloud",
+    expiryDate: "2024-12-31",
+    userCount: 100,
+    deviceCount: 150,
+  },
+  {
+    id: 2,
+    appName: "Adobe Creative Cloud",
+    platform: "Desktop",
+    expiryDate: "2024-10-15",
+    userCount: 25,
+    deviceCount: 30,
+  },
+]);
 
-async function getData(): Promise<Payment[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      NomorAsset: "Laptop X1",
-      SerialNumber: "Electronics",
-      Pengguna: "Pengguna A",
-      CetakBarcode: "High-performance laptop for professionals.",
-      year: 2021,
-      status: "active",
-      price: 12000000, // 12 juta
-    },
-    {
-      NomorAsset: "Smartphone Y2",
-      SerialNumber: "Electronics",
-      Pengguna: "Pengguna B",
-      CetakBarcode: "Latest smartphone with advanced features.",
-      year: 2023,
-      status: "active",
-      price: 8000000, // 8 juta
-    },
-    {
-      NomorAsset: "Office Chair Z3",
-      SerialNumber: "Furniture",
-      Pengguna: "Pengguna C",
-      CetakBarcode: "Ergonomic office chair for comfort.",
-      year: 2020,
-      status: "active",
-      price: 2500000, // 2.5 juta
-    },
-    {
-      NomorAsset: "Projector Q4",
-      SerialNumber: "Electronics",
-      Pengguna: "Pengguna D",
-      CetakBarcode: "Portable projector for presentations.",
-      year: 2022,
-      status: "non active",
-      price: 6000000, // 6 juta
-    },
-    {
-      NomorAsset: "Desktop PC R5",
-      SerialNumber: "Electronics",
-      Pengguna: "Pengguna E",
-      CetakBarcode: "Powerful desktop for gaming and work.",
-      year: 2020,
-      status: "active",
-      price: 15000000, // 15 juta
-    },
-    {
-      NomorAsset: "Printer S6",
-      SerialNumber: "Electronics",
-      Pengguna: "Pengguna F",
-      CetakBarcode: "All-in-one printer with scanning capabilities.",
-      year: 2019,
-      status: "non acCetak Barcode",
-      price: 3000000, // 3 juta
-    },
-    {
-      NomorAsset: "Conference Table T7",
-      SerialNumber: "Furniture",
-      Pengguna: "Pengguna G",
-      CetakBarcode: "Spacious table for meetings.",
-      year: 2021,
-      status: "active",
-      price: 8000000, // 8 juta
-    },
-  ];
-}
-
-onMounted(async () => {
-  data.value = await getData();
-});
+const isOpen = ref(false);
 </script>
 
 <template>
-  <div>
-    <DataTable :columns="columns" :data="data" />
+  <div class="p-8" :class="{ 'ml-64': isOpen, 'ml-20': !isOpen }">
+    <div class="bg-white rounded-lg shadow-lg">
+      <div class="p-6 border-b border-gray-200">
+        <h1 class="text-2xl font-bold text-gray-800">Data Lisensi Software</h1>
+      </div>
+
+      <div class="p-6">
+        <DataTable :columns="columns" :data="softwareLicenses" />
+      </div>
+    </div>
   </div>
 </template>

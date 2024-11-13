@@ -22,6 +22,16 @@ interface Column {
   toggleSorting: (asc: boolean) => void;
 }
 
+interface Hardware {
+  id: number;
+  assetNumber: string;
+  serialNumber: string;
+  assetType: string;
+  division: string;
+  currentDepreciation: string;
+  assetDetail: string;
+}
+
 const columns = [
   {
     id: "select",
@@ -41,6 +51,21 @@ const columns = [
     enableHiding: false,
   },
   {
+    accessorKey: "assetNumber",
+    header: ({ column }: { column: Column }) => {
+      return h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Nomor Aset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      );
+    },
+    cell: ({ row }: { row: TableRow }) =>
+      h("div", { class: "capitalize" }, row.getValue("assetNumber")),
+  },
+  {
     accessorKey: "serialNumber",
     header: ({ column }: { column: Column }) => {
       return h(
@@ -53,10 +78,10 @@ const columns = [
       );
     },
     cell: ({ row }: { row: TableRow }) =>
-      h("div", { class: "capitalize" }, row.getValue("serialNumber")),
+      h("div", {}, row.getValue("serialNumber")),
   },
   {
-    accessorKey: "assetNumber",
+    accessorKey: "assetType",
     header: ({ column }: { column: Column }) => {
       return h(
         Button,
@@ -64,23 +89,56 @@ const columns = [
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Nomor Asset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+        () => ["Tipe Aset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
       );
     },
     cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("assetNumber")),
-  },
-  {
-    accessorKey: "deviceName",
-    header: () => h("div", {}, "Data Perangkat"),
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("deviceName")),
+      h("div", {}, row.getValue("assetType")),
   },
   {
     accessorKey: "division",
-    header: () => h("div", {}, "Divisi"),
+    header: ({ column }: { column: Column }) => {
+      return h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Divisi Pengguna", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      );
+    },
     cell: ({ row }: { row: TableRow }) =>
       h("div", {}, row.getValue("division")),
+  },
+  {
+    accessorKey: "currentDepreciation",
+    header: ({ column }: { column: Column }) => {
+      return h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Nilai Depresiasi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      );
+    },
+    cell: ({ row }: { row: TableRow }) =>
+      h("div", {}, row.getValue("currentDepreciation")),
+  },
+  {
+    accessorKey: "assetDetail",
+    header: ({ column }: { column: Column }) => {
+      return h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Detail Aset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      );
+    },
+    cell: ({ row }: { row: TableRow }) =>
+      h("div", {}, row.getValue("assetDetail")),
   },
   {
     id: "actions",
@@ -110,20 +168,24 @@ const columns = [
   },
 ];
 
-const electronics = ref([
+const hardwareAssets = ref<Hardware[]>([
   {
     id: 1,
-    serialNumber: "SN-2024-001",
-    assetNumber: "AST-001",
-    deviceName: "Laptop Dell XPS 13",
-    division: "Divisi IT",
+    assetNumber: "HW-001",
+    serialNumber: "SN123456789",
+    assetType: "SSD",
+    division: "IT",
+    currentDepreciation: "Rp 15.000.000",
+    assetDetail: "Samsung 970 EVO Plus 1TB",
   },
   {
     id: 2,
-    serialNumber: "SN-2024-002",
-    assetNumber: "AST-002",
-    deviceName: 'Monitor LG 27"',
-    division: "Divisi Marketing",
+    assetNumber: "HW-002",
+    serialNumber: "SN987654321",
+    assetType: "RAM",
+    division: "Finance",
+    currentDepreciation: "Rp 8.000.000",
+    assetDetail: "Corsair Vengeance 32GB DDR4",
   },
 ]);
 
@@ -134,11 +196,11 @@ const isOpen = ref(false);
   <div class="p-8" :class="{ 'ml-64': isOpen, 'ml-20': !isOpen }">
     <div class="bg-white rounded-lg shadow-lg">
       <div class="p-6 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-800">Data Aset Elektronik</h1>
+        <h1 class="text-2xl font-bold text-gray-800">Data Hardware</h1>
       </div>
 
       <div class="p-6">
-        <DataTable :columns="columns" :data="electronics" />
+        <DataTable :columns="columns" :data="hardwareAssets" />
       </div>
     </div>
   </div>

@@ -22,6 +22,8 @@ interface Column {
   toggleSorting: (asc: boolean) => void;
 }
 
+const isOpen = useState("is-sidebar-open", () => false);
+
 const columns = [
   {
     id: "select",
@@ -41,7 +43,7 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "serialNumber",
+    accessorKey: "namaAplikasi",
     header: ({ column }: { column: Column }) => {
       return h(
         Button,
@@ -49,14 +51,12 @@ const columns = [
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Serial Number", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+        () => ["Nama Aplikasi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
       );
     },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", { class: "capitalize" }, row.getValue("serialNumber")),
   },
   {
-    accessorKey: "assetNumber",
+    accessorKey: "urlAplikasi",
     header: ({ column }: { column: Column }) => {
       return h(
         Button,
@@ -64,34 +64,32 @@ const columns = [
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Nomor Asset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+        () => ["URL Aplikasi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
       );
     },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("assetNumber")),
   },
   {
-    accessorKey: "deviceName",
-    header: () => h("div", {}, "Data Perangkat"),
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("deviceName")),
-  },
-  {
-    accessorKey: "division",
-    header: () => h("div", {}, "Divisi"),
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("division")),
+    accessorKey: "server",
+    header: ({ column }: { column: Column }) => {
+      return h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Server Penyimpanan", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      );
+    },
   },
   {
     id: "actions",
-    header: () => h("div", {}, "Aksi"),
     cell: ({ row }: { row: TableRow }) => {
-      return h("div", { class: "flex gap-2" }, [
+      return h("div", { class: "flex justify-end space-x-2" }, [
         h(
           Button,
           {
-            variant: "default",
-            class: "bg-blue-500 hover:bg-blue-600",
+            variant: "outline",
+            class: "bg-blue-500 hover:bg-blue-600 text-white w-[100px]",
             onClick: () => console.log("Update", row.original.id),
           },
           () => "Update"
@@ -99,8 +97,8 @@ const columns = [
         h(
           Button,
           {
-            variant: "default",
-            class: "bg-red-500 hover:bg-red-600",
+            variant: "destructive",
+            class: "w-[100px]",
             onClick: () => console.log("Delete", row.original.id),
           },
           () => "Delete"
@@ -110,35 +108,37 @@ const columns = [
   },
 ];
 
-const electronics = ref([
+const aplikasiList = ref([
   {
     id: 1,
-    serialNumber: "SN-2024-001",
-    assetNumber: "AST-001",
-    deviceName: "Laptop Dell XPS 13",
-    division: "Divisi IT",
+    namaAplikasi: "SIMRS",
+    urlAplikasi: "https://simrs.rsud.com",
+    server: "Server 1 - 192.168.1.10",
   },
   {
     id: 2,
-    serialNumber: "SN-2024-002",
-    assetNumber: "AST-002",
-    deviceName: 'Monitor LG 27"',
-    division: "Divisi Marketing",
+    namaAplikasi: "E-Office",
+    urlAplikasi: "https://eoffice.rsud.com",
+    server: "Server 2 - 192.168.1.20",
+  },
+  {
+    id: 3,
+    namaAplikasi: "Website RSUD",
+    urlAplikasi: "https://rsud.com",
+    server: "Server 3 - 192.168.1.30",
   },
 ]);
-
-const isOpen = ref(false);
 </script>
 
 <template>
   <div class="p-8" :class="{ 'ml-64': isOpen, 'ml-20': !isOpen }">
     <div class="bg-white rounded-lg shadow-lg">
       <div class="p-6 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-800">Data Aset Elektronik</h1>
+        <h1 class="text-2xl font-bold text-gray-800">Data Aplikasi</h1>
       </div>
 
       <div class="p-6">
-        <DataTable :columns="columns" :data="electronics" />
+        <DataTable :columns="columns" :data="aplikasiList" />
       </div>
     </div>
   </div>

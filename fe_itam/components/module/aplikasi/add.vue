@@ -1,5 +1,8 @@
 <template>
-  <div class="p-8 bg-white shadow-lg rounded-lg">
+  <div
+    class="p-8 bg-white shadow-lg rounded-lg"
+    :class="isOpen ? 'lg:ml-64' : ''"
+  >
     <h1 class="text-2xl font-bold mb-6">Registrasi Aplikasi</h1>
     <form @submit.prevent="registerAsset">
       <div class="grid grid-cols-2 gap-x-4">
@@ -26,6 +29,7 @@
             class="block text-sm font-medium text-gray-700"
             >Tanggal Pembuatan</label
           >
+
           <input
             type="date"
             id="tanggalPembuatan"
@@ -193,40 +197,37 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      vendor: "",
-      tanggalPembuatan: "",
-      namaAplikasi: "",
-      tanggalTerima: "",
-      tipePlatform: "",
-      serverPenyimpanan: null,
-      urlAplikasi: "",
-      tanggalAktifDomain: "",
-      tanggalExpiredDomain: "",
-      sertifikatAplikasi: "",
-      dokumentasi: null,
-    };
-  },
-  methods: {
-    registerAsset() {
-      console.log({
-        vendor: this.vendor,
-        tanggalPembuatan: this.tanggalPembuatan,
-        namaAplikasi: this.namaAplikasi,
-        tanggalTerima: this.tanggalTerima,
-        tipePlatform: this.tipePlatform,
-        serverPenyimpanan: this.serverPenyimpanan,
-        urlAplikasi: this.urlAplikasi,
-        tanggalAktifDomain: this.tanggalAktifDomain,
-        tanggalExpiredDomain: this.tanggalExpiredDomain,
-        sertifikatAplikasi: this.sertifikatAplikasi,
-        dokumentasi: this.dokumentasi,
-      });
-    },
-  },
+<script setup>
+import { useState } from "#app";
+
+const isOpen = useState("is-sidebar-open");
+
+const vendor = ref("");
+const tanggalPembuatan = ref("");
+const namaAplikasi = ref("");
+const tanggalTerima = ref("");
+const tipePlatform = ref("");
+const serverPenyimpanan = ref(null);
+const urlAplikasi = ref("");
+const tanggalAktifDomain = ref("");
+const tanggalExpiredDomain = ref("");
+const sertifikatAplikasi = ref("");
+const dokumentasi = ref(null);
+
+const registerAsset = () => {
+  console.log({
+    vendor: vendor.value,
+    tanggalPembuatan: tanggalPembuatan.value,
+    namaAplikasi: namaAplikasi.value,
+    tanggalTerima: tanggalTerima.value,
+    tipePlatform: tipePlatform.value,
+    serverPenyimpanan: serverPenyimpanan.value,
+    urlAplikasi: urlAplikasi.value,
+    tanggalAktifDomain: tanggalAktifDomain.value,
+    tanggalExpiredDomain: tanggalExpiredDomain.value,
+    sertifikatAplikasi: sertifikatAplikasi.value,
+    dokumentasi: dokumentasi.value,
+  });
 };
 </script>
 

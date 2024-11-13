@@ -1,207 +1,166 @@
 <script setup lang="ts">
-import Overview from "./components/Overview.vue";
-import DateRangePicker from "./components/DateRangePicker.vue";
-import MainNav from "./components/MainNav.vue";
-import RecentSales from "./components/RecentSales.vue";
-import Search from "./components/Search.vue";
-import TeamSwitcher from "./components/TeamSwitcher.vue";
-import UserNav from "./components/UserNav.vue";
+import { ref, onMounted } from "vue";
+import {
+  BellIcon,
+  MonitorIcon,
+  BoxIcon,
+  KeyIcon,
+  UsersIcon,
+  ClockIcon,
+} from "lucide-vue-next";
 
-import { Button } from "@/lib/registry/new-york/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/lib/registry/new-york/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/lib/registry/new-york/ui/tabs";
+// Menggunakan state dari sidebar
+const isOpen = useState("is-sidebar-open", () => false);
+
+const stats = ref({
+  elektronik: 0,
+  aplikasi: 0,
+  lisensi: 0,
+  pegawai: 0,
+});
+
+const notifications = ref([
+  {
+    id: 1,
+    title: "Lisensi Windows 10 Pro",
+    expiry: "2024-03-20",
+    status: "warning",
+    description: "Perlu perpanjangan dalam 30 hari",
+  },
+  {
+    id: 2,
+    title: "Lisensi Adobe Creative Cloud",
+    expiry: "2024-03-25",
+    status: "danger",
+    description: "Perlu perpanjangan dalam 7 hari",
+  },
+]);
+
+onMounted(() => {
+  // Di sini nanti fetch data dari API
+  stats.value = {
+    elektronik: 150,
+    aplikasi: 45,
+    lisensi: 30,
+    pegawai: 200,
+  };
+});
 </script>
 
 <template>
-  <div class="md:hidden">
-    <VPImage
-      alt="Dashboard"
-      width="1280"
-      height="1214"
-      class="block"
-      :image="{
-        dark: '/examples/dashboard-dark.png',
-        light: '/examples/dashboard-light.png',
-      }"
-    />
-  </div>
+  <div>
+    <div class="p-8 bg-white shadow-lg rounded-lg">
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-gray-500">
+            <ClockIcon class="inline h-4 w-4 mr-1" />
+            {{ new Date().toLocaleDateString("id-ID") }}
+          </span>
+        </div>
+      </div>
 
-  <div class="hidden flex-col md:flex">
-    <div class="border-b">
-      <div class="flex h-16 items-center px-4">
-        <TeamSwitcher />
-        <MainNav class="mx-6" />
-        <div class="ml-auto flex items-center space-x-4">
-          <Search />
-          <UserNav />
+      <!-- Stats Cards -->
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <div
+          class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-medium text-blue-800"
+              >Total Aset Elektronik</span
+            >
+            <MonitorIcon class="h-5 w-5 text-blue-600" />
+          </div>
+          <div class="text-3xl font-bold text-blue-900">
+            {{ stats.elektronik }}
+          </div>
+        </div>
+
+        <div
+          class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-medium text-purple-800"
+              >Total Aplikasi</span
+            >
+            <BoxIcon class="h-5 w-5 text-purple-600" />
+          </div>
+          <div class="text-3xl font-bold text-purple-900">
+            {{ stats.aplikasi }}
+          </div>
+        </div>
+
+        <div
+          class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-medium text-green-800"
+              >Total Lisensi Software</span
+            >
+            <KeyIcon class="h-5 w-5 text-green-600" />
+          </div>
+          <div class="text-3xl font-bold text-green-900">
+            {{ stats.lisensi }}
+          </div>
+        </div>
+
+        <div
+          class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-sm font-medium text-orange-800"
+              >Total Pegawai</span
+            >
+            <UsersIcon class="h-5 w-5 text-orange-600" />
+          </div>
+          <div class="text-3xl font-bold text-orange-900">
+            {{ stats.pegawai }}
+          </div>
         </div>
       </div>
-    </div>
-    <div class="flex-1 space-y-4 p-8 pt-6">
-      <div class="flex items-center justify-between space-y-2">
-        <h2 class="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <div class="flex items-center space-x-2">
-          <DateRangePicker />
-          <Button>Download</Button>
+
+      <!-- Notifications -->
+      <div
+        class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl shadow-sm"
+      >
+        <div class="p-6 border-b border-gray-200">
+          <h2 class="text-xl font-bold flex items-center gap-3 text-gray-800">
+            <BellIcon class="h-6 w-6 text-gray-600" />
+            Notifikasi Lisensi
+          </h2>
+        </div>
+        <div class="p-6">
+          <div class="space-y-4">
+            <div
+              v-for="notif in notifications"
+              :key="notif.id"
+              class="flex items-center justify-between p-5 border rounded-xl bg-white hover:shadow-md transition-shadow"
+            >
+              <div>
+                <h3 class="font-semibold text-gray-800">{{ notif.title }}</h3>
+                <p class="text-sm text-gray-600 mt-1">
+                  <span class="font-medium">Berakhir pada:</span>
+                  {{ new Date(notif.expiry).toLocaleDateString("id-ID") }}
+                </p>
+                <p class="text-sm text-gray-500 mt-1">
+                  {{ notif.description }}
+                </p>
+              </div>
+              <span
+                :class="{
+                  'px-4 py-2 text-sm font-medium rounded-full': true,
+                  'bg-yellow-100 text-yellow-800 border border-yellow-200':
+                    notif.status === 'warning',
+                  'bg-red-100 text-red-800 border border-red-200':
+                    notif.status === 'danger',
+                }"
+              >
+                {{ notif.status === "warning" ? "Segera Berakhir" : "Kritis" }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
-      <Tabs default-value="overview" class="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview"> Overview </TabsTrigger>
-          <TabsTrigger value="analytics" disabled> Analytics </TabsTrigger>
-          <TabsTrigger value="reports" disabled> Reports </TabsTrigger>
-          <TabsTrigger value="notifications" disabled>
-            Notifications
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" class="space-y-4">
-          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader
-                class="flex flex-row items-center justify-between space-y-0 pb-2"
-              >
-                <CardTitle class="text-sm font-medium">
-                  Total Revenue
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  class="h-4 w-4 text-muted-foreground"
-                >
-                  <path
-                    d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-                  />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div class="text-2xl font-bold">$45,231.89</div>
-                <p class="text-xs text-muted-foreground">
-                  +20.1% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader
-                class="flex flex-row items-center justify-between space-y-0 pb-2"
-              >
-                <CardTitle class="text-sm font-medium">
-                  Subscriptions
-                </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  class="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path
-                    d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
-                  />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div class="text-2xl font-bold">+2350</div>
-                <p class="text-xs text-muted-foreground">
-                  +180.1% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader
-                class="flex flex-row items-center justify-between space-y-0 pb-2"
-              >
-                <CardTitle class="text-sm font-medium"> Sales </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  class="h-4 w-4 text-muted-foreground"
-                >
-                  <rect width="20" height="14" x="2" y="5" rx="2" />
-                  <path d="M2 10h20" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div class="text-2xl font-bold">+12,234</div>
-                <p class="text-xs text-muted-foreground">
-                  +19% from last month
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader
-                class="flex flex-row items-center justify-between space-y-0 pb-2"
-              >
-                <CardTitle class="text-sm font-medium"> Active Now </CardTitle>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  class="h-4 w-4 text-muted-foreground"
-                >
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg>
-              </CardHeader>
-              <CardContent>
-                <div class="text-2xl font-bold">+573</div>
-                <p class="text-xs text-muted-foreground">
-                  +201 since last hour
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card class="col-span-4">
-              <CardHeader>
-                <CardTitle>Overview</CardTitle>
-              </CardHeader>
-              <CardContent class="pl-2">
-                <Overview />
-              </CardContent>
-            </Card>
-            <Card class="col-span-3">
-              <CardHeader>
-                <CardTitle>Recent Sales</CardTitle>
-                <CardDescription>
-                  You made 265 sales this month.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RecentSales />
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
     </div>
   </div>
 </template>
