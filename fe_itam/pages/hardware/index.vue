@@ -1,4 +1,5 @@
 <script setup lang="ts">
+<<<<<<< HEAD
 import { h, ref } from "vue";
 import DataTable from "@/components/DataTable.vue";
 import { ArrowUpDown } from "lucide-vue-next";
@@ -205,3 +206,17 @@ const isOpen = ref(false);
     </div>
   </div>
 </template>
+=======
+import { Button } from '@/components/ui/button'
+
+const route = useRoute()
+</script>
+
+<template>
+  <div class="flex mb-2">
+    <Button @click="navigateTo(route.path + '/add')">Tambah</Button>
+  </div>
+
+  <p>Tabel Data Hardware</p>
+</template>
+>>>>>>> 988390618515c82a10424c730a828e66c000c19b
