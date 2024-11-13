@@ -1,11 +1,7 @@
 <script lang="ts" setup>
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-<<<<<<< HEAD
-import { ChevronLeft } from 'lucide-vue-next'
-=======
 import { ChevronLeftIcon } from '@radix-icons/vue'
->>>>>>> 988390618515c82a10424c730a828e66c000c19b
 import { CalendarPrev, type CalendarPrevProps, useForwardProps } from 'radix-vue'
 import { computed, type HTMLAttributes } from 'vue'
 

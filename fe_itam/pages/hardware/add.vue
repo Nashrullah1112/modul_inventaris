@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-<template>
-  <div>
-    <HardwareAdd />
-  </div>
-</template>
-
-<script setup>
-import HardwareAdd from "@/components/module/hardware/add.vue";
-</script>
-=======
 <script setup lang="ts">
 const router = useRouter()
 </script>
@@ -18,9 +7,8 @@ const router = useRouter()
     <Button @click="router.back()" variant="secondary">Kembali</Button>
   </div>
 
-  <ModuleHardwareForm
+  <ModuleHardwareAdd
     type="add"
     :data="[]"
   />
 </template>
->>>>>>> 988390618515c82a10424c730a828e66c000c19b
