@@ -1,9 +1,65 @@
 <script setup lang="ts">
-
+/**
+ * Props untuk menerima tipe dan data dari parent component
+ * @param {string} type - Tipe aset elektronik
+ * @param {any[]} data - Data array yang diterima dari parent
+ */
 const props = defineProps<{
-  type: string,
-  data: any[],
-}>()
+  type: string;
+  data: any[];
+}>();
+
+// TODO: Tambahkan API endpoint untuk:
+// - GET /api/suppliers untuk dropdown supplier
+// - GET /api/asset-types untuk dropdown tipe asset
+// - GET /api/employees untuk dropdown penanggung jawab
+// - GET /api/divisions untuk dropdown divisi
+// - POST /api/assets untuk submit form
+
+/**
+ * State untuk form inputs
+ * Menyimpan semua nilai input form
+ */
+const namasupllier = ref(""); // Menyimpan nama supplier yang dipilih
+const tipeasset = ref(""); // Menyimpan tipe aset yang dipilih
+const notaNumber = ref(""); // Menyimpan nomor nota pembelian
+const kondisiasset = ref(""); // Menyimpan kondisi aset (Baik/Cacat/Rusak)
+const status = ref(""); // Menyimpan status aset (Sewa/Aset Perusahaan/dll)
+const lokasipenerima = ref(""); // Menyimpan lokasi penerimaan aset
+const nilaiasset = ref(""); // Menyimpan nilai/harga aset
+const achievedDate = ref(""); // Menyimpan tanggal penerimaan aset
+const tandaterima = ref(""); // Menyimpan file tanda terima
+const hasilpemeriksaan = ref(""); // Menyimpan file hasil pemeriksaan
+const tanggalaktivasi = ref(""); // Menyimpan tanggal aktivasi perangkat
+const penanggungjawabasset = ref(""); // Menyimpan penanggung jawab aset
+const divpengguna = ref(""); // Menyimpan divisi pengguna aset
+const notapembelian = ref(""); // Menyimpan file nota pembelian
+const lokasipenyimpanan = ref(""); // Menyimpan lokasi penyimpanan aset
+const jangkamasapakaiaset = ref(""); // Menyimpan masa pakai aset
+const model = ref(""); // Menyimpan model perangkat
+const tanggalasetkeluar = ref(""); // Menyimpan tanggal aset keluar
+const nomorgaransi = ref(""); // Menyimpan nomor kartu garansi
+const merk = ref(""); // Menyimpan merek perangkat
+const garansimulai = ref(""); // Menyimpan tanggal mulai garansi
+const garansiakhir = ref(""); // Menyimpan tanggal berakhir garansi
+const serialnumber = ref(""); // Menyimpan nomor seri perangkat
+const prosesor = ref(""); // Menyimpan spesifikasi prosesor
+const ram = ref(""); // Menyimpan kapasitas RAM
+const tiperam = ref(""); // Menyimpan tipe RAM
+const rom = ref(""); // Menyimpan kapasitas ROM/storage
+
+/**
+ * Method untuk handle form submission
+ * Mengirim data form ke API endpoint
+ */
+const registerAsset = async () => {
+  try {
+    // TODO: Implementasi POST request ke API endpoint
+    // POST /api/assets dengan form data
+  } catch (error) {
+    console.error("Error submitting form:", error);
+  }
+};
 </script>
 
 <template>
