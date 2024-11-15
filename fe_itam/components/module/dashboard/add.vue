@@ -1,18 +1,108 @@
+<script setup lang="ts">
+import { cn } from "@/lib/utils";
+import { useForm } from "vee-validate";
+import { toTypedSchema } from "@vee-validate/zod";
+import * as z from "zod";
+import { toDate } from "radix-vue/date";
+import {
+  CalendarDate,
+  DateFormatter,
+  getLocalTimeZone,
+  parseDate,
+  today,
+} from "@internationalized/date";
+import { CalendarIcon } from "@radix-icons/vue";
+
+import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+
+const props = defineProps<{
+  type: string;
+  data: any[];
+}>();
+
+/* handle form */
+const formSchema = toTypedSchema(
+  z.object({
+    totalRevenue: z.number().min(0),
+    subscriptions: z.number().min(0),
+    sales: z.number().min(0),
+    activeNow: z.number().min(0),
+    dateRange: z.string().refine((v) => v, { message: "Date is required." }),
+    overview: z.string().min(1),
+  })
+);
+
+const { handleSubmit, setFieldValue, values } = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    totalRevenue: 0,
+    subscriptions: 0,
+    sales: 0,
+    activeNow: 0,
+    dateRange: "",
+    overview: "",
+  },
+});
+
+const onSubmit = handleSubmit(async (values) => {
+  try {
+    const formData = new FormData();
+    formData.append("totalRevenue", values.totalRevenue.toString());
+    formData.append("subscriptions", values.subscriptions.toString());
+    formData.append("sales", values.sales.toString());
+    formData.append("activeNow", values.activeNow.toString());
+    formData.append("dateRange", values.dateRange);
+    formData.append("overview", values.overview);
+
+    const response = await $fetch("http://localhost:3000/api/dashboard", {
+      method: "POST",
+      body: formData,
+    });
+
+    console.log("Data berhasil disimpan:", response);
+    navigateTo("/dashboard");
+  } catch (error) {
+    console.error("Terjadi kesalahan:", error);
+  }
+});
+</script>
+
 <template>
-  <div
-    class="p-8 bg-white shadow-lg rounded-lg"
-    :class="isOpen ? 'lg:ml-64' : ''"
-  >
+  <div class="p-8 bg-white shadow-lg rounded-lg">
     <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
 
-    <Form @submit="registerDashboard">
+    <form @submit="onSubmit">
       <div class="grid grid-cols-2 gap-x-4">
         <FormField name="totalRevenue">
           <FormItem>
             <FormLabel>Total Revenue</FormLabel>
             <FormControl>
-              <Input type="number" v-model="totalRevenue" />
+              <Input type="number" v-model="values.totalRevenue" />
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
@@ -20,8 +110,9 @@
           <FormItem>
             <FormLabel>Subscriptions</FormLabel>
             <FormControl>
-              <Input type="number" v-model="subscriptions" />
+              <Input type="number" v-model="values.subscriptions" />
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
@@ -29,8 +120,9 @@
           <FormItem>
             <FormLabel>Sales</FormLabel>
             <FormControl>
-              <Input type="number" v-model="sales" />
+              <Input type="number" v-model="values.sales" />
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
@@ -38,8 +130,9 @@
           <FormItem>
             <FormLabel>Active Now</FormLabel>
             <FormControl>
-              <Input type="number" v-model="activeNow" />
+              <Input type="number" v-model="values.activeNow" />
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
@@ -47,8 +140,9 @@
           <FormItem>
             <FormLabel>Date Range</FormLabel>
             <FormControl>
-              <Input type="date" v-model="dateRange" />
+              <Input type="date" v-model="values.dateRange" />
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
@@ -56,7 +150,7 @@
           <FormItem>
             <FormLabel>Overview</FormLabel>
             <FormControl>
-              <Select v-model="overview">
+              <Select v-model="values.overview">
                 <SelectTrigger>
                   <SelectValue placeholder="Select Overview" />
                 </SelectTrigger>
@@ -67,65 +161,12 @@
                 </SelectContent>
               </Select>
             </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
       </div>
-    </Form>
+
+      <Button type="submit" class="mt-4">Submit</Button>
+    </form>
   </div>
 </template>
-
-<script setup>
-import { useState } from "#app";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-const baseURL = "http://localhost:3000/api";
-
-const isOpen = useState("is-sidebar-open");
-const router = useRouter();
-
-const totalRevenue = ref(0);
-const subscriptions = ref(0);
-const sales = ref(0);
-const activeNow = ref(0);
-const dateRange = ref("");
-const overview = ref("");
-
-const registerDashboard = async () => {
-  try {
-    const formData = new FormData();
-    formData.append("totalRevenue", totalRevenue.value);
-    formData.append("subscriptions", subscriptions.value);
-    formData.append("sales", sales.value);
-    formData.append("activeNow", activeNow.value);
-    formData.append("dateRange", dateRange.value);
-    formData.append("overview", overview.value);
-
-    const response = await $fetch(`${baseURL}/dashboard`, {
-      method: "POST",
-      body: formData,
-    });
-
-    console.log("Data berhasil disimpan:", response);
-    router.push("/dashboard");
-  } catch (error) {
-    console.error("Terjadi kesalahan:", error);
-  }
-};
-</script>

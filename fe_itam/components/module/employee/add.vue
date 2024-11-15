@@ -1,3 +1,60 @@
+<script setup lang="ts">
+import { cn } from "@/lib/utils";
+import { useForm } from "vee-validate";
+import { toTypedSchema } from "@vee-validate/zod";
+import * as z from "zod";
+import { CalendarIcon } from "@radix-icons/vue";
+
+import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+
+/* handle form */
+const formSchema = toTypedSchema(
+  z.object({
+    employeeId: z.string().min(1, { message: "ID Pegawai wajib diisi" }),
+    name: z.string().min(1, { message: "Nama wajib diisi" }),
+    email: z.string().email({ message: "Email tidak valid" }),
+    position: z.string().min(1, { message: "Jabatan wajib diisi" }),
+    division: z.string().min(1, { message: "Divisi wajib diisi" }),
+    joinDate: z.string().min(1, { message: "Tanggal bergabung wajib diisi" }),
+  })
+);
+
+const { handleSubmit, values } = useForm({
+  validationSchema: formSchema,
+});
+
+const onSubmit = handleSubmit(async (values) => {
+  try {
+    const response = await $fetch(
+      `${useRuntimeConfig().public.apiBase}/employees`,
+      {
+        method: "POST",
+        body: values,
+      }
+    );
+    console.log("Data berhasil disimpan:", response);
+    navigateTo("/employee");
+  } catch (error) {
+    console.error("Terjadi kesalahan:", error);
+  }
+});
+</script>
+
 <template>
   <div class="container mx-auto py-10">
     <div class="flex flex-col space-y-8">
@@ -9,96 +66,106 @@
       </div>
 
       <div class="border rounded-lg p-4">
-        <form @submit.prevent="onSubmit" class="space-y-4">
+        <Form @submit="onSubmit" class="space-y-4">
           <div class="grid gap-4 py-4">
-            <div class="grid grid-cols-4 items-center gap-4">
-              <Label for="employeeId" class="text-right">ID Pegawai</Label>
-              <Input
-                id="employeeId"
-                v-model="form.employeeId"
-                placeholder="Masukkan ID Pegawai"
-                class="col-span-3"
-              />
-            </div>
+            <FormField name="employeeId">
+              <FormItem>
+                <FormLabel>ID Pegawai</FormLabel>
+                <FormControl>
+                  <Input
+                    v-model="values.employeeId"
+                    placeholder="Masukkan ID Pegawai"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="grid grid-cols-4 items-center gap-4">
-              <Label for="name" class="text-right">Nama</Label>
-              <Input
-                id="name"
-                v-model="form.name"
-                placeholder="Masukkan Nama Lengkap"
-                class="col-span-3"
-              />
-            </div>
+            <FormField name="name">
+              <FormItem>
+                <FormLabel>Nama</FormLabel>
+                <FormControl>
+                  <Input
+                    v-model="values.name"
+                    placeholder="Masukkan Nama Lengkap"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="grid grid-cols-4 items-center gap-4">
-              <Label for="email" class="text-right">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                v-model="form.email"
-                placeholder="Masukkan Email"
-                class="col-span-3"
-              />
-            </div>
+            <FormField name="email">
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    v-model="values.email"
+                    placeholder="Masukkan Email"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="grid grid-cols-4 items-center gap-4">
-              <Label for="position" class="text-right">Jabatan</Label>
-              <Input
-                id="position"
-                v-model="form.position"
-                placeholder="Masukkan Jabatan"
-                class="col-span-3"
-              />
-            </div>
+            <FormField name="position">
+              <FormItem>
+                <FormLabel>Jabatan</FormLabel>
+                <FormControl>
+                  <Input
+                    v-model="values.position"
+                    placeholder="Masukkan Jabatan"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="grid grid-cols-4 items-center gap-4">
-              <Label for="division" class="text-right">Divisi</Label>
-              <Input
-                id="division"
-                v-model="form.division"
-                placeholder="Masukkan Divisi"
-                class="col-span-3"
-              />
-            </div>
+            <FormField name="division">
+              <FormItem>
+                <FormLabel>Divisi</FormLabel>
+                <FormControl>
+                  <Input
+                    v-model="values.division"
+                    placeholder="Masukkan Divisi"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
-            <div class="grid grid-cols-4 items-center gap-4">
-              <Label for="joinDate" class="text-right">Tanggal Bergabung</Label>
-              <Input
-                id="joinDate"
-                type="date"
-                v-model="form.joinDate"
-                class="col-span-3"
-              />
-            </div>
+            <FormField name="joinDate">
+              <FormItem>
+                <FormLabel>Tanggal Bergabung</FormLabel>
+                <FormControl>
+                  <Popover>
+                    <PopoverTrigger as-child>
+                      <Button
+                        variant="outline"
+                        class="w-full justify-start text-left font-normal"
+                      >
+                        <CalendarIcon class="mr-2 h-4 w-4" />
+                        {{
+                          values.joinDate ? values.joinDate : "Pilih tanggal"
+                        }}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <Calendar v-model="values.joinDate" />
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
           </div>
 
-          <div class="flex justify-end">
+          <div class="flex justify-end space-x-2">
+            <Button variant="outline" @click="$router.back()">Batal</Button>
             <Button type="submit">Simpan</Button>
           </div>
-        </form>
+        </Form>
       </div>
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from "vue";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-const form = ref({
-  employeeId: "",
-  name: "",
-  email: "",
-  position: "",
-  division: "",
-  joinDate: "",
-});
-
-const onSubmit = () => {
-  // Implementasi logika penyimpanan data
-  console.log("Form submitted:", form.value);
-};
-</script>
