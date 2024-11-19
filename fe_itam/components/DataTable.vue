@@ -43,6 +43,7 @@ import {
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  dataStatus: string;
 }>();
 
 const sorting = ref<SortingState>([]);
@@ -94,12 +95,12 @@ const table = useVueTable({
 <template>
   <div>
     <div class="flex items-center py-4">
-      <Input
+      <!-- <Input
         class="max-w-sm"
         placeholder="Filter emails..."
         :model-value="table.getColumn('email')?.getFilterValue() as string"
         @update:model-value="table.getColumn('email')?.setFilterValue($event)"
-      />
+      /> -->
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
           <Button variant="outline" class="ml-auto">
@@ -129,10 +130,7 @@ const table = useVueTable({
     <div class="border rounded-md">
       <Table>
         <TableHeader>
-          <TableRow
-            v-for="headerGroup in table.getHeaderGroups()"
-            :key="headerGroup.id"
-          >
+          <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <TableHead v-for="header in headerGroup.headers" :key="header.id">
               <FlexRender
                 v-if="!header.isPlaceholder"
@@ -143,11 +141,22 @@ const table = useVueTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          <template v-if="table.getRowModel().rows?.length">
+          <!-- Loading Indicator -->
+          <template v-if="dataStatus === 'pending'">
+            <template v-for="index in 5" :key="'loading-' + index">
+              <TableRow>
+                <TableCell v-for="(cellIndex, columnIndex) in columns.length" :key="'loading-cell-' + cellIndex">
+                  <!-- exclude first column (as checkbox or numbering) -->
+                  <Skeleton v-if="columnIndex !== 0" class="h-4 w-40" /> 
+                </TableCell>
+              </TableRow>
+            </template>
+          </template>
+
+          <!-- Render Rows -->
+          <template v-else-if="table.getRowModel().rows?.length">
             <template v-for="row in table.getRowModel().rows" :key="row.id">
-              <TableRow
-                :data-state="row.getIsSelected() ? 'selected' : undefined"
-              >
+              <TableRow :data-state="row.getIsSelected() ? 'selected' : undefined">
                 <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                   <FlexRender
                     :render="cell.column.columnDef.cell"
@@ -156,12 +165,14 @@ const table = useVueTable({
                 </TableCell>
               </TableRow>
               <TableRow v-if="row.getIsExpanded()">
-                <TableCell :colspan="row.getAllCells().length">
+                <TableCell :colspan="columns.length">
                   {{ JSON.stringify(row.original) }}
                 </TableCell>
               </TableRow>
             </template>
           </template>
+
+          <!-- No Results -->
           <template v-else>
             <TableRow>
               <TableCell :colspan="columns.length" class="h-24 text-center">
