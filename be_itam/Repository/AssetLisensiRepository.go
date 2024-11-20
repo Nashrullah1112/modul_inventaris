@@ -12,7 +12,7 @@ type (
 		Update(data *Database.DetailAsetLisensi) (id int64, err error)
 		Delete(id int64) error
 		FindById(id int64) (data Database.DetailAsetLisensi, err error)
-		FindAll() (data []Database.De	tailAsetLisensi, err error)
+		FindAll() (data []Database.DetailAsetLisensi, err error)
 	}
 
 	AssetLisensiRepositoryImpl struct {

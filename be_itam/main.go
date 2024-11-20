@@ -28,7 +28,7 @@ func main() {
 	Route.NewRouter(app)
 
 	// Menjalankan server pada port 3000
-	err := app.Listen(":3000")
+	err := app.Listen(":5000")
 	if err != nil {
 		panic(err)
 	}
