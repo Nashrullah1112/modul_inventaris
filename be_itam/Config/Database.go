@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"itam/Model/Migration"
+
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gen"
@@ -40,7 +42,7 @@ func InitDB() {
 	})
 
 	DB = con
-
+	Migrate(DB)
 	g := gen.NewGenerator(gen.Config{
 		OutPath:      "Model/Database",
 		OutFile:      "dto",
@@ -61,4 +63,19 @@ func InitDB() {
 	//g.GenerateModel("master_type_schedules")
 
 	g.Execute()
+}
+
+func Migrate(db *gorm.DB) error {
+	return db.AutoMigrate(
+		&Migration.Vendor{},
+		&Migration.Divisi{},
+		&Migration.Jabatan{},
+		&Migration.Role{},
+		&Migration.User{},
+		&Migration.Asset{},
+		&Migration.DetaiAsetAplikasi{},
+		&Migration.DetailAsetHardware{},
+		&Migration.DetailAsetLisensi{},
+		&Migration.DetailAsetPerangkat{},
+	)
 }
