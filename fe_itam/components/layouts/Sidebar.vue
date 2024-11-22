@@ -66,7 +66,7 @@ const sidebarItem = reactive({
         },
         {
           title: "Software Lisensi",
-          url: "/software_license/add",
+          url: "/software-license/add",
         },
         {
           title: "Software Aplikasi",
@@ -90,7 +90,7 @@ const sidebarItem = reactive({
         },
         {
           title: "Data Software Lisensi",
-          url: "/software_license/",
+          url: "/software-license/",
         },
         {
           title: "Data Software Aplikasi",
