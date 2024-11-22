@@ -33,15 +33,18 @@ const props = defineProps<{
   data: any[],
 }>()
 
+const config = useRuntimeConfig()
+const { showLoading, hideLoading } = useLoading()
+
 /* handle form */
 const formSchema = toTypedSchema(z.object({
   supplier: z.string().min(1),
-  assetType: z.string().min(1),
-  notaNumber: z.string().min(1),
-  achievedDate: z
+  asset_type: z.string().min(1),
+  nota_number: z.string().min(1),
+  achieved_date: z
     .string()
     .refine(v => v, { message: 'Date is required.' }),
-  serialNumber: z.string().min(1),
+  serial_number: z.string().min(1),
   brand: z.string().min(1),
   model: z.string().min(1),
   specification: z.string().min(1),
@@ -51,17 +54,31 @@ const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
 })
 
-const onSubmit = handleSubmit((values) => {
-  console.log('val:', values);
+const onSubmit = handleSubmit(async (values) => {
+  showLoading()
 
+  const { data, status } = await useFetch(config.public.API_URL + '/t_asset_hardware', {
+    method: 'POST',
+    body: values,
+    headers: { 
+      apiKey: config.public.API_KEY,
+    },
+  })
+
+  hideLoading()
+
+  if (status.value == 'success') {
+    navigateTo('/hardware')
+  }
 })
 
 const df = new DateFormatter('en-US', {
   dateStyle: 'long',
 })
 
-const value = computed({
-  get: () => values.achievedDate ? parseDate(values.achievedDate) : undefined,
+/* hold datefield value */
+const achievedDate = computed({
+  get: () => values.achieved_date ? parseDate(values.achieved_date) : undefined,
   set: val => val,
 })
 
@@ -109,7 +126,7 @@ const assetTypes = [
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="assetType">
+      <FormField v-slot="{ componentField }" name="asset_type">
         <FormItem>
           <FormLabel>Tipe Asset</FormLabel>
           <Select v-bind="componentField">
@@ -132,7 +149,7 @@ const assetTypes = [
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="notaNumber" >
+      <FormField v-slot="{ componentField }" name="nota_number" >
         <FormItem>
           <FormLabel>Nomor Nota</FormLabel>
           <FormControl>
@@ -142,7 +159,7 @@ const assetTypes = [
         </FormItem>
       </FormField>
 
-      <FormField name="achievedDate">
+      <FormField name="achieved_date">
         <FormItem class="flex flex-col">
           <FormLabel>Tanggal Penerimaan</FormLabel>
           <Popover>
@@ -151,10 +168,10 @@ const assetTypes = [
                 <Button
                   variant="outline" :class="cn(
                     'ps-3 text-start font-normal',
-                    !value && 'text-muted-foreground',
+                    !achievedDate && 'text-muted-foreground',
                   )"
                 >
-                  <span>{{ value ? df.format(toDate(value)) : "Pick a date" }}</span>
+                  <span>{{ achievedDate ? df.format(toDate(achievedDate)) : "Pick a date" }}</span>
                   <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                 </Button>
                 <input hidden>
@@ -162,14 +179,14 @@ const assetTypes = [
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
               <Calendar
-                v-model="value"
+                v-model="achievedDate"
                 calendar-label="Date of birth"
                 @update:model-value="(v) => {
                   if (v) {
-                    setFieldValue('achievedDate', v.toString())
+                    setFieldValue('achieved_date', v.toString())
                   }
                   else {
-                    setFieldValue('achievedDate', undefined)
+                    setFieldValue('achieved_date', undefined)
                   }
                 }"
               />
@@ -179,7 +196,7 @@ const assetTypes = [
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="serialNumber" >
+      <FormField v-slot="{ componentField }" name="serial_number" >
         <FormItem>
           <FormLabel>Serial Number</FormLabel>
           <FormControl>
