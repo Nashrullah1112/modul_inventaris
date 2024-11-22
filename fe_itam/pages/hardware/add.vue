@@ -7,7 +7,7 @@ const router = useRouter()
     <Button @click="router.back()" variant="secondary">Kembali</Button>
   </div>
 
-  <ModuleHardwareAdd
+  <ModuleHardwareForm
     type="add"
     :data="[]"
   />
