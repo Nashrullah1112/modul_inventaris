@@ -11,6 +11,7 @@ import {
   GearIcon,
   LayersIcon,
 } from "@radix-icons/vue";
+import { TrashIcon } from "lucide-vue-next";
 
 const route = useRoute();
 
@@ -72,6 +73,10 @@ const sidebarItem = reactive({
           title: "Software Aplikasi",
           url: "/application/add",
         },
+        {
+          title: "Tambah Vendor",
+          url: "/vendormgm/add",
+        },
       ],
     },
     {
@@ -97,8 +102,8 @@ const sidebarItem = reactive({
           url: "/application",
         },
         {
-          title: "Tambah Vendor",
-          url: "/vendors/add",
+          title: "Data Vendor",
+          url: "/vendormgm",
         },
       ],
     },
@@ -108,6 +113,22 @@ const sidebarItem = reactive({
       icon: GearIcon,
       dropdown: false,
     },
+    {
+      title: "Disposal",
+      url: "/disposal",
+      icon: TrashIcon,
+      dropdown: false,
+    },
+    // {
+    //   title: "Disposal",
+    //   icon: TrashIcon,
+    //   dropdown: true,
+    //   isOpen: ref(false),
+    //   children: [
+    //     // {
+    //     //   // title: "Tambah Disposal",
+    //     //   // url: "/disposal/add",
+    //     },
     {
       title: "Pegawai",
       icon: PersonIcon,
@@ -134,7 +155,7 @@ const sidebarItem = reactive({
     {
       title: "Logout",
       url: "/logout",
-      icon: mdiLogout,
+      icon: "",
     },
   ],
 });
