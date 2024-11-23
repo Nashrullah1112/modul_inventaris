@@ -14,4 +14,11 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: "2024-07-17",
+
+  runtimeConfig: {
+    public: {
+      API_URL: process.env.API_URL || '',
+      API_KEY: process.env.API_KEY || '',
+    }
+  }
 });
