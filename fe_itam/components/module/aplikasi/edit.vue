@@ -1,22 +1,14 @@
 <script setup lang="ts">
+import { useRoute, useRouter } from "vue-router";
 import { cn } from "@/lib/utils";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
-import { toDate } from "radix-vue/date";
-import {
-  CalendarDate,
-  DateFormatter,
-  getLocalTimeZone,
-  parseDate,
-  today,
-} from "@internationalized/date";
 import { CalendarIcon } from "@radix-icons/vue";
 
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,7 +17,6 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -36,15 +27,51 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
-const props = defineProps<{
-  type: string;
-  data: any[];
-}>();
+const route = useRoute();
+const router = useRouter();
 
-/* handle form */
+const isLoading = ref(false);
+const errorMessage = ref<string | null>(null);
+const application = ref<Application | null>(null);
+
+// Fetch application data by ID
+async function findByIDApplication(id: number) {
+  try {
+    isLoading.value = true;
+    errorMessage.value = null;
+
+    const response = await $fetch<{
+      message: string;
+      data: Application;
+      error: any;
+    }>(`http://localhost:5000/api/asset-aplikasi/${id}`, {
+      method: "GET",
+    });
+
+    if (response.error) {
+      throw new Error(response.error);
+    }
+
+    application.value = response.data;
+  } catch (error) {
+    console.error("Error fetching application:", error);
+    errorMessage.value = "Failed to load application data. Please try again.";
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+// Auto-call findByIDApplication when component mounts if there's an ID
+onMounted(() => {
+  const id = route.params.id;
+  if (id) {
+    findByIDApplication(Number(id));
+  }
+});
+
+// Form schema validation
 const formSchema = toTypedSchema(
   z.object({
     vendor: z.string().min(1),
@@ -71,6 +98,19 @@ const formSchema = toTypedSchema(
 
 const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    vendor: application.value?.vendor_id || "",
+    tanggalPembuatan: application.value?.tanggal_pembuatan || "",
+    namaAplikasi: application.value?.nama_aplikasi || "",
+    tanggalTerima: application.value?.tanggal_terima || "",
+    tipePlatform: application.value?.tipe_aplikasi || "",
+    serverPenyimpanan: application.value?.lokasi_server_penyimpanan || "",
+    urlAplikasi: application.value?.link_aplikasi || "",
+    tanggalAktifDomain: application.value?.tanggal_aktif || "",
+    tanggalExpiredDomain: application.value?.tanggal_kadaluarsa || "",
+    sertifikatAplikasi: application.value?.sertifikasi_aplikasi || "",
+    dokumentasi: null, // handle separately if needed
+  },
 });
 
 const onSubmit = handleSubmit(async (values) => {
@@ -80,21 +120,26 @@ const onSubmit = handleSubmit(async (values) => {
       formData.append(key, value);
     });
 
-    const response = await $fetch(
-      `${useRuntimeConfig().public.apiBase}/asset-aplikasi`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    const method = application.value ? "PUT" : "POST"; // Decide based on whether we are updating or creating
+    const url = application.value
+      ? `${useRuntimeConfig().public.apiBase}/asset-aplikasi/${
+          application.value.id
+        }`
+      : `${useRuntimeConfig().public.apiBase}/asset-aplikasi`;
+
+    const response = await $fetch(url, {
+      method,
+      body: formData,
+    });
 
     console.log("Data berhasil disimpan:", response);
-    navigateTo("/aplikasi");
+    router.push("/aplikasi");
   } catch (error) {
     console.error("Terjadi kesalahan:", error);
   }
 });
 
+// Application interface for type checking
 interface Application {
   id: number;
   nama_aplikasi: string;
@@ -109,44 +154,10 @@ interface Application {
   asset_id: number;
   vendor_id: number;
 }
-
-// State for application data
-const application = ref<Application>();
-const isLoading = ref(false);
-const errorMessage = ref<string | null>(null);
-
-async function findByIDApplication(id: number) {
-  try {
-    isLoading.value = true;
-    errorMessage.value = null;
-
-    const response = await $fetch<{
-      message: string;
-      data: Application;
-      error: any;
-    }>(`http://localhost:5000/api/asset-aplikasi/${id}`, {
-      method: "GET",
-    });
-
-    if (response.error) {
-      throw new Error(response.error);
-    }
-
-    application.value = response.data;
-  } catch (error) {
-    console.error("Error fetching applications:", error);
-    errorMessage.value = "Failed to load application data. Please try again.";
-  } finally {
-    isLoading.value = false;
-  }
-}
 </script>
 
 <template>
-  <div
-    class="p-8 bg-white shadow-lg rounded-lg"
-    :class="isOpen ? 'lg:ml-64' : ''"
-  >
+  <div class="p-8 bg-white shadow-lg rounded-lg">
     <h1 class="text-2xl font-bold mb-6">Registrasi Aplikasi</h1>
 
     <Form @submit="onSubmit">
@@ -181,11 +192,7 @@ async function findByIDApplication(id: number) {
                     class="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon class="mr-2 h-4 w-4" />
-                    {{
-                      values.tanggalPembuatan
-                        ? values.tanggalPembuatan
-                        : "Pilih tanggal"
-                    }}
+                    {{ values.tanggalPembuatan || "Pilih tanggal" }}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent>
@@ -218,11 +225,7 @@ async function findByIDApplication(id: number) {
                     class="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon class="mr-2 h-4 w-4" />
-                    {{
-                      values.tanggalTerima
-                        ? values.tanggalTerima
-                        : "Pilih tanggal"
-                    }}
+                    {{ values.tanggalTerima || "Pilih tanggal" }}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent>
@@ -285,11 +288,7 @@ async function findByIDApplication(id: number) {
                     class="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon class="mr-2 h-4 w-4" />
-                    {{
-                      values.tanggalAktifDomain
-                        ? values.tanggalAktifDomain
-                        : "Pilih tanggal"
-                    }}
+                    {{ values.tanggalAktifDomain || "Pilih tanggal" }}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent>
@@ -312,11 +311,7 @@ async function findByIDApplication(id: number) {
                     class="w-full justify-start text-left font-normal"
                   >
                     <CalendarIcon class="mr-2 h-4 w-4" />
-                    {{
-                      values.tanggalExpiredDomain
-                        ? values.tanggalExpiredDomain
-                        : "Pilih tanggal"
-                    }}
+                    {{ values.tanggalExpiredDomain || "Pilih tanggal" }}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent>
@@ -353,7 +348,7 @@ async function findByIDApplication(id: number) {
       </div>
 
       <div class="flex justify-end mt-4 space-x-2">
-        <Button variant="outline" @click="$router.back()">Cancel</Button>
+        <Button variant="outline" @click="router.back()">Cancel</Button>
         <Button type="submit">Submit</Button>
       </div>
     </Form>

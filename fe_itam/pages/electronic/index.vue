@@ -1,10 +1,85 @@
 <script setup lang="ts">
-import { h, ref } from "vue";
+import { h, ref, onMounted } from "vue";
 import DataTable from "@/components/DataTable.vue";
 import { ArrowUpDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
+interface Device {
+  id: number;
+  lokasi_penerima: string;
+  waktu_penerimaan: Date;
+  tanda_terima: File;
+  tipe_aset: string;
+  waktu_aktivasi_aset: Date;
+  hasil_pemeriksaan_aset: string;
+  serial_number: string;
+  model: string;
+  masa_garansi_mulai: Date;
+  nomor_kartu_garansi: string;
+  prosesor: string;
+  kapasitas_ram: number;
+  kapasitas_rom: number;
+  tipe_ram: string;
+  tipe_penyimpnanan: string;
+  status_aset: string;
+  nilai_aset: number;
+  nilai_depresiasi: number;
+  jangka_masa_pakai: number;
+  waktu_aset_keluar: Date;
+  kondisi_aset_keluar: string;
+  nota_pembelian: File;
+  divisi_id: number;
+  user_id: number;
+  asset_id: number;
+  vendor_id: number;
+}
+
+//state for application data
+const devices = ref<Device[]>([]);
+const isLoading = ref(false);
+const errorMessage = ref<string | null>(null);
+
+async function fetchDevices() {
+  try {
+    isLoading.value = true;
+    errorMessage.value = null;
+
+    const response = await $fetch<{
+      message: string;
+      data: Device[];
+      error: any;
+    }>("http://localhost:5000/api/asset-hardware", {
+      method: "GET",
+    });
+
+    if (response.error) {
+      throw new Error(response.error);
+    }
+    // Extract the data array from the response
+    devices.value = response.data;
+  } catch (error) {
+    console.error("Error fetching devices:", error);
+    errorMessage.value = "Failed to load device data. Please try again.";
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+onMounted(fetchDevices);
+
+// Transform API data for table usage
+const electronics = computed(() =>
+  devices.value.map((device) => ({
+    id: device.id,
+    serialNumber: device.serial_number,
+    assetNumber: device.asset_id.toString(),
+    deviceName: device.model,
+    division: device.divisi_id.toString(),
+  }))
+);
+
+//define table columns
 interface TableRow {
   getIsSelected: () => boolean;
   toggleSelected: (value: boolean) => void;
@@ -109,23 +184,6 @@ const columns = [
     },
   },
 ];
-
-const electronics = ref([
-  {
-    id: 1,
-    serialNumber: "SN-2024-001",
-    assetNumber: "AST-001",
-    deviceName: "Laptop Dell XPS 13",
-    division: "Divisi IT",
-  },
-  {
-    id: 2,
-    serialNumber: "SN-2024-002",
-    assetNumber: "AST-002",
-    deviceName: 'Monitor LG 27"',
-    division: "Divisi Marketing",
-  },
-]);
 
 const isOpen = ref(false);
 </script>

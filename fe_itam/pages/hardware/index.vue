@@ -5,6 +5,31 @@ import { ArrowUpDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
+interface Sparepart {
+  id: number;
+  waktu_penerimaan: Date;
+  bukti_penerimaan: string;
+  tipe_aset: string;
+  tanggal_aktivasi_perangkat: Date;
+  hasil_pemeriksaan: string;
+  serial_number: string;
+  model: string;
+  waktu_garansi_mulai: Date;
+  waktu_garansi_berakhir: Date;
+  nomor_kartu_garansi: string;
+  spesifikasi_perangkat: string;
+  status_aset: string;
+  penanggungjawab_aset: string;
+  lokasi_penyimpanan_id: string;
+  jangka_masa_pakai: number;
+  waktu_aset_keluar: Date;
+  kondisi_aset: string;
+  nota_pembelian: string;
+  divisi_id: number;
+  asset_id: number;
+  vendor_id: number;
+}
+
 const config = useRuntimeConfig();
 
 interface TableRow {
@@ -161,11 +186,15 @@ const columns = [
 ];
 
 /* fetch data from api */
-const { data: result, status, refresh } = await useFetch(config.public.API_URL + '/t_asset_hardware', {
-  headers: { 
+const {
+  data: result,
+  status,
+  refresh,
+} = await useFetch(config.public.API_URL + "/t_asset_hardware", {
+  headers: {
     apiKey: config.public.API_KEY,
   },
-})
+});
 </script>
 
 <template>
@@ -178,7 +207,7 @@ const { data: result, status, refresh } = await useFetch(config.public.API_URL +
       <div class="p-6 border-b border-gray-200">
         <h1 class="text-2xl font-bold text-gray-800">Data Hardware</h1>
       </div>
-      
+
       <div class="p-6">
         <DataTable :columns="columns" :data="result ?? []" :dataStatus="status" />
       </div>
