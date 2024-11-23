@@ -1,4 +1,4 @@
-package Migration
+package Database
 
 import "time"
 

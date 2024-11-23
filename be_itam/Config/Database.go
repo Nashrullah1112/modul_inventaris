@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"itam/Model/Migration"
+	"itam/Model/Database"
 
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
-	"gorm.io/gen"
 	"gorm.io/gorm"
 )
 
@@ -43,39 +42,19 @@ func InitDB() {
 
 	DB = con
 	Migrate(DB)
-	g := gen.NewGenerator(gen.Config{
-		OutPath:      "Model/Database",
-		OutFile:      "dto",
-		Mode:         gen.WithoutContext | gen.WithDefaultQuery | gen.WithQueryInterface, // generate mode
-		WithUnitTest: true,
-		ModelPkgPath: "Database",
-	})
-
-	g.UseDB(DB)
-
-	// generate Database if the Database is used only
-	// don't generate unused Database
-
-	// Generates All Table in Database
-	// g.GenerateAllTable()
-
-	// Generate Specify Table in Database
-	//g.GenerateModel("master_type_schedules")
-
-	g.Execute()
 }
 
 func Migrate(db *gorm.DB) error {
 	return db.AutoMigrate(
-		&Migration.Vendor{},
-		&Migration.Divisi{},
-		&Migration.Jabatan{},
-		&Migration.Role{},
-		&Migration.User{},
-		&Migration.Asset{},
-		&Migration.DetaiAsetAplikasi{},
-		&Migration.DetailAsetHardware{},
-		&Migration.DetailAsetLisensi{},
-		&Migration.DetailAsetPerangkat{},
+		&Database.Vendor{},
+		&Database.Divisi{},
+		&Database.Jabatan{},
+		&Database.Role{},
+		&Database.User{},
+		&Database.Asset{},
+		&Database.DetaiAsetAplikasi{},
+		&Database.DetailAsetHardware{},
+		&Database.DetailAsetLisensi{},
+		&Database.DetailAsetPerangkat{},
 	)
 }

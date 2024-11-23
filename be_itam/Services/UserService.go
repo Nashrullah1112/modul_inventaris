@@ -39,7 +39,7 @@ func (h *UserServiceImpl) Create(request Response.UserCreateRequest) (id int64, 
 		return 0, Web.NewCustomServiceError("User not created", err, http.StatusInternalServerError)
 	}
 	id, err = h.repo.Save(&Database.User{
-		Nip:              request.NIP,
+		NIP:              request.NIP,
 		Email:            request.Email,
 		JabatanID:        request.JabatanID,
 		DivisiID:         request.DivisiID,
@@ -62,7 +62,7 @@ func (h *UserServiceImpl) Update(request Response.UserUpdateRequest) (id int64, 
 
 	id, err = h.repo.Update(&Database.User{
 		ID:               existingUser.ID,
-		Nip:              request.NIP,
+		NIP:              request.NIP,
 		Email:            request.Email,
 		JabatanID:        request.JabatanID,
 		DivisiID:         request.DivisiID,
@@ -96,7 +96,7 @@ func (h *UserServiceImpl) FindById(userId int64) (user Response.UserResponse, se
 
 	user = Response.UserResponse{
 		ID:               data.ID,
-		NIP:              data.Nip,
+		NIP:              data.NIP,
 		Email:            data.Email,
 		JabatanID:        data.JabatanID,
 		DivisiID:         data.DivisiID,
@@ -115,7 +115,7 @@ func (h *UserServiceImpl) FindAll() (users []Response.UserResponse, serviceErr *
 	for _, d := range data {
 		users = append(users, Response.UserResponse{
 			ID:               d.ID,
-			NIP:              d.Nip,
+			NIP:              d.NIP,
 			Email:            d.Email,
 			JabatanID:        d.JabatanID,
 			DivisiID:         d.DivisiID,
