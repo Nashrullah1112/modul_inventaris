@@ -30,7 +30,13 @@ func VendorServiceProvider(repo Repository.VendorRepositoryHandler) *VendorServi
 
 func (h *VendorServiceImpl) Create(request Response.VendorCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
 	id, err := h.repo.Save(&Database.Vendor{
-		Nama: request.Nama,
+		PIC:         request.PIC,
+		Email:       request.Email,
+		NomorKontak: request.NomorKontak,
+		Lokasi:      request.LokasiPerusahaan,
+		NomorSIUP:   request.NomorSIUP,
+		NomorNIB:    request.NomorNIB,
+		NomorNPWP:   request.NomorNPWP,
 	})
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Vendor not created", err, http.StatusInternalServerError)
@@ -46,8 +52,14 @@ func (h *VendorServiceImpl) Update(request Response.VendorUpdateRequest) (id int
 	}
 
 	id, err = h.repo.Update(&Database.Vendor{
-		ID:   existingVendor.ID,
-		Nama: request.Nama,
+		ID:          existingVendor.ID,
+		PIC:         request.PIC,
+		Email:       request.Email,
+		NomorKontak: request.NomorKontak,
+		Lokasi:      request.LokasiPerusahaan,
+		NomorSIUP:   request.NomorSIUP,
+		NomorNIB:    request.NomorNIB,
+		NomorNPWP:   request.NomorNPWP,
 	})
 	if err != nil {
 		return 0, Web.NewInternalServiceError(err)
@@ -76,8 +88,14 @@ func (h *VendorServiceImpl) FindById(vendorId int64) (vendor Response.VendorResp
 	}
 
 	vendor = Response.VendorResponse{
-		ID:   data.ID,
-		Nama: data.Nama,
+		ID:               data.ID,
+		PIC:              data.PIC,
+		Email:            data.Email,
+		NomorKontak:      data.NomorKontak,
+		LokasiPerusahaan: data.Lokasi,
+		NomorSIUP:        data.NomorSIUP,
+		NomorNIB:         data.NomorNIB,
+		NomorNPWP:        data.NomorNPWP,
 	}
 
 	return vendor, nil
@@ -91,8 +109,14 @@ func (h *VendorServiceImpl) FindAll() (vendors []Response.VendorResponse, servic
 
 	for _, d := range data {
 		vendors = append(vendors, Response.VendorResponse{
-			ID:   d.ID,
-			Nama: d.Nama,
+			ID:               d.ID,
+			PIC:              d.PIC,
+			Email:            d.Email,
+			NomorKontak:      d.NomorKontak,
+			LokasiPerusahaan: d.Lokasi,
+			NomorSIUP:        d.NomorSIUP,
+			NomorNIB:         d.NomorNIB,
+			NomorNPWP:        d.NomorNPWP,
 		})
 	}
 

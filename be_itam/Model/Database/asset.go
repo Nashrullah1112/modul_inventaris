@@ -15,6 +15,7 @@ type Asset struct {
 	Status       string    `gorm:"column:status;not null" json:"status"`
 	CreatedAt    time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt    time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	DeletedAt    time.Time `gorm:"column:deleted_at;index" json:"deleted_at,omitempty"`
 }
 
 func (*Asset) TableName() string {
