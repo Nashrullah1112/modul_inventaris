@@ -1,0 +1,810 @@
+{
+	"info": {
+		"_postman_id": "2d7552db-226b-4bce-bb38-11595f7a2612",
+		"name": "New Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26575050",
+		"_collection_link": "https://orange-moon-451661.postman.co/workspace/Itam~26903a37-f1a8-4a3d-866b-743a079b214b/collection/26575050-2d7552db-226b-4bce-bb38-11595f7a2612?action=share&source=collection_link&creator=26575050"
+	},
+	"item": [
+		{
+			"name": "Asset",
+			"item": [
+				{
+					"name": "Get asset",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset/2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset/6",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create asset",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "hardware",
+			"item": [
+				{
+					"name": "Get  by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-hardware/4",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-hardware",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete  by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-hardware/4",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-hardware",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "form Hardware",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "merek_perangkat",
+									"value": "Dell Inspiron 15",
+									"type": "text"
+								},
+								{
+									"key": "vendor_id",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "nomor_nota",
+									"value": "INV-20231012",
+									"type": "text"
+								},
+								{
+									"key": "lokasi_penerima",
+									"value": "Jakarta Warehouse",
+									"type": "text"
+								},
+								{
+									"key": "tanggal_penerimaan",
+									"value": "2024-10-12T10:30:00",
+									"type": "text"
+								},
+								{
+									"key": "masa_garansi_mulai",
+									"value": "2024-10-12T10:30:00",
+									"type": "text"
+								},
+								{
+									"key": "penanggung_jawab_perangkat",
+									"value": "Nasrul",
+									"type": "text"
+								},
+								{
+									"key": "model",
+									"value": "Inspiron 15 5000",
+									"type": "text"
+								},
+								{
+									"key": "serial_number",
+									"value": "SN1234567890",
+									"type": "text"
+								},
+								{
+									"key": "harga_perangkat",
+									"value": "15000000",
+									"type": "text"
+								},
+								{
+									"key": "depresiasi_perangkat",
+									"value": "4343000",
+									"type": "text"
+								},
+								{
+									"key": "tanda_terima",
+									"type": "file",
+									"src": "postman-cloud:///1eeb9391-a16a-4470-9848-c4c9b68d96cd"
+								},
+								{
+									"key": "kondisi_aset",
+									"value": "new",
+									"type": "text"
+								},
+								{
+									"key": "tipe_perangkat",
+									"value": "laptop",
+									"type": "text"
+								},
+								{
+									"key": "tanggal_aktivasi_perangkat",
+									"value": "2024-10-13T00:00:00Z",
+									"type": "text"
+								},
+								{
+									"key": "masa_berakhir_garansi",
+									"value": "2026-10-13T00:00:00Z",
+									"type": "text"
+								},
+								{
+									"key": "hasil_pemeriksaan_perangkat",
+									"value": "Good condition",
+									"type": "text"
+								},
+								{
+									"key": "jangka_masa_pakai",
+									"value": "5",
+									"type": "text"
+								},
+								{
+									"key": "status_perangkat",
+									"value": "Operational",
+									"type": "text"
+								},
+								{
+									"key": "nota_pembelian",
+									"value": "path/to/purchase-invoice.pdf",
+									"type": "text"
+								},
+								{
+									"key": "detail_spesifikasi",
+									"value": "Intel Core i7, 16GB RAM, 512GB SSD",
+									"type": "text"
+								},
+								{
+									"key": "nomor_kartu_garansi",
+									"value": "775673929",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/form-hardware",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"form-hardware"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-hardware",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-hardware"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Lisensi",
+			"item": [
+				{
+					"name": "Get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset/2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset/6",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "aplikasi",
+			"item": [
+				{
+					"name": "Get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-aplikasi",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-aplikasi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-aplikasi/2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-aplikasi",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-aplikasi/6",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-aplikasi",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN123456789\",\n    \"merk\": \"Vendor Brand\",\n    \"model\": \"Model XYZ\",\n    \"nomor_nota\": \"INV123456\",\n    \"nama_aplikasi\": \"Aplikasi Contoh\",\n    \"tanggal_pembuatan\": \"2024-10-17T14:30:00Z\",\n    \"tanggal_terima\": \"2024-10-17T14:30:00Z\",\n    \"lokasi_server_penyimpanan\": \"Server A\",\n    \"tipe_aplikasi\": \"Web\",\n    \"link_aplikasi\": \"https://contohaplikasi.com\",\n    \"sertifikasi_aplikasi\": \"Sertifikasi Contoh\",\n    \"tanggal_aktif\": \"2024-10-17T14:30:00Z\",\n    \"tanggal_kadaluarsa\": \"2025-10-17T14:30:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-aplikasi",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-aplikasi"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "perangkat",
+			"item": [
+				{
+					"name": "Get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-aplikasi",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-aplikasi"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete by id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-aplikasi/2",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-aplikasi",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN-00112233\",\n    \"merk\": \"BrandX\",\n    \"model\": \"ModelY\",\n    \"nomor_nota\": \"Nota-98765\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-aplikasi/6",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-aplikasi",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vendor_id\": 12345,\n    \"serial_number\": \"SN123456789\",\n    \"merk\": \"Vendor Brand\",\n    \"model\": \"Model XYZ\",\n    \"nomor_nota\": \"INV123456\",\n    \"lokasi_penerima\": \"Warehouse A\",\n    \"waktu_penerimaan\": \"2024-10-17T14:30:00Z\",\n    \"tanda_terima\": \"Tanda Terima Document\",\n    \"tipe_aset\": \"Tipe Aset\",\n    \"waktu_aktivasi_aset\": \"2024-10-17T14:30:00Z\",\n    \"hasil_pemeriksaan_aset\": \"Lulus Pemeriksaan\",\n    \"masa_garansi_mulai\": \"2024-10-17T14:30:00Z\",\n    \"nomor_kartu_garansi\": \"GAR123456\",\n    \"prosesor\": \"Intel Core i7\",\n    \"kapasitas_ram\": 16,\n    \"kapasitas_rom\": 512,\n    \"tipe_ram\": \"DDR4\",\n    \"tipe_penyimpnanan\": \"SSD\",\n    \"status_aset\": \"Aktif\",\n    \"nilai_aset\": 3000000,\n    \"nilai_sisa\": 1500000,\n    \"jangka_masa_pakai\": 5,\n    \"waktu_aset_keluar\": \"2024-10-17T14:30:00Z\",\n    \"kondisi_aset_keluar\": \"Baik\",\n    \"nota_pembelian\": \"Nota Pembelian Document\",\n    \"divisi_id\": 6789,\n    \"user_id\": 101112\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:3000/api/asset-perangkat",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"asset-perangkat"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
