@@ -12,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func assetDI(db *gorm.DB) *Controller.AssetControllerImpl {
+func AssetDI(db *gorm.DB) *Controller.AssetControllerImpl {
 	panic(wire.Build(wire.NewSet(
 		Repository.AssetRepositoryProvider,
 		Services.AssetServiceControllerProvider,
@@ -28,7 +28,7 @@ func assetDI(db *gorm.DB) *Controller.AssetControllerImpl {
 }
 
 // Asset Perangkat DI
-func assetPerangkatDI(db *gorm.DB) *Controller.AssetPerangkatControllerImpl {
+func AssetPerangkatDI(db *gorm.DB) *Controller.AssetPerangkatControllerImpl {
 	panic(wire.Build(wire.NewSet(
 		Repository.AssetPerangkatRepositoryProvider,
 		Repository.AssetRepositoryProvider,
@@ -60,7 +60,7 @@ func AssetAplikasiDI(db *gorm.DB) *Controller.AssetAplikasiControllerImpl {
 }
 
 // Asset Hardware DI
-func assetHardwareDI(db *gorm.DB) *Controller.AssetHardwareControllerImpl {
+func AssetHardwareDI(db *gorm.DB) *Controller.AssetHardwareControllerImpl {
 	panic(wire.Build(wire.NewSet(
 		Repository.AssetHardwareRepositoryProvider,
 		Repository.AssetRepositoryProvider,
@@ -92,7 +92,7 @@ func AssetLisensiDI(db *gorm.DB) *Controller.AssetLisensiControllerImpl {
 }
 
 // Vendor DI
-func vendorDI(db *gorm.DB) *Controller.VendorControllerImpl {
+func VendorDI(db *gorm.DB) *Controller.VendorControllerImpl {
 	panic(wire.Build(wire.NewSet(
 		Repository.VendorRepositoryProvider,
 		Services.VendorServiceProvider,
@@ -106,7 +106,7 @@ func vendorDI(db *gorm.DB) *Controller.VendorControllerImpl {
 }
 
 // User DI
-func userDI(db *gorm.DB) *Controller.UserControllerImpl {
+func UserDI(db *gorm.DB) *Controller.UserControllerImpl {
 	panic(wire.Build(wire.NewSet(
 		Repository.UserRepositoryProvider,
 		Services.UserServiceProvider,
@@ -120,7 +120,7 @@ func userDI(db *gorm.DB) *Controller.UserControllerImpl {
 }
 
 // Role DI
-func roleDI(db *gorm.DB) *Controller.RoleControllerImpl {
+func RoleDI(db *gorm.DB) *Controller.RoleControllerImpl {
 	panic(wire.Build(wire.NewSet(
 		Repository.RoleRepositoryProvider,
 		Services.RoleServiceControllerProvider,
@@ -134,7 +134,7 @@ func roleDI(db *gorm.DB) *Controller.RoleControllerImpl {
 }
 
 // Divisi DI
-func divisiDI(db *gorm.DB) *Controller.DivisiControllerImpl {
+func DivisiDI(db *gorm.DB) *Controller.DivisiControllerImpl {
 	panic(wire.Build(wire.NewSet(
 		Repository.DivisiRepositoryProvider,
 		Services.DivisiServiceProvider,
@@ -145,4 +145,18 @@ func divisiDI(db *gorm.DB) *Controller.DivisiControllerImpl {
 		wire.Bind(new(Controller.DivisiControllerHandler), new(*Controller.DivisiControllerImpl)),
 	)))
 	return &Controller.DivisiControllerImpl{}
+}
+
+// Jabatan DI
+func JabatanDI(db *gorm.DB) *Controller.JabatanControllerImpl {
+	panic(wire.Build(wire.NewSet(
+		Repository.JabatanRepositoryProvider,
+		Services.JabatanServiceControllerProvider,
+		Controller.JabatanControllerProvider,
+
+		wire.Bind(new(Repository.JabatanRepositoryHandler), new(*Repository.JabatanRepositoryImpl)),
+		wire.Bind(new(Services.JabatanServiceHandler), new(*Services.JabatanServiceImpl)),
+		wire.Bind(new(Controller.JabatanControllerHandler), new(*Controller.JabatanControllerImpl)),
+	)))
+	return &Controller.JabatanControllerImpl{}
 }

@@ -23,7 +23,8 @@ type DetaiAsetAplikasi struct {
 	TanggalAktif            time.Time `gorm:"column:tanggal_aktif;not null" json:"tanggal_aktif"`
 	TanggalKadaluarsa       time.Time `gorm:"column:tanggal_kadaluarsa;not null" json:"tanggal_kadaluarsa"`
 	AssetID                 int64     `gorm:"column:asset_id;not null" json:"asset_id"`
-	VendorID                int64     `gorm:"column:vendor_id;not null" json:"vendor_id"`
+	CreatedAt               time.Time `gorm:"column:created_at" json:"created_at"`
+	UpdatedAt               time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
 
 // TableName DetaiAsetAplikasi's table name

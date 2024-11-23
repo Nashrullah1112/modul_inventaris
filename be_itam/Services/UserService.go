@@ -1,11 +1,14 @@
 package Services
 
 import (
+	"itam/Middleware"
 	"itam/Model/Database"
+	"itam/Model/Domain"
 	"itam/Model/Web"
 	"itam/Model/Web/Response"
 	"itam/Repository"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -16,6 +19,7 @@ type (
 		Delete(userId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(userId int64) (user Response.UserResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (users []Response.UserResponse, serviceErr *Web.ServiceErrorDto)
+		Login(request Domain.LoginRequest) (token Domain.JwtTokenDetail, serviceErr *Web.ServiceErrorDto)
 	}
 
 	UserServiceImpl struct {
@@ -30,11 +34,17 @@ func UserServiceProvider(repo Repository.UserRepositoryHandler) *UserServiceImpl
 }
 
 func (h *UserServiceImpl) Create(request Response.UserCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
-	id, err := h.repo.Save(&Database.User{
-		NIP:              request.NIP,
+	password, err := Middleware.HashPassword(request.Password)
+	if err != nil {
+		return 0, Web.NewCustomServiceError("User not created", err, http.StatusInternalServerError)
+	}
+	id, err = h.repo.Save(&Database.User{
+		Nip:              request.NIP,
 		Email:            request.Email,
 		JabatanID:        request.JabatanID,
 		DivisiID:         request.DivisiID,
+		Password:         password,
+		Nama:             request.Nama,
 		TanggalBergabung: time.Now(),
 	})
 	if err != nil {
@@ -52,7 +62,7 @@ func (h *UserServiceImpl) Update(request Response.UserUpdateRequest) (id int64, 
 
 	id, err = h.repo.Update(&Database.User{
 		ID:               existingUser.ID,
-		NIP:              request.NIP,
+		Nip:              request.NIP,
 		Email:            request.Email,
 		JabatanID:        request.JabatanID,
 		DivisiID:         request.DivisiID,
@@ -86,7 +96,7 @@ func (h *UserServiceImpl) FindById(userId int64) (user Response.UserResponse, se
 
 	user = Response.UserResponse{
 		ID:               data.ID,
-		NIP:              data.NIP,
+		NIP:              data.Nip,
 		Email:            data.Email,
 		JabatanID:        data.JabatanID,
 		DivisiID:         data.DivisiID,
@@ -105,7 +115,7 @@ func (h *UserServiceImpl) FindAll() (users []Response.UserResponse, serviceErr *
 	for _, d := range data {
 		users = append(users, Response.UserResponse{
 			ID:               d.ID,
-			NIP:              d.NIP,
+			NIP:              d.Nip,
 			Email:            d.Email,
 			JabatanID:        d.JabatanID,
 			DivisiID:         d.DivisiID,
@@ -114,4 +124,23 @@ func (h *UserServiceImpl) FindAll() (users []Response.UserResponse, serviceErr *
 	}
 
 	return users, nil
+}
+
+func (h *UserServiceImpl) Login(request Domain.LoginRequest) (token Domain.JwtTokenDetail, serviceErr *Web.ServiceErrorDto) {
+	data, err := h.repo.FindByEmail(request.Email)
+	if err != nil {
+		return Domain.JwtTokenDetail{}, Web.NewCustomServiceError("User dan Password salah", err, http.StatusNotFound)
+	}
+
+	if !Middleware.CheckPasswordHash(request.Password, data.Password) {
+		return Domain.JwtTokenDetail{}, Web.NewCustomServiceError("User dan Password salah", nil, http.StatusUnauthorized)
+	}
+
+	tokenPtr, err := Middleware.GenerateTokenJwtV2(time.Hour*24*7, data.ID, os.Getenv("ACCESS_TOKEN_PRIVATE_KEY"))
+	if err != nil {
+		return Domain.JwtTokenDetail{}, Web.NewCustomServiceError("Login failed", err, http.StatusUnauthorized)
+	}
+	token = *tokenPtr
+
+	return token, nil
 }

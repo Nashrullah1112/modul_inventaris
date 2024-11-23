@@ -45,7 +45,7 @@ func (h *AssetLisensiServiceImpl) Create(request Response.AssetLicenseCreateRequ
 	fmt.Println("assetId", assetId)
 	if id, err := h.lisensiRepo.Save(&Database.DetailAsetLisensi{
 		WaktuPembelian:           request.WaktuPembelian,
-		SNPerangkatTerpasang:     request.SNPerangkatTerpasang,
+		SnPerangkatTerpasang:     request.SNPerangkatTerpasang,
 		WaktuAktivasi:            request.WaktuAktivasi,
 		TanggalExpired:           request.TanggalExpired,
 		TipeKepemilikanAset:      request.TipeKepemilikanAset,
@@ -71,7 +71,7 @@ func (h *AssetLisensiServiceImpl) Update(request Response.DetailAsetLisensiUpdat
 	if id, err := h.lisensiRepo.Update(&Database.DetailAsetLisensi{
 		ID:                       existingDetailAsetLisensi.ID,
 		WaktuPembelian:           request.WaktuPembelian,
-		SNPerangkatTerpasang:     request.SNPerangkatTerpasang,
+		SnPerangkatTerpasang:     request.SNPerangkatTerpasang,
 		WaktuAktivasi:            request.WaktuAktivasi,
 		TanggalExpired:           request.TanggalExpired,
 		TipeKepemilikanAset:      request.TipeKepemilikanAset,
@@ -109,7 +109,7 @@ func (h *AssetLisensiServiceImpl) FindById(detailAsetLisensiId int64) (detailAse
 	detailAsetLisensi = Response.DetailAsetLisensiResponse{
 		ID:                       data.ID,
 		WaktuPembelian:           data.WaktuPembelian,
-		SNPerangkatTerpasang:     data.SNPerangkatTerpasang,
+		SNPerangkatTerpasang:     data.SnPerangkatTerpasang,
 		WaktuAktivasi:            data.WaktuAktivasi,
 		TanggalExpired:           data.TanggalExpired,
 		TipeKepemilikanAset:      data.TipeKepemilikanAset,
@@ -133,7 +133,7 @@ func (h *AssetLisensiServiceImpl) FindAll() (detailAsetLisensi []Response.Detail
 		detailAsetLisensi = append(detailAsetLisensi, Response.DetailAsetLisensiResponse{
 			ID:                       d.ID,
 			WaktuPembelian:           d.WaktuPembelian,
-			SNPerangkatTerpasang:     d.SNPerangkatTerpasang,
+			SNPerangkatTerpasang:     d.SnPerangkatTerpasang,
 			WaktuAktivasi:            d.WaktuAktivasi,
 			TanggalExpired:           d.TanggalExpired,
 			TipeKepemilikanAset:      d.TipeKepemilikanAset,

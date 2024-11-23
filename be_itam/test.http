@@ -1,28 +1,27 @@
-### Get all barang
-GET http://localhost:3000/api/barang
+### Get all assets
+GET http://localhost:3000/api/asset
 X-API-Key: dHsi2
 Accept: application/json
 
-### Create new category
-POST http://localhost:3000/api/barang
+### Create new asset
+POST http://localhost:3000/api/asset
 X-API-Key: dHsi2
 Accept: application/json
 Content-Type: application/json
 
 {
-
   "name" : "jam",
   "category" : "elektronik",
   "price" : 5000
 }
 
-### Get category by Id
-GET http://localhost:3000/api/barang/1
+### Get asset by Id
+GET http://localhost:3000/api/asset/1
 X-API-Key: dHsi2
 Accept: application/json
 
-### Update category by id
-PATCH http://localhost:3000/api/barang/
+### Update asset by id
+PATCH http://localhost:3000/api/asset
 X-API-Key: dHsi2
 Accept: application/json
 Content-Type: application/json
@@ -34,7 +33,318 @@ Content-Type: application/json
   "price" : 5000
 }
 
-### Delete category by id
-DELETE http://localhost:3000/api/barang/2
+### Delete asset by id
+DELETE http://localhost:3000/api/asset/2
+X-API-Key: dHsi2
+Accept: application/json
+
+### Get all asset-aplikasi
+GET http://localhost:3000/api/asset-aplikasi
+X-API-Key: dHsi2
+Accept: application/json
+
+### Create new asset-aplikasi
+POST http://localhost:3000/api/asset-aplikasi
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "aplikasi1",
+  "version" : "1.0"
+}
+
+### Get asset-aplikasi by Id
+GET http://localhost:3000/api/asset-aplikasi/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Update asset-aplikasi by id
+PATCH http://localhost:3000/api/asset-aplikasi
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id"  : 1,
+  "name" : "aplikasi1",
+  "version" : "1.1"
+}
+
+### Delete asset-aplikasi by id
+DELETE http://localhost:3000/api/asset-aplikasi/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Get all asset-hardware
+GET http://localhost:3000/api/asset-hardware
+X-API-Key: dHsi2
+Accept: application/json
+
+### Create new asset-hardware
+POST http://localhost:3000/api/asset-hardware
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "hardware1",
+  "type" : "type1"
+}
+
+### Get asset-hardware by Id
+GET http://localhost:3000/api/asset-hardware/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Update asset-hardware by id
+PATCH http://localhost:3000/api/asset-hardware
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id"  : 1,
+  "name" : "hardware1",
+  "type" : "type2"
+}
+
+### Delete asset-hardware by id
+DELETE http://localhost:3000/api/asset-hardware/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Form asset-hardware
+POST http://localhost:3000/api/form-hardware
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "hardware1",
+  "type" : "type1"
+}
+
+### Get all asset-lisensi
+GET http://localhost:3000/api/asset-lisensi
+X-API-Key: dHsi2
+Accept: application/json
+
+### Create new asset-lisensi
+POST http://localhost:3000/api/asset-lisensi
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "lisensi1",
+  "type" : "type1"
+}
+
+### Get asset-lisensi by Id
+GET http://localhost:3000/api/asset-lisensi/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Update asset-lisensi by id
+PATCH http://localhost:3000/api/asset-lisensi
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id"  : 1,
+  "name" : "lisensi1",
+  "type" : "type2"
+}
+
+### Delete asset-lisensi by id
+DELETE http://localhost:3000/api/asset-lisensi/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Get all asset-perangkat
+GET http://localhost:3000/api/asset-perangkat
+X-API-Key: dHsi2
+Accept: application/json
+
+### Create new asset-perangkat
+POST http://localhost:3000/api/asset-perangkat
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "perangkat1",
+  "type" : "type1"
+}
+
+### Get asset-perangkat by Id
+GET http://localhost:3000/api/asset-perangkat/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Update asset-perangkat by id
+PATCH http://localhost:3000/api/asset-perangkat
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id"  : 1,
+  "name" : "perangkat1",
+  "type" : "type2"
+}
+
+### Delete asset-perangkat by id
+DELETE http://localhost:3000/api/asset-perangkat/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Get all vendors
+GET http://localhost:3000/api/vendor
+X-API-Key: dHsi2
+Accept: application/json
+
+### Create new vendor
+POST http://localhost:3000/api/vendor
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "vendor1",
+  "address" : "address1"
+}
+
+### Get vendor by Id
+GET http://localhost:3000/api/vendor/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Update vendor by id
+PATCH http://localhost:3000/api/vendor
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id"  : 1,
+  "name" : "vendor1",
+  "address" : "address2"
+}
+
+### Delete vendor by id
+DELETE http://localhost:3000/api/vendor/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Get all users
+GET http://localhost:3000/api/user
+X-API-Key: dHsi2
+Accept: application/json
+
+### Create new user
+POST http://localhost:3000/api/user
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "user1",
+  "email" : "user1@example.com"
+}
+
+### Get user by Id
+GET http://localhost:3000/api/user/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Update user by id
+PATCH http://localhost:3000/api/user
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id"  : 1,
+  "name" : "user1",
+  "email" : "user1@example.com"
+}
+
+### Delete user by id
+DELETE http://localhost:3000/api/user/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Get all roles
+GET http://localhost:3000/api/role
+X-API-Key: dHsi2
+Accept: application/json
+
+### Create new role
+POST http://localhost:3000/api/role
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "role1"
+}
+
+### Get role by Id
+GET http://localhost:3000/api/role/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Update role by id
+PATCH http://localhost:3000/api/role
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id"  : 1,
+  "name" : "role1"
+}
+
+### Delete role by id
+DELETE http://localhost:3000/api/role/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Get all divisi
+GET http://localhost:3000/api/divisi
+X-API-Key: dHsi2
+Accept: application/json
+
+### Create new divisi
+POST http://localhost:3000/api/divisi
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name" : "divisi1"
+}
+
+### Get divisi by Id
+GET http://localhost:3000/api/divisi/1
+X-API-Key: dHsi2
+Accept: application/json
+
+### Update divisi by id
+PATCH http://localhost:3000/api/divisi
+X-API-Key: dHsi2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id"  : 1,
+  "name" : "divisi1"
+}
+
+### Delete divisi by id
+DELETE http://localhost:3000/api/divisi/1
 X-API-Key: dHsi2
 Accept: application/json

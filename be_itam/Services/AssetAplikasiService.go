@@ -52,7 +52,6 @@ func (h *AssetAplikasiServiceImpl) Create(request Response.DetaiAsetAplikasiCrea
 		TanggalAktif:            request.TanggalAktif,
 		TanggalKadaluarsa:       request.TanggalKadaluarsa,
 		AssetID:                 assetId,
-		VendorID:                request.VendorID,
 	}); err != nil {
 		return id, Web.NewCustomServiceError("DetaiAsetAplikasi not created", err, http.StatusInternalServerError)
 	}
@@ -79,7 +78,6 @@ func (h *AssetAplikasiServiceImpl) Update(request Response.DetaiAsetAplikasiUpda
 		TanggalAktif:            request.TanggalAktif,
 		TanggalKadaluarsa:       request.TanggalKadaluarsa,
 		AssetID:                 request.AssetID,
-		VendorID:                request.VendorID,
 	}); err != nil {
 		return id, Web.NewInternalServiceError(err)
 	}
@@ -122,7 +120,6 @@ func (h *AssetAplikasiServiceImpl) FindById(detaiAsetAplikasiId int64) (detaiAse
 		TanggalAktif:            data.TanggalAktif,
 		TanggalKadaluarsa:       data.TanggalKadaluarsa,
 		AssetID:                 data.AssetID,
-		VendorID:                data.VendorID,
 	}
 
 	return detaiAsetAplikasi, nil
@@ -149,7 +146,6 @@ func (h *AssetAplikasiServiceImpl) FindAll() (detaiAsetAplikasis []Response.Deta
 			TanggalAktif:            d.TanggalAktif,
 			TanggalKadaluarsa:       d.TanggalKadaluarsa,
 			AssetID:                 d.AssetID,
-			VendorID:                d.VendorID,
 		})
 	}
 

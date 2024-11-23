@@ -5,6 +5,7 @@ import (
 	"itam/Model/Web"
 	"itam/Model/Web/Response"
 	"itam/Repository"
+	"log"
 	"net/http"
 )
 
@@ -32,7 +33,9 @@ func (h *JabatanServiceImpl) Create(request Response.JabatanCreateRequest) (id i
 	id, err := h.repo.Save(&Database.Jabatan{
 		Nama: request.Nama,
 	})
+
 	if err != nil {
+		log.Println(err)
 		return id, Web.NewCustomServiceError("Jabatan not created", err, http.StatusInternalServerError)
 	}
 

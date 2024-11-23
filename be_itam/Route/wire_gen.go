@@ -15,7 +15,7 @@ import (
 
 // Injectors from wire.go:
 
-func assetDI(db *gorm.DB) *Controller.AssetControllerImpl {
+func AssetDI(db *gorm.DB) *Controller.AssetControllerImpl {
 	assetRepositoryImpl := Repository.AssetRepositoryProvider(db)
 	assetServiceImpl := Services.AssetServiceControllerProvider(assetRepositoryImpl)
 	assetControllerImpl := Controller.AssetControllerProvider(assetServiceImpl)
@@ -23,7 +23,7 @@ func assetDI(db *gorm.DB) *Controller.AssetControllerImpl {
 }
 
 // Asset Perangkat DI
-func assetPerangkatDI(db *gorm.DB) *Controller.AssetPerangkatControllerImpl {
+func AssetPerangkatDI(db *gorm.DB) *Controller.AssetPerangkatControllerImpl {
 	assetPerangkatRepositoryImpl := Repository.AssetPerangkatRepositoryProvider(db)
 	assetRepositoryImpl := Repository.AssetRepositoryProvider(db)
 	assetPerangkatServiceImpl := Services.AssetPerangkatServiceProvider(assetPerangkatRepositoryImpl, assetRepositoryImpl)
@@ -41,7 +41,7 @@ func AssetAplikasiDI(db *gorm.DB) *Controller.AssetAplikasiControllerImpl {
 }
 
 // Asset Hardware DI
-func assetHardwareDI(db *gorm.DB) *Controller.AssetHardwareControllerImpl {
+func AssetHardwareDI(db *gorm.DB) *Controller.AssetHardwareControllerImpl {
 	assetHardwareRepositoryImpl := Repository.AssetHardwareRepositoryProvider(db)
 	assetRepositoryImpl := Repository.AssetRepositoryProvider(db)
 	assetHardwareServiceImpl := Services.AssetHardwareServiceProvider(assetHardwareRepositoryImpl, assetRepositoryImpl)
@@ -59,7 +59,7 @@ func AssetLisensiDI(db *gorm.DB) *Controller.AssetLisensiControllerImpl {
 }
 
 // Vendor DI
-func vendorDI(db *gorm.DB) *Controller.VendorControllerImpl {
+func VendorDI(db *gorm.DB) *Controller.VendorControllerImpl {
 	vendorRepositoryImpl := Repository.VendorRepositoryProvider(db)
 	vendorServiceImpl := Services.VendorServiceProvider(vendorRepositoryImpl)
 	vendorControllerImpl := Controller.VendorControllerProvider(vendorServiceImpl)
@@ -67,7 +67,7 @@ func vendorDI(db *gorm.DB) *Controller.VendorControllerImpl {
 }
 
 // User DI
-func userDI(db *gorm.DB) *Controller.UserControllerImpl {
+func UserDI(db *gorm.DB) *Controller.UserControllerImpl {
 	userRepositoryImpl := Repository.UserRepositoryProvider(db)
 	userServiceImpl := Services.UserServiceProvider(userRepositoryImpl)
 	userControllerImpl := Controller.UserControllerProvider(userServiceImpl)
@@ -75,7 +75,7 @@ func userDI(db *gorm.DB) *Controller.UserControllerImpl {
 }
 
 // Role DI
-func roleDI(db *gorm.DB) *Controller.RoleControllerImpl {
+func RoleDI(db *gorm.DB) *Controller.RoleControllerImpl {
 	roleRepositoryImpl := Repository.RoleRepositoryProvider(db)
 	roleServiceImpl := Services.RoleServiceControllerProvider(roleRepositoryImpl)
 	roleControllerImpl := Controller.RoleControllerProvider(roleServiceImpl)
@@ -83,9 +83,17 @@ func roleDI(db *gorm.DB) *Controller.RoleControllerImpl {
 }
 
 // Divisi DI
-func divisiDI(db *gorm.DB) *Controller.DivisiControllerImpl {
+func DivisiDI(db *gorm.DB) *Controller.DivisiControllerImpl {
 	divisiRepositoryImpl := Repository.DivisiRepositoryProvider(db)
 	divisiServiceImpl := Services.DivisiServiceProvider(divisiRepositoryImpl)
 	divisiControllerImpl := Controller.DivisiControllerProvider(divisiServiceImpl)
 	return divisiControllerImpl
+}
+
+// Jabatan DI
+func JabatanDI(db *gorm.DB) *Controller.JabatanControllerImpl {
+	jabatanRepositoryImpl := Repository.JabatanRepositoryProvider(db)
+	jabatanServiceImpl := Services.JabatanServiceControllerProvider(jabatanRepositoryImpl)
+	jabatanControllerImpl := Controller.JabatanControllerProvider(jabatanServiceImpl)
+	return jabatanControllerImpl
 }

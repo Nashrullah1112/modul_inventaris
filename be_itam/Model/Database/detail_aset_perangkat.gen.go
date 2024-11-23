@@ -38,7 +38,8 @@ type DetailAsetPerangkat struct {
 	DivisiID             int64     `gorm:"column:divisi_id;not null" json:"divisi_id"`
 	UserID               int64     `gorm:"column:user_id;not null" json:"user_id"`
 	AssetID              int64     `gorm:"column:asset_id;not null" json:"asset_id"`
-	VendorID             int64     `gorm:"column:vendor_id;not null" json:"vendor_id"`
+	CreatedAt            time.Time `gorm:"column:created_at" json:"created_at"`
+	UpdatedAt            time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
 
 // TableName DetailAsetPerangkat's table name

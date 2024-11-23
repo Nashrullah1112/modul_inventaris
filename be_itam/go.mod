@@ -2,7 +2,7 @@ module itam
 
 go 1.22
 
-toolchain go1.22.2
+toolchain go1.22.8
 
 require (
 	github.com/go-playground/validator/v10 v10.14.1
@@ -11,7 +11,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.9
-	github.com/swaggo/swag v1.16.3
+	github.com/swaggo/swag v1.16.4
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/gen v0.3.22
 	gorm.io/gorm v1.25.2
@@ -30,6 +30,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible 
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
@@ -52,7 +53,7 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.47.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/crypto v0.24.0 // indirect
+	golang.org/x/crypto v0.24.0 
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect

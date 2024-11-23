@@ -1,4 +1,6 @@
 info:
+  title: "API Documentation"
+  version: "1.0.0"
   contact: {}
 paths: {}
 swagger: "2.0"

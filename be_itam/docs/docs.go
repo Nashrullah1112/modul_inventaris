@@ -4,27 +4,27 @@ package docs
 import "github.com/swaggo/swag"
 
 const docTemplate = `{
-    "schemes": {{ marshal .Schemes }},
-    "swagger": "2.0",
-    "info": {
-        "description": "{{escape .Description}}",
-        "title": "{{.Title}}",
-        "contact": {},
-        "version": "{{.Version}}"
-    },
-    "host": "{{.Host}}",
-    "basePath": "{{.BasePath}}",
-    "paths": {}
+	"schemes": {{ marshal .Schemes }},
+	"swagger": "2.0",
+	"info": {
+		"description": "{{escape .Description}}",
+		"title": "{{.Title}}",
+		"contact": {},
+		"version": "{{.Version}}"
+	},
+	"host": "{{.Host}}",
+	"basePath": "{{.BasePath}}",
+	"paths": {}
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
-	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Version:          "1.0.0",
+	Host:             "localhost:8080",
+	BasePath:         "/api/v1",
+	Schemes:          []string{"http", "https"},
+	Title:            "My API",
+	Description:      "This is my API documentation",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

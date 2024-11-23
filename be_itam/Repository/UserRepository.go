@@ -13,6 +13,7 @@ type (
 		Delete(id int64) error
 		FindById(id int64) (data Database.User, err error)
 		FindAll() (data []Database.User, err error)
+		FindByEmail(email string) (data Database.User, err error)
 	}
 
 	UserRepositoryImpl struct {
@@ -60,5 +61,13 @@ func (h *UserRepositoryImpl) FindAll() (data []Database.User, err error) {
 		Find(&data).
 		Error
 
+	return data, err
+}
+
+func (h *UserRepositoryImpl) FindByEmail(email string) (data Database.User, err error) {
+	err = h.DB.Model(&Database.User{}).
+		Where("email = ?", email).
+		Take(&data).
+		Error
 	return data, err
 }

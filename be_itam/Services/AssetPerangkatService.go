@@ -68,7 +68,6 @@ func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatC
 		DivisiID:             request.DivisiID,
 		UserID:               request.UserID,
 		AssetID:              assetId,
-		VendorID:             request.VendorID,
 	})
 	if err != nil {
 		return id, Web.NewCustomServiceError("Detail Aset Perangkat not created", err, http.StatusInternalServerError)
@@ -110,7 +109,6 @@ func (h *AssetPerangkatServiceImpl) Update(request Response.DetailAsetPerangkatU
 		DivisiID:             request.DivisiID,
 		UserID:               request.UserID,
 		AssetID:              request.AssetID,
-		VendorID:             request.VendorID,
 	})
 	if err != nil {
 		return id, Web.NewInternalServiceError(err)
@@ -165,7 +163,6 @@ func (h *AssetPerangkatServiceImpl) FindById(detailAsetPerangkatId int64) (detai
 		DivisiID:             data.DivisiID,
 		UserID:               data.UserID,
 		AssetID:              data.AssetID,
-		VendorID:             data.VendorID,
 	}
 
 	return detailAsetPerangkat, nil
@@ -205,7 +202,6 @@ func (h *AssetPerangkatServiceImpl) FindAll() (detailAsetPerangkat []Response.De
 			DivisiID:             d.DivisiID,
 			UserID:               d.UserID,
 			AssetID:              d.AssetID,
-			VendorID:             d.VendorID,
 		})
 	}
 

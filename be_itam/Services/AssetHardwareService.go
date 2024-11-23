@@ -55,7 +55,6 @@ func (h *AssetHardwareServiceImpl) Create(request Response.DetailAsetHardwareCre
 		NotaPembelian:            request.NotaPembelian,
 		DivisiID:                 request.DivisiID,
 		AssetID:                  request.AssetID,
-		VendorID:                 request.VendorID,
 	}); err != nil {
 		return id, Web.NewCustomServiceError("Detail Aset Hardware not created", err, http.StatusInternalServerError)
 	}
@@ -91,7 +90,6 @@ func (h *AssetHardwareServiceImpl) Update(request Response.DetailAsetHardwareUpd
 		NotaPembelian:            request.NotaPembelian,
 		DivisiID:                 request.DivisiID,
 		AssetID:                  request.AssetID,
-		VendorID:                 request.VendorID,
 	}); err != nil {
 		return id, Web.NewInternalServiceError(err)
 	}
@@ -141,7 +139,6 @@ func (h *AssetHardwareServiceImpl) FindById(detailAsetHardwareId int64) (detailA
 		NotaPembelian:            data.NotaPembelian,
 		DivisiID:                 data.DivisiID,
 		AssetID:                  data.AssetID,
-		VendorID:                 data.VendorID,
 	}
 
 	return detailAsetHardware, nil
@@ -177,7 +174,6 @@ func (h *AssetHardwareServiceImpl) FindAll() (detailAsetHardwares []Response.Det
 			NotaPembelian:            d.NotaPembelian,
 			DivisiID:                 d.DivisiID,
 			AssetID:                  d.AssetID,
-			VendorID:                 d.VendorID,
 		})
 	}
 
@@ -219,7 +215,6 @@ func (h *AssetHardwareServiceImpl) FormAssetHardware(request Response.AssetHardw
 		NotaPembelian:            request.NotaPembelian,
 		DivisiID:                 request.DivisiPengguna,
 		AssetID:                  assetId,
-		VendorID:                 request.VendorID,
 	})
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Detail Aset Hardware not created", err, http.StatusInternalServerError)

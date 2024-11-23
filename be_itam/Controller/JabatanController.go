@@ -5,6 +5,7 @@ import (
 	"itam/Model/Web"
 	"itam/Model/Web/Response"
 	"itam/Services"
+	"log"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,6 +39,7 @@ func (h *JabatanControllerImpl) Create(c *fiber.Ctx) error {
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
 	}
+	log.Println(request)
 
 	// Call service to create Jabatan
 	if _, serviceErr = h.service.Create(request); serviceErr != nil {

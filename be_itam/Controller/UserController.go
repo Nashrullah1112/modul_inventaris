@@ -2,6 +2,7 @@ package Controller
 
 import (
 	"itam/Constant"
+	"itam/Model/Domain"
 	"itam/Model/Web"
 	"itam/Model/Web/Response"
 	"itam/Services"
@@ -16,6 +17,7 @@ type UserControllerHandler interface {
 	Delete(c *fiber.Ctx) error
 	FindById(c *fiber.Ctx) error
 	FindAll(c *fiber.Ctx) error
+	Login(c *fiber.Ctx) error
 }
 
 type UserControllerImpl struct {
@@ -105,4 +107,25 @@ func (h *UserControllerImpl) FindAll(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("All users found", response))
+}
+
+func (h *UserControllerImpl) Login(c *fiber.Ctx) error {
+	var (
+		request    Domain.LoginRequest
+		response   Domain.JwtTokenDetail
+		serviceErr *Web.ServiceErrorDto
+	)
+
+	// Parse request body
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
+	}
+
+	// Call service to login
+	response, serviceErr = h.service.Login(request)
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Login successful", response))
 }
