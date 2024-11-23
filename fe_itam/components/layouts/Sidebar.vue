@@ -58,19 +58,19 @@ const sidebarItem = reactive({
       children: [
         {
           title: "Perangkat Elektronik",
-          url: "/electronic",
+          url: "/electronic/add",
         },
         {
           title: "Hardware",
-          url: "/hardware",
+          url: "/hardware/add",
         },
         {
           title: "Software Lisensi",
-          url: "/software_license/add",
+          url: "/software-license/add",
         },
         {
           title: "Software Aplikasi",
-          url: "/aplikasi/add",
+          url: "/application/add",
         },
       ],
     },
@@ -82,19 +82,19 @@ const sidebarItem = reactive({
       children: [
         {
           title: "Data Perangkat Elektronik",
-          url: "/electronic/",
+          url: "/electronic",
         },
         {
           title: "Data Hardware",
-          url: "/hardware/",
+          url: "/hardware",
         },
         {
           title: "Data Software Lisensi",
-          url: "/software_license/",
+          url: "/software-license",
         },
         {
           title: "Data Software Aplikasi",
-          url: "/aplikasi/",
+          url: "/application",
         },
         {
           title: "Tambah Vendor",
@@ -120,7 +120,7 @@ const sidebarItem = reactive({
         },
         {
           title: "Data Pegawai",
-          url: "/employee/",
+          url: "/employee",
         },
       ],
     },

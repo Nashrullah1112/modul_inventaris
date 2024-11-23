@@ -180,7 +180,7 @@ const { data: result, status, refresh } = await useFetch(config.public.API_URL +
       </div>
       
       <div class="p-6">
-        <DataTable :columns="columns" :data="result" />
+        <DataTable :columns="columns" :data="result ?? []" :dataStatus="status" />
       </div>
     </div>
   </div>
