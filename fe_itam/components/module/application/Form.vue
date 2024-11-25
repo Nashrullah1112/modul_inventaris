@@ -44,27 +44,83 @@ const props = defineProps<{
   data: any[];
 }>();
 
+const config = useRuntimeConfig()
+const { showLoading, hideLoading } = useLoading()
+
+const df = new DateFormatter('en-US', {
+  dateStyle: 'long',
+})
+
+/* hold datefield value */
+const tanggalPembuatan = computed({
+  get: () => values.tanggal_pembuatan ? parseDate(values.tanggal_pembuatan) : undefined,
+  set: val => val,
+})
+const tanggalTerima = computed({
+  get: () => values.tanggal_terima ? parseDate(values.tanggal_terima) : undefined,
+  set: val => val,
+})
+const tanggalAktif = computed({
+  get: () => values.tanggal_aktif ? parseDate(values.tanggal_aktif) : undefined,
+  set: val => val,
+})
+const tanggalKadaluarsa = computed({
+  get: () => values.tanggal_kadaluarsa ? parseDate(values.tanggal_kadaluarsa) : undefined,
+  set: val => val,
+})
+
+/* data select vendor */
+const vendors = ref([]);
+
+const getVendorData = async () => {
+  try {
+    const { data, status } = await useFetch(config.public.API_URL + '/vendor');
+
+    if (status.value == 'success' && data.value?.data?.length) {
+      vendors.value = data.value.data.map(item => {
+        return {
+          label: item.nama_pic,
+          value: item.id,
+        }
+      })
+    }
+  } catch (error) {
+    console.error("Terjadi kesalahan:", error);
+  }
+}
+
+onMounted(() => {
+  getVendorData()
+})
+onActivated(() => {
+  getVendorData()
+})
+
 /* handle form */
 const formSchema = toTypedSchema(
   z.object({
-    vendor: z.string().min(1),
-    tanggalPembuatan: z
+    vendor_id: z.number().min(1),
+    tanggal_pembuatan: z
       .string()
-      .refine((v) => v, { message: "Tanggal pembuatan wajib diisi." }),
-    namaAplikasi: z.string().min(1),
-    tanggalTerima: z
+      .refine((val) => /^\d{4}-\d{2}-\d{2}$/.test(val), { message: "Invalid date format, expected YYYY-MM-DD" })
+      .transform((val) => new Date(`${val}T00:00:00Z`).toISOString()),
+    nama_aplikasi: z.string().min(1),
+    tanggal_terima: z
       .string()
-      .refine((v) => v, { message: "Tanggal terima wajib diisi." }),
-    tipePlatform: z.string().min(1),
-    serverPenyimpanan: z.string().min(1),
-    urlAplikasi: z.string().min(1),
-    tanggalAktifDomain: z
+      .refine((val) => /^\d{4}-\d{2}-\d{2}$/.test(val), { message: "Invalid date format, expected YYYY-MM-DD" })
+      .transform((val) => new Date(`${val}T00:00:00Z`).toISOString()),
+    tipe_aplikasi: z.string().min(1),
+    lokasi_server_penyimpanan: z.string().min(1),
+    link_aplikasi: z.string().min(1),
+    tanggal_aktif: z
       .string()
-      .refine((v) => v, { message: "Tanggal aktif domain wajib diisi." }),
-    tanggalExpiredDomain: z
+      .refine((val) => /^\d{4}-\d{2}-\d{2}$/.test(val), { message: "Invalid date format, expected YYYY-MM-DD" })
+      .transform((val) => new Date(`${val}T00:00:00Z`).toISOString()),
+    tanggal_kadaluarsa: z
       .string()
-      .refine((v) => v, { message: "Tanggal expired domain wajib diisi." }),
-    sertifikatAplikasi: z.string().min(1),
+      .refine((val) => /^\d{4}-\d{2}-\d{2}$/.test(val), { message: "Invalid date format, expected YYYY-MM-DD" })
+      .transform((val) => new Date(`${val}T00:00:00Z`).toISOString()),
+    sertifikasi_aplikasi: z.string().min(1),
     dokumentasi: z.any(),
   })
 );
@@ -75,94 +131,46 @@ const { handleSubmit, setFieldValue, values } = useForm({
 
 const onSubmit = handleSubmit(async (values) => {
   try {
-    const formData = new FormData();
-    Object.entries(values).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
+    showLoading()
 
-    const response = await $fetch(
-      `${useRuntimeConfig().public.apiBase}/asset-aplikasi`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    const { data, status } = await useFetch(config.public.API_URL + '/asset-aplikasi', {
+      method: 'POST',
+      body: values,
+    })
 
-    console.log("Data berhasil disimpan:", response);
-    navigateTo("/aplikasi");
+    hideLoading()
+
+    if (status.value == 'success')
+      navigateTo('/application')
   } catch (error) {
     console.error("Terjadi kesalahan:", error);
   }
 });
 
-interface Application {
-  id: number;
-  nama_aplikasi: string;
-  tanggal_pembuatan: Date;
-  tanggal_terima: Date;
-  lokasi_server_penyimpanan: string;
-  tipe_aplikasi: string;
-  link_aplikasi: string;
-  sertifikasi_aplikasi: string;
-  tanggal_aktif: Date;
-  tanggal_kadaluarsa: Date;
-  asset_id: number;
-  vendor_id: number;
-}
-
-// State for application data
-const application = ref<Application>();
-const isLoading = ref(false);
-const errorMessage = ref<string | null>(null);
-
-async function findByIDApplication(id: number) {
-  try {
-    isLoading.value = true;
-    errorMessage.value = null;
-
-    const response = await $fetch<{
-      message: string;
-      data: Application;
-      error: any;
-    }>(`http://localhost:5000/api/asset-aplikasi/${id}`, {
-      method: "GET",
-    });
-
-    if (response.error) {
-      throw new Error(response.error);
-    }
-
-    application.value = response.data;
-  } catch (error) {
-    console.error("Error fetching applications:", error);
-    errorMessage.value = "Failed to load application data. Please try again.";
-  } finally {
-    isLoading.value = false;
-  }
-}
 </script>
 
 <template>
-  <div
-    class="p-8 bg-white shadow-lg rounded-lg"
-    :class="isOpen ? 'lg:ml-64' : ''"
-  >
+  <div class="p-8 bg-white shadow-lg rounded-lg">
     <h1 class="text-2xl font-bold mb-6">Registrasi Aplikasi</h1>
 
-    <Form @submit="onSubmit">
-      <div class="grid grid-cols-2 gap-x-4">
-        <FormField name="vendor">
+    <form @submit="onSubmit">
+      <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+        <FormField v-slot="{ componentField }" name="vendor_id">
           <FormItem>
             <FormLabel>Nama Vendor</FormLabel>
             <FormControl>
-              <Select v-model="values.vendor">
+              <Select v-bind="componentField">
                 <SelectTrigger>
                   <SelectValue placeholder="Pilih Vendor" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="vendor1">Vendor 1</SelectItem>
-                  <SelectItem value="vendor2">Vendor 2</SelectItem>
-                  <SelectItem value="vendor3">Vendor 3</SelectItem>
+                  <SelectGroup>
+                    <template v-for="item in vendors" :key="item.value">
+                      <SelectItem :value="item.value">
+                        {{ item.label }}
+                      </SelectItem>
+                    </template>
+                  </SelectGroup>
                 </SelectContent>
               </Select>
             </FormControl>
@@ -170,75 +178,95 @@ async function findByIDApplication(id: number) {
           </FormItem>
         </FormField>
 
-        <FormField name="tanggalPembuatan">
-          <FormItem>
+        <FormField name="tanggal_pembuatan">
+          <FormItem class="flex flex-col">
             <FormLabel>Tanggal Pembuatan</FormLabel>
-            <FormControl>
-              <Popover>
-                <PopoverTrigger as-child>
+            <Popover>
+              <PopoverTrigger as-child>
+                <FormControl>
                   <Button
-                    variant="outline"
-                    class="w-full justify-start text-left font-normal"
+                    variant="outline" :class="cn(
+                      'ps-3 text-start font-normal',
+                      !tanggalPembuatan && 'text-muted-foreground',
+                    )"
                   >
-                    <CalendarIcon class="mr-2 h-4 w-4" />
-                    {{
-                      values.tanggalPembuatan
-                        ? values.tanggalPembuatan
-                        : "Pilih tanggal"
-                    }}
+                    <span>{{ tanggalPembuatan ? df.format(toDate(tanggalPembuatan)) : "Pick a date" }}</span>
+                    <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <Calendar v-model="values.tanggalPembuatan" />
-                </PopoverContent>
-              </Popover>
-            </FormControl>
+                  <input hidden>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent class="w-auto p-0">
+                <Calendar
+                  v-model="tanggalPembuatan"
+                  calendar-label="Date of birth"
+                  @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('tanggal_pembuatan', v.toString())
+                    }
+                    else {
+                      setFieldValue('tanggal_pembuatan', undefined)
+                    }
+                  }"
+                />
+              </PopoverContent>
+            </Popover>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="namaAplikasi">
+        <FormField v-slot="{ componentField }" name="nama_aplikasi">
           <FormItem>
             <FormLabel>Nama Aplikasi</FormLabel>
             <FormControl>
-              <Input v-model="values.namaAplikasi" />
+              <Input type="text" v-bind="componentField" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="tanggalTerima">
-          <FormItem>
+        <FormField name="tanggal_terima">
+          <FormItem class="flex flex-col">
             <FormLabel>Tanggal Terima</FormLabel>
-            <FormControl>
-              <Popover>
-                <PopoverTrigger as-child>
+            <Popover>
+              <PopoverTrigger as-child>
+                <FormControl>
                   <Button
-                    variant="outline"
-                    class="w-full justify-start text-left font-normal"
+                    variant="outline" :class="cn(
+                      'ps-3 text-start font-normal',
+                      !tanggalTerima && 'text-muted-foreground',
+                    )"
                   >
-                    <CalendarIcon class="mr-2 h-4 w-4" />
-                    {{
-                      values.tanggalTerima
-                        ? values.tanggalTerima
-                        : "Pilih tanggal"
-                    }}
+                    <span>{{ tanggalTerima ? df.format(toDate(tanggalTerima)) : "Pick a date" }}</span>
+                    <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <Calendar v-model="values.tanggalTerima" />
-                </PopoverContent>
-              </Popover>
-            </FormControl>
+                  <input hidden>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent class="w-auto p-0">
+                <Calendar
+                  v-model="tanggalTerima"
+                  calendar-label="Date of birth"
+                  @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('tanggal_terima', v.toString())
+                    }
+                    else {
+                      setFieldValue('tanggal_terima', undefined)
+                    }
+                  }"
+                />
+              </PopoverContent>
+            </Popover>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="tipePlatform">
+        <FormField v-slot="{ componentField }" name="tipe_aplikasi">
           <FormItem>
             <FormLabel>Tipe Platform</FormLabel>
             <FormControl>
-              <Select v-model="values.tipePlatform">
+              <Select v-bind="componentField">
                 <SelectTrigger>
                   <SelectValue placeholder="Pilih Platform" />
                 </SelectTrigger>
@@ -254,97 +282,118 @@ async function findByIDApplication(id: number) {
           </FormItem>
         </FormField>
 
-        <FormField name="serverPenyimpanan">
+        <FormField v-slot="{ componentField }" name="lokasi_server_penyimpanan">
           <FormItem>
             <FormLabel>Server Penyimpanan</FormLabel>
             <FormControl>
-              <Input type="number" v-model="values.serverPenyimpanan" />
+              <Input type="text" v-bind="componentField" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="urlAplikasi">
+        <FormField v-slot="{ componentField }" name="link_aplikasi">
           <FormItem>
             <FormLabel>URL Aplikasi</FormLabel>
             <FormControl>
-              <Input v-model="values.urlAplikasi" />
+              <Input type="text" v-bind="componentField" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="tanggalAktifDomain">
-          <FormItem>
+        <FormField name="tanggal_aktif">
+          <FormItem class="flex flex-col">
             <FormLabel>Tanggal Aktif Domain</FormLabel>
-            <FormControl>
-              <Popover>
-                <PopoverTrigger as-child>
+            <Popover>
+              <PopoverTrigger as-child>
+                <FormControl>
                   <Button
-                    variant="outline"
-                    class="w-full justify-start text-left font-normal"
+                    variant="outline" :class="cn(
+                      'ps-3 text-start font-normal',
+                      !tanggalAktif && 'text-muted-foreground',
+                    )"
                   >
-                    <CalendarIcon class="mr-2 h-4 w-4" />
-                    {{
-                      values.tanggalAktifDomain
-                        ? values.tanggalAktifDomain
-                        : "Pilih tanggal"
-                    }}
+                    <span>{{ tanggalAktif ? df.format(toDate(tanggalAktif)) : "Pick a date" }}</span>
+                    <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <Calendar v-model="values.tanggalAktifDomain" />
-                </PopoverContent>
-              </Popover>
-            </FormControl>
+                  <input hidden>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent class="w-auto p-0">
+                <Calendar
+                  v-model="tanggalAktif"
+                  calendar-label="Date of birth"
+                  @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('tanggal_aktif', v.toString())
+                    }
+                    else {
+                      setFieldValue('tanggal_aktif', undefined)
+                    }
+                  }"
+                />
+              </PopoverContent>
+            </Popover>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="tanggalExpiredDomain">
-          <FormItem>
+        <FormField name="tanggal_kadaluarsa">
+          <FormItem class="flex flex-col">
             <FormLabel>Tanggal Expired Domain</FormLabel>
-            <FormControl>
-              <Popover>
-                <PopoverTrigger as-child>
+            <Popover>
+              <PopoverTrigger as-child>
+                <FormControl>
                   <Button
-                    variant="outline"
-                    class="w-full justify-start text-left font-normal"
+                    variant="outline" :class="cn(
+                      'ps-3 text-start font-normal',
+                      !tanggalKadaluarsa && 'text-muted-foreground',
+                    )"
                   >
-                    <CalendarIcon class="mr-2 h-4 w-4" />
-                    {{
-                      values.tanggalExpiredDomain
-                        ? values.tanggalExpiredDomain
-                        : "Pilih tanggal"
-                    }}
+                    <span>{{ tanggalKadaluarsa ? df.format(toDate(tanggalKadaluarsa)) : "Pick a date" }}</span>
+                    <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <Calendar v-model="values.tanggalExpiredDomain" />
-                </PopoverContent>
-              </Popover>
-            </FormControl>
+                  <input hidden>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent class="w-auto p-0">
+                <Calendar
+                  v-model="tanggalKadaluarsa"
+                  calendar-label="Date of birth"
+                  @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('tanggal_kadaluarsa', v.toString())
+                    }
+                    else {
+                      setFieldValue('tanggal_kadaluarsa', undefined)
+                    }
+                  }"
+                />
+              </PopoverContent>
+            </Popover>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="sertifikatAplikasi">
+        <FormField v-slot="{ componentField }" name="sertifikasi_aplikasi">
           <FormItem>
             <FormLabel>Sertifikat Aplikasi</FormLabel>
             <FormControl>
-              <Input v-model="values.sertifikatAplikasi" />
+              <Input v-bind="componentField" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="dokumentasi">
+        <FormField v-slot="{ componentField }" name="dokumentasi">
           <FormItem>
             <FormLabel>Dokumentasi</FormLabel>
             <FormControl>
               <Input
                 type="file"
                 @change="(e) => setFieldValue('dokumentasi', e.target.files[0])"
+                v-bind="componentField"
               />
             </FormControl>
             <FormMessage />
@@ -356,6 +405,6 @@ async function findByIDApplication(id: number) {
         <Button variant="outline" @click="$router.back()">Cancel</Button>
         <Button type="submit">Submit</Button>
       </div>
-    </Form>
+    </form>
   </div>
 </template>
