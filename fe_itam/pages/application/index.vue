@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "vue-router";
 
+const router = useRouter();
+const config = useRuntimeConfig();
+
 interface Application {
   id: number;
   nama_aplikasi: string;
@@ -23,47 +26,7 @@ interface Application {
 
 // State for application data
 const applications = ref<Application[]>([]);
-const isLoading = ref(false);
 const errorMessage = ref<string | null>(null);
-const router = useRouter();
-
-async function fetchApplications() {
-  try {
-    isLoading.value = true;
-    errorMessage.value = null;
-
-    const response = await $fetch<{
-      message: string;
-      data: Application[];
-      error: any;
-    }>("http://localhost:5000/api/asset-aplikasi", {
-      method: "GET",
-    });
-
-    if (response.error) {
-      throw new Error(response.error);
-    }
-
-    applications.value = response.data;
-  } catch (error) {
-    console.error("Error fetching applications:", error);
-    errorMessage.value = "Failed to load application data. Please try again.";
-  } finally {
-    isLoading.value = false;
-  }
-}
-
-onMounted(fetchApplications);
-
-// Transform API data for table usage
-const transformedApplications = computed(() =>
-  applications.value.map((app) => ({
-    id: app.id,
-    namaAplikasi: app.nama_aplikasi,
-    urlAplikasi: app.link_aplikasi,
-    server: app.lokasi_server_penyimpanan,
-  }))
-);
 
 // Define table columns
 const columns = [
@@ -85,7 +48,7 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "namaAplikasi",
+    accessorKey: "nama_aplikasi",
     header: ({ column }: { column: any }) =>
       h(
         Button,
@@ -97,7 +60,19 @@ const columns = [
       ),
   },
   {
-    accessorKey: "urlAplikasi",
+    accessorKey: "tipe_aplikasi",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Tipe Aplikasi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+  {
+    accessorKey: "link_aplikasi",
     header: ({ column }: { column: any }) =>
       h(
         Button,
@@ -109,7 +84,7 @@ const columns = [
       ),
   },
   {
-    accessorKey: "server",
+    accessorKey: "lokasi_server_penyimpanan",
     header: ({ column }: { column: any }) =>
       h(
         Button,
@@ -147,6 +122,15 @@ const columns = [
   },
 ];
 
+console.log(config.public);
+
+/* fetch data from api */
+const {
+  data: result,
+  status,
+  refresh,
+} = await useFetch(config.public.API_URL + "/asset-aplikasi");
+
 // Delete action
 async function deleteApplication(id: number) {
   try {
@@ -163,25 +147,13 @@ async function deleteApplication(id: number) {
 </script>
 
 <template>
-  <div class="p-8">
-    <div class="bg-white rounded-lg shadow-lg">
-      <div class="p-6 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-800">Data Aplikasi</h1>
-      </div>
-      <div class="p-6">
-        <!-- Error Message -->
-        <div v-if="errorMessage" class="text-red-500 mb-4">
-          {{ errorMessage }}
-        </div>
-
-        <!-- Loading Spinner -->
-        <div v-if="isLoading" class="flex justify-center items-center h-40">
-          <span>Loading...</span>
-        </div>
-
-        <!-- Data Table -->
-        <DataTable v-else :columns="columns" :data="transformedApplications" />
-      </div>
+  <div class="bg-white rounded-lg shadow-lg">
+    <div class="px-6 py-2 border-b border-gray-200 flex justify-between">
+      <h1 class="text-2xl font-bold text-gray-800">Data Aplikasi</h1>
+      <Button @click="refresh()" variant="secondary">Refresh</Button>
+    </div>
+    <div class="px-6 py-2">
+      <DataTable :columns="columns" :data="result?.data || []" :dataStatus="status" />
     </div>
   </div>
 </template>
