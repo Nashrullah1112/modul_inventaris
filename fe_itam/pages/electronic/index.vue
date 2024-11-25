@@ -49,7 +49,7 @@ async function fetchDevices() {
       message: string;
       data: Device[];
       error: any;
-    }>("http://localhost:5000/api/asset-hardware", {
+    }>("http://103.127.139.11:5000/api/asset-perangkat", {
       method: "GET",
     });
 
