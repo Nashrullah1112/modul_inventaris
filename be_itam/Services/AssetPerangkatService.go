@@ -118,12 +118,12 @@ func (h *AssetPerangkatServiceImpl) Update(request Response.DetailAsetPerangkatU
 }
 
 func (h *AssetPerangkatServiceImpl) Delete(detailAsetPerangkatId int64) (serviceErr *Web.ServiceErrorDto) {
-	_, err := h.perangkatRepo.FindById(detailAsetPerangkatId)
+	asset, err := h.perangkatRepo.FindById(detailAsetPerangkatId)
 	if err != nil {
 		return Web.NewCustomServiceError("Detail Aset Perangkat not found", err, http.StatusNotFound)
 	}
 
-	if err := h.perangkatRepo.Delete(detailAsetPerangkatId); err != nil {
+	if err := h.perangkatRepo.Delete(asset.AssetID); err != nil {
 		return Web.NewInternalServiceError(err)
 	}
 
@@ -135,7 +135,10 @@ func (h *AssetPerangkatServiceImpl) FindById(detailAsetPerangkatId int64) (detai
 	if err != nil {
 		return Response.DetailAsetPerangkatResponse{}, Web.NewCustomServiceError("Detail Aset Perangkat not found", err, http.StatusNotFound)
 	}
-
+	asset, err := h.assetRepo.FindById(data.AssetID)
+	if err != nil {
+		return Response.DetailAsetPerangkatResponse{}, Web.NewInternalServiceError(err)
+	}
 	detailAsetPerangkat = Response.DetailAsetPerangkatResponse{
 		ID:                   data.ID,
 		LokasiPenerima:       data.LokasiPenerima,
@@ -163,6 +166,14 @@ func (h *AssetPerangkatServiceImpl) FindById(detailAsetPerangkatId int64) (detai
 		DivisiID:             data.DivisiID,
 		UserID:               data.UserID,
 		AssetID:              data.AssetID,
+		Asset: Response.AssetResponse{
+			Id:           asset.ID,
+			SerialNumber: asset.SerialNumber,
+			Model:        asset.Model,
+			Merk:         asset.Merk,
+			NomorNota:    asset.NomorNota,
+			VendorID:     asset.VendorID,
+		},
 	}
 
 	return detailAsetPerangkat, nil
@@ -175,34 +186,48 @@ func (h *AssetPerangkatServiceImpl) FindAll() (detailAsetPerangkat []Response.De
 	}
 
 	for _, d := range data {
-		detailAsetPerangkat = append(detailAsetPerangkat, Response.DetailAsetPerangkatResponse{
-			ID:                   d.ID,
-			LokasiPenerima:       d.LokasiPenerima,
-			WaktuPenerimaan:      d.WaktuPenerimaan,
-			TandaTerima:          d.TandaTerima,
-			TipeAset:             d.TipeAset,
-			WaktuAktivasiAset:    d.WaktuAktivasiAset,
-			HasilPemeriksaanAset: d.HasilPemeriksaanAset,
-			SerialNumber:         d.SerialNumber,
-			Model:                d.Model,
-			MasaGaransiMulai:     d.MasaGaransiMulai,
-			NomorKartuGaransi:    d.NomorKartuGaransi,
-			Prosesor:             d.Prosesor,
-			KapasitasRAM:         d.KapasitasRAM,
-			KapasitasRom:         d.KapasitasRom,
-			TipeRAM:              d.TipeRAM,
-			TipePenyimpnanan:     d.TipePenyimpnanan,
-			StatusAset:           d.StatusAset,
-			NilaiAset:            d.NilaiAset,
-			NilaiDepresiasi:      d.NilaiDepresiasi,
-			JangkaMasaPakai:      d.JangkaMasaPakai,
-			WaktuAsetKeluar:      d.WaktuAsetKeluar,
-			KondisiAsetKeluar:    d.KondisiAsetKeluar,
-			NotaPembelian:        d.NotaPembelian,
-			DivisiID:             d.DivisiID,
-			UserID:               d.UserID,
-			AssetID:              d.AssetID,
-		})
+		asset, err := h.assetRepo.FindById(d.AssetID)
+		if err != nil {
+			return []Response.DetailAsetPerangkatResponse{}, Web.NewInternalServiceError(err)
+		}
+		if asset.Status != "Disposal" {
+			detailAsetPerangkat = append(detailAsetPerangkat, Response.DetailAsetPerangkatResponse{
+				ID:                   d.ID,
+				LokasiPenerima:       d.LokasiPenerima,
+				WaktuPenerimaan:      d.WaktuPenerimaan,
+				TandaTerima:          d.TandaTerima,
+				TipeAset:             d.TipeAset,
+				WaktuAktivasiAset:    d.WaktuAktivasiAset,
+				HasilPemeriksaanAset: d.HasilPemeriksaanAset,
+				SerialNumber:         d.SerialNumber,
+				Model:                d.Model,
+				MasaGaransiMulai:     d.MasaGaransiMulai,
+				NomorKartuGaransi:    d.NomorKartuGaransi,
+				Prosesor:             d.Prosesor,
+				KapasitasRAM:         d.KapasitasRAM,
+				KapasitasRom:         d.KapasitasRom,
+				TipeRAM:              d.TipeRAM,
+				TipePenyimpnanan:     d.TipePenyimpnanan,
+				StatusAset:           d.StatusAset,
+				NilaiAset:            d.NilaiAset,
+				NilaiDepresiasi:      d.NilaiDepresiasi,
+				JangkaMasaPakai:      d.JangkaMasaPakai,
+				WaktuAsetKeluar:      d.WaktuAsetKeluar,
+				KondisiAsetKeluar:    d.KondisiAsetKeluar,
+				NotaPembelian:        d.NotaPembelian,
+				DivisiID:             d.DivisiID,
+				UserID:               d.UserID,
+				AssetID:              d.AssetID,
+				Asset: Response.AssetResponse{
+					Id:           asset.ID,
+					SerialNumber: asset.SerialNumber,
+					Model:        asset.Model,
+					Merk:         asset.Merk,
+					NomorNota:    asset.NomorNota,
+					VendorID:     asset.VendorID,
+				},
+			})
+		}
 	}
 
 	return detailAsetPerangkat, nil

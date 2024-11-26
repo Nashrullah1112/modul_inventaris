@@ -13,6 +13,7 @@ type (
 		Delete(id int64) error
 		FindById(id int64) (data Database.Asset, err error)
 		FindAll() (data []Database.Asset, err error)
+		FindDisposal() (data []Database.Asset, err error)
 	}
 
 	AssetRepositoryImpl struct {
@@ -56,6 +57,14 @@ func (h *AssetRepositoryImpl) FindById(id int64) (data Database.Asset, err error
 
 func (h *AssetRepositoryImpl) FindAll() (data []Database.Asset, err error) {
 	err = h.DB.Model(&Database.Asset{}).
+		Find(&data).
+		Error
+
+	return data, err
+}
+func (h *AssetRepositoryImpl) FindDisposal() (data []Database.Asset, err error) {
+	err = h.DB.Model(&Database.Asset{}).
+		Where("status = ?", "Disposal").
 		Find(&data).
 		Error
 

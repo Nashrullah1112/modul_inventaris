@@ -88,12 +88,12 @@ func (h *AssetLisensiServiceImpl) Update(request Response.DetailAsetLisensiUpdat
 }
 
 func (h *AssetLisensiServiceImpl) Delete(detailAsetLisensiId int64) (serviceErr *Web.ServiceErrorDto) {
-	_, err := h.lisensiRepo.FindById(detailAsetLisensiId)
+	asset, err := h.lisensiRepo.FindById(detailAsetLisensiId)
 	if err != nil {
 		return Web.NewCustomServiceError("Detail Aset Lisensi not found", err, http.StatusNotFound)
 	}
 
-	if err := h.lisensiRepo.Delete(detailAsetLisensiId); err != nil {
+	if err := h.lisensiRepo.Delete(asset.AssetID); err != nil {
 		return Web.NewInternalServiceError(err)
 	}
 
@@ -105,7 +105,10 @@ func (h *AssetLisensiServiceImpl) FindById(detailAsetLisensiId int64) (detailAse
 	if err != nil {
 		return Response.DetailAsetLisensiResponse{}, Web.NewCustomServiceError("Detail Aset Lisensi not found", err, http.StatusNotFound)
 	}
-
+	asset, err := h.assetRepo.FindById(data.AssetID)
+	if err != nil {
+		return Response.DetailAsetLisensiResponse{}, Web.NewInternalServiceError(err)
+	}
 	detailAsetLisensi = Response.DetailAsetLisensiResponse{
 		ID:                       data.ID,
 		WaktuPembelian:           data.WaktuPembelian,
@@ -118,6 +121,14 @@ func (h *AssetLisensiServiceImpl) FindById(detailAsetLisensiId int64) (detailAse
 		MaksimalUserAplikasi:     data.MaksimalUserAplikasi,
 		MaksimalPerangkatLisensi: data.MaksimalPerangkatLisensi,
 		TipeLisensi:              data.TipeLisensi,
+		AssetID:                  data.AssetID,
+		Asset: Response.AssetResponse{
+			Id:           asset.ID,
+			SerialNumber: asset.SerialNumber,
+			Model:        asset.Model,
+			Merk:         asset.Merk,
+			NomorNota:    asset.NomorNota,
+		},
 	}
 
 	return detailAsetLisensi, nil
@@ -130,19 +141,33 @@ func (h *AssetLisensiServiceImpl) FindAll() (detailAsetLisensi []Response.Detail
 	}
 
 	for _, d := range data {
-		detailAsetLisensi = append(detailAsetLisensi, Response.DetailAsetLisensiResponse{
-			ID:                       d.ID,
-			WaktuPembelian:           d.WaktuPembelian,
-			SNPerangkatTerpasang:     d.SNPerangkatTerpasang,
-			WaktuAktivasi:            d.WaktuAktivasi,
-			TanggalExpired:           d.TanggalExpired,
-			TipeKepemilikanAset:      d.TipeKepemilikanAset,
-			KategoriLisensi:          d.KategoriLisensi,
-			VersiLisensi:             d.VersiLisensi,
-			MaksimalUserAplikasi:     d.MaksimalUserAplikasi,
-			MaksimalPerangkatLisensi: d.MaksimalPerangkatLisensi,
-			TipeLisensi:              d.TipeLisensi,
-		})
+		asset, err := h.assetRepo.FindById(d.AssetID)
+		if err != nil {
+			return []Response.DetailAsetLisensiResponse{}, Web.NewInternalServiceError(err)
+		}
+		if asset.Status != "Disposal" {
+			detailAsetLisensi = append(detailAsetLisensi, Response.DetailAsetLisensiResponse{
+				ID:                       d.ID,
+				WaktuPembelian:           d.WaktuPembelian,
+				SNPerangkatTerpasang:     d.SNPerangkatTerpasang,
+				WaktuAktivasi:            d.WaktuAktivasi,
+				TanggalExpired:           d.TanggalExpired,
+				TipeKepemilikanAset:      d.TipeKepemilikanAset,
+				KategoriLisensi:          d.KategoriLisensi,
+				VersiLisensi:             d.VersiLisensi,
+				MaksimalUserAplikasi:     d.MaksimalUserAplikasi,
+				MaksimalPerangkatLisensi: d.MaksimalPerangkatLisensi,
+				TipeLisensi:              d.TipeLisensi,
+				AssetID:                  d.AssetID,
+				Asset: Response.AssetResponse{
+					Id:           asset.ID,
+					SerialNumber: asset.SerialNumber,
+					Model:        asset.Model,
+					Merk:         asset.Merk,
+					NomorNota:    asset.NomorNota,
+				},
+			})
+		}
 	}
 
 	return detailAsetLisensi, nil

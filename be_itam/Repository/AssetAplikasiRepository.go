@@ -2,6 +2,7 @@ package Repository
 
 import (
 	"itam/Model/Database"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -42,7 +43,12 @@ func (h *AssetAplikasiRepositoryImpl) Update(data *Database.DetaiAsetAplikasi) (
 }
 
 func (h *AssetAplikasiRepositoryImpl) Delete(id int64) error {
-	err := h.DB.Delete(&Database.DetaiAsetAplikasi{}, id).Error
+	err := h.DB.Model(&Database.DetaiAsetAplikasi{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{
+			"deleted_at": time.Now(),
+			"status":     "Disposal",
+		}).Error
 	return err
 }
 
