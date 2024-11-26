@@ -16,6 +16,7 @@ type AssetControllerHandler interface {
 	Delete(c *fiber.Ctx) error
 	FindById(c *fiber.Ctx) error
 	FindAll(c *fiber.Ctx) error
+	FindDisposal(c *fiber.Ctx) error
 }
 
 type AssetControllerImpl struct {
@@ -105,4 +106,13 @@ func (h *AssetControllerImpl) FindAll(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("All assets found", response))
+}
+func (h *AssetControllerImpl) FindDisposal(c *fiber.Ctx) error {
+	// Call service to find all assets
+	response, serviceErr := h.service.FindDisposal()
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("All assets disposal found", response))
 }
