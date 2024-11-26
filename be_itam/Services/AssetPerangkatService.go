@@ -15,6 +15,7 @@ type (
 		Delete(detailAsetPerangkatId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(detailAsetPerangkatId int64) (detailAsetPerangkat Response.DetailAsetPerangkatResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (detailAsetPerangkat []Response.DetailAsetPerangkatResponse, serviceErr *Web.ServiceErrorDto)
+		TotalPerangkat() (total int64, serviceErr *Web.ServiceErrorDto)
 	}
 
 	AssetPerangkatServiceImpl struct {
@@ -231,4 +232,13 @@ func (h *AssetPerangkatServiceImpl) FindAll() (detailAsetPerangkat []Response.De
 	}
 
 	return detailAsetPerangkat, nil
+}
+
+func (h *AssetPerangkatServiceImpl) TotalPerangkat() (total int64, serviceErr *Web.ServiceErrorDto) {
+	total, err := h.perangkatRepo.TotalPerangkat("Disposal")
+	if err != nil {
+		return 0, Web.NewInternalServiceError(err)
+
+	}
+	return total, nil
 }
