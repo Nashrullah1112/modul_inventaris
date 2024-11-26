@@ -98,12 +98,12 @@ func (h *AssetHardwareServiceImpl) Update(request Response.DetailAsetHardwareUpd
 }
 
 func (h *AssetHardwareServiceImpl) Delete(detailAsetHardwareId int64) (serviceErr *Web.ServiceErrorDto) {
-	_, err := h.hardwareRepo.FindById(detailAsetHardwareId)
+	asset, err := h.hardwareRepo.FindById(detailAsetHardwareId)
 	if err != nil {
 		return Web.NewCustomServiceError("Detail Aset Hardware not found", err, http.StatusNotFound)
 	}
 
-	if err := h.hardwareRepo.Delete(detailAsetHardwareId); err != nil {
+	if err := h.hardwareRepo.Delete(asset.AssetID); err != nil {
 		return Web.NewInternalServiceError(err)
 	}
 
@@ -116,7 +116,10 @@ func (h *AssetHardwareServiceImpl) FindById(detailAsetHardwareId int64) (detailA
 		return Response.DetailAsetHardwareResponse{}, Web.NewCustomServiceError("Detail Aset Hardware not found", err, http.StatusNotFound)
 	}
 
-	// Convert Database.DetailAsetHardware to Response.DetailAsetHardwareResponse
+	asset, err := h.assetRepo.FindById(data.AssetID)
+	if err != nil {
+		return Response.DetailAsetHardwareResponse{}, Web.NewInternalServiceError(err)
+	}
 	detailAsetHardware = Response.DetailAsetHardwareResponse{
 		Id:                       data.ID,
 		WaktuPenerimaan:          data.WaktuPenerimaan,
@@ -139,6 +142,13 @@ func (h *AssetHardwareServiceImpl) FindById(detailAsetHardwareId int64) (detailA
 		NotaPembelian:            data.NotaPembelian,
 		DivisiID:                 data.DivisiID,
 		AssetID:                  data.AssetID,
+		Asset: Response.AssetResponse{
+			Id:           asset.ID,
+			SerialNumber: asset.SerialNumber,
+			Model:        asset.Model,
+			Merk:         asset.Merk,
+			NomorNota:    asset.NomorNota,
+		},
 	}
 
 	return detailAsetHardware, nil
@@ -152,29 +162,42 @@ func (h *AssetHardwareServiceImpl) FindAll() (detailAsetHardwares []Response.Det
 
 	// Convert []Database.DetailAsetHardware to []Response.DetailAsetHardwareResponse
 	for _, d := range data {
-		detailAsetHardwares = append(detailAsetHardwares, Response.DetailAsetHardwareResponse{
-			Id:                       d.ID,
-			WaktuPenerimaan:          d.WaktuPenerimaan,
-			BuktiPenerimaan:          d.BuktiPenerimaan,
-			TipeAset:                 d.TipeAset,
-			TanggalAktivasiPerangkat: d.TanggalAktivasiPerangkat,
-			HasilPemeriksaan:         d.HasilPemeriksaan,
-			SerialNumber:             d.SerialNumber,
-			Model:                    d.Model,
-			WaktuGaransiMulai:        d.WaktuGaransiMulai,
-			WaktuGaransiBerakhir:     d.WaktuGaransiBerakhir,
-			NomorKartuGaransi:        d.NomorKartuGaransi,
-			SpesifikasiPerangkat:     d.SpesifikasiPerangkat,
-			StatusAset:               d.StatusAset,
-			PenanggungjawabAset:      d.PenanggungjawabAset,
-			LokasiPenyimpananID:      d.LokasiPenyimpananID,
-			JangkaMasaPakai:          d.JangkaMasaPakai,
-			WaktuAsetKeluar:          d.WaktuAsetKeluar,
-			KondisiAset:              d.KondisiAset,
-			NotaPembelian:            d.NotaPembelian,
-			DivisiID:                 d.DivisiID,
-			AssetID:                  d.AssetID,
-		})
+		asset, err := h.assetRepo.FindById(d.AssetID)
+		if err != nil {
+			return []Response.DetailAsetHardwareResponse{}, Web.NewInternalServiceError(err)
+		}
+		if asset.Status != "Disposal" {
+			detailAsetHardwares = append(detailAsetHardwares, Response.DetailAsetHardwareResponse{
+				Id:                       d.ID,
+				WaktuPenerimaan:          d.WaktuPenerimaan,
+				BuktiPenerimaan:          d.BuktiPenerimaan,
+				TipeAset:                 d.TipeAset,
+				TanggalAktivasiPerangkat: d.TanggalAktivasiPerangkat,
+				HasilPemeriksaan:         d.HasilPemeriksaan,
+				SerialNumber:             d.SerialNumber,
+				Model:                    d.Model,
+				WaktuGaransiMulai:        d.WaktuGaransiMulai,
+				WaktuGaransiBerakhir:     d.WaktuGaransiBerakhir,
+				NomorKartuGaransi:        d.NomorKartuGaransi,
+				SpesifikasiPerangkat:     d.SpesifikasiPerangkat,
+				StatusAset:               d.StatusAset,
+				PenanggungjawabAset:      d.PenanggungjawabAset,
+				LokasiPenyimpananID:      d.LokasiPenyimpananID,
+				JangkaMasaPakai:          d.JangkaMasaPakai,
+				WaktuAsetKeluar:          d.WaktuAsetKeluar,
+				KondisiAset:              d.KondisiAset,
+				NotaPembelian:            d.NotaPembelian,
+				DivisiID:                 d.DivisiID,
+				AssetID:                  d.AssetID,
+				Asset: Response.AssetResponse{
+					Id:           asset.ID,
+					SerialNumber: asset.SerialNumber,
+					Model:        asset.Model,
+					Merk:         asset.Merk,
+					NomorNota:    asset.NomorNota,
+				},
+			})
+		}
 	}
 
 	return detailAsetHardwares, nil

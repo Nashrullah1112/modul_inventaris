@@ -87,13 +87,13 @@ func (h *AssetAplikasiServiceImpl) Update(request Response.DetaiAsetAplikasiUpda
 
 func (h *AssetAplikasiServiceImpl) Delete(detaiAsetAplikasiId int64) (serviceErr *Web.ServiceErrorDto) {
 	// Check if the DetaiAsetAplikasi exists
-	_, err := h.aplikasiRepo.FindById(detaiAsetAplikasiId)
+	asset, err := h.aplikasiRepo.FindById(detaiAsetAplikasiId)
 	if err != nil {
 		return Web.NewCustomServiceError("DetaiAsetAplikasi not found", err, http.StatusNotFound)
 	}
 
 	// Delete the DetaiAsetAplikasi
-	if err := h.aplikasiRepo.Delete(detaiAsetAplikasiId); err != nil {
+	if err := h.aplikasiRepo.Delete(asset.AssetID); err != nil {
 		return Web.NewInternalServiceError(err)
 	}
 
@@ -106,7 +106,10 @@ func (h *AssetAplikasiServiceImpl) FindById(detaiAsetAplikasiId int64) (detaiAse
 	if err != nil {
 		return Response.DetaiAsetAplikasiResponse{}, Web.NewCustomServiceError("DetaiAsetAplikasi not found", err, http.StatusNotFound)
 	}
-
+	asset, err := h.assetRepo.FindById(data.AssetID)
+	if err != nil {
+		return Response.DetaiAsetAplikasiResponse{}, Web.NewInternalServiceError(err)
+	}
 	// Convert Database.DetaiAsetAplikasi to Response.DetaiAsetAplikasiResponse
 	detaiAsetAplikasi = Response.DetaiAsetAplikasiResponse{
 		Id:                      data.ID,
@@ -120,6 +123,13 @@ func (h *AssetAplikasiServiceImpl) FindById(detaiAsetAplikasiId int64) (detaiAse
 		TanggalAktif:            data.TanggalAktif,
 		TanggalKadaluarsa:       data.TanggalKadaluarsa,
 		AssetID:                 data.AssetID,
+		Asset: Response.AssetResponse{
+			Id:           asset.ID,
+			SerialNumber: asset.SerialNumber,
+			Merk:         asset.Merk,
+			Model:        asset.Model,
+			NomorNota:    asset.NomorNota,
+		},
 	}
 
 	return detaiAsetAplikasi, nil
@@ -134,19 +144,33 @@ func (h *AssetAplikasiServiceImpl) FindAll() (detaiAsetAplikasis []Response.Deta
 
 	// Convert each Database.DetaiAsetAplikasi to Response.DetaiAsetAplikasiResponse
 	for _, d := range data {
-		detaiAsetAplikasis = append(detaiAsetAplikasis, Response.DetaiAsetAplikasiResponse{
-			Id:                      d.ID,
-			NamaAplikasi:            d.NamaAplikasi,
-			TanggalPembuatan:        d.TanggalPembuatan,
-			TanggalTerima:           d.TanggalTerima,
-			LokasiServerPenyimpanan: d.LokasiServerPenyimpanan,
-			TipeAplikasi:            d.TipeAplikasi,
-			LinkAplikasi:            d.LinkAplikasi,
-			SertifikasiAplikasi:     d.SertifikasiAplikasi,
-			TanggalAktif:            d.TanggalAktif,
-			TanggalKadaluarsa:       d.TanggalKadaluarsa,
-			AssetID:                 d.AssetID,
-		})
+		asset, err := h.assetRepo.FindById(d.AssetID)
+		if err != nil {
+			return []Response.DetaiAsetAplikasiResponse{}, Web.NewInternalServiceError(err)
+		}
+		if asset.Status != "Disposal" {
+			detaiAsetAplikasis = append(detaiAsetAplikasis, Response.DetaiAsetAplikasiResponse{
+				Id:                      d.ID,
+				NamaAplikasi:            d.NamaAplikasi,
+				TanggalPembuatan:        d.TanggalPembuatan,
+				TanggalTerima:           d.TanggalTerima,
+				LokasiServerPenyimpanan: d.LokasiServerPenyimpanan,
+				TipeAplikasi:            d.TipeAplikasi,
+				LinkAplikasi:            d.LinkAplikasi,
+				SertifikasiAplikasi:     d.SertifikasiAplikasi,
+				TanggalAktif:            d.TanggalAktif,
+				TanggalKadaluarsa:       d.TanggalKadaluarsa,
+				AssetID:                 d.AssetID,
+				Asset: Response.AssetResponse{
+					Id:           asset.ID,
+					SerialNumber: asset.SerialNumber,
+					Model:        asset.Model,
+					Merk:         asset.Merk,
+					NomorNota:    asset.NomorNota,
+					VendorID:     asset.VendorID,
+				},
+			})
+		}
 	}
 
 	return detaiAsetAplikasis, nil

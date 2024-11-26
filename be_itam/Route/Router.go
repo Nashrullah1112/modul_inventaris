@@ -81,6 +81,7 @@ func NewRouter(c *fiber.App) {
 	c.Post("/api/asset", assetController.Create)
 	c.Patch("/api/asset", assetController.Update)
 	c.Delete("/api/asset/:assetId", assetController.Delete)
+	c.Get("/api/disposal", assetController.FindDisposal)
 
 	// Asset Aplikasi Routes
 	assetAplikasiController := AssetAplikasiDI(Config.DB)
@@ -114,6 +115,7 @@ func NewRouter(c *fiber.App) {
 	c.Post("/api/asset-perangkat", assetPerangkatController.Create)
 	c.Patch("/api/asset-perangkat", assetPerangkatController.Update)
 	c.Delete("/api/asset-perangkat/:assetPerangkatId", assetPerangkatController.Delete)
+	c.Get("/api/asset-perangkat/total", assetPerangkatController.TotalPerangkat)
 
 	// Vendor Routes
 	vendorController := VendorDI(Config.DB)

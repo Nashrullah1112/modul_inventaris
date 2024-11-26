@@ -2,6 +2,7 @@ package Repository
 
 import (
 	"itam/Model/Database"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -13,6 +14,7 @@ type (
 		Delete(id int64) error
 		FindById(id int64) (data Database.DetailAsetPerangkat, err error)
 		FindAll() (data []Database.DetailAsetPerangkat, err error)
+		TotalPerangkat(status string) (total int64, err error)
 	}
 
 	AssetPerangkatRepositoryImpl struct {
@@ -42,7 +44,12 @@ func (h *AssetPerangkatRepositoryImpl) Update(data *Database.DetailAsetPerangkat
 }
 
 func (h *AssetPerangkatRepositoryImpl) Delete(id int64) error {
-	err := h.DB.Delete(&Database.DetailAsetPerangkat{}, id).Error
+	err := h.DB.Model(&Database.DetaiAsetAplikasi{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{
+			"deleted_at": time.Now(),
+			"status":     "Disposal",
+		}).Error
 	return err
 }
 
@@ -61,4 +68,14 @@ func (h *AssetPerangkatRepositoryImpl) FindAll() (data []Database.DetailAsetPera
 		Error
 
 	return data, err
+}
+
+func (h *AssetPerangkatRepositoryImpl) TotalPerangkat(status string) (total int64, err error) {
+
+	err = h.DB.Model(&Database.DetailAsetPerangkat{}).
+		Joins("JOIN assets ON assets.id = detail_aset_perangkats.asset_id").
+		Where("detail_aset_perangkats.status = ?", status).
+		Count(&total).
+		Error
+	return total, err
 }

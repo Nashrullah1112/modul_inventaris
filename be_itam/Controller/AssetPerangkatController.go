@@ -16,6 +16,7 @@ type AssetPerangkatControllerHandler interface {
 	Delete(c *fiber.Ctx) error
 	FindById(c *fiber.Ctx) error
 	FindAll(c *fiber.Ctx) error
+	TotalPerangkat(c *fiber.Ctx) error
 }
 
 type AssetPerangkatControllerImpl struct {
@@ -105,4 +106,15 @@ func (h *AssetPerangkatControllerImpl) FindAll(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("All Detail Aset Perangkat found", response))
+}
+
+func (h *AssetPerangkatControllerImpl) TotalPerangkat(c *fiber.Ctx) error {
+
+	// Call service to get total perangkat
+	total, serviceErr := h.service.TotalPerangkat()
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Total Perangkat found", total))
 }

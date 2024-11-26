@@ -16,6 +16,7 @@ type (
 		Delete(assetId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(assetId int64) (asset Response.AssetResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto)
+		FindDisposal() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto)
 	}
 
 	AssetServiceImpl struct {
@@ -103,13 +104,32 @@ func (h *AssetServiceImpl) FindById(assetId int64) (asset Response.AssetResponse
 }
 
 func (h *AssetServiceImpl) FindAll() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto) {
-	// Retrieve all assets from the database
+
 	data, err := h.repo.FindAll()
 	if err != nil {
 		return []Response.AssetResponse{}, Web.NewInternalServiceError(err)
 	}
 
-	// Convert each Database.Asset to Response.AssetResponse
+	for _, d := range data {
+		assets = append(assets, Response.AssetResponse{
+			Id:           d.ID,
+			VendorID:     d.VendorID,
+			SerialNumber: d.SerialNumber,
+			Merk:         d.Merk,
+			Model:        d.Model,
+			NomorNota:    d.NomorNota,
+		})
+	}
+
+	return assets, nil
+}
+
+func (h *AssetServiceImpl) FindDisposal() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto) {
+	data, err := h.repo.FindDisposal()
+	if err != nil {
+		return []Response.AssetResponse{}, Web.NewInternalServiceError(err)
+	}
+
 	for _, d := range data {
 		assets = append(assets, Response.AssetResponse{
 			Id:           d.ID,
