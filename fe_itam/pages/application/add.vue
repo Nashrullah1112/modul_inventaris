@@ -3,6 +3,9 @@
 
 <template>
   <div>
-    <ModuleAplicationForm />
+      <ModuleApplicationForm
+      type="add"
+      :data="[]"
+    />
   </div>
 </template>
