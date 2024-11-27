@@ -18,6 +18,7 @@ type (
 		FindAll() (detailAsetHardwares []Response.DetailAsetHardwareResponse, serviceErr *Web.ServiceErrorDto)
 		FormAssetHardware(request Response.AssetHardwareCreateRequest, tandaTerima string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto)
 		UpdateAssetHardware(hardwareID int64, request Response.AssetHardwareUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
+		TotalHardware() (total int64, serviceErr *Web.ServiceErrorDto)
 	}
 
 	AssetHardwareServiceImpl struct {
@@ -293,4 +294,13 @@ func (h *AssetHardwareServiceImpl) UpdateAssetHardware(hardwareID int64, request
 	}
 
 	return id, nil
+}
+
+func (h *AssetHardwareServiceImpl) TotalHardware() (total int64, serviceErr *Web.ServiceErrorDto) {
+	total, err := h.hardwareRepo.TotalHardware("Disposal")
+	if err != nil {
+		return 0, Web.NewInternalServiceError(err)
+	}
+
+	return total, nil
 }

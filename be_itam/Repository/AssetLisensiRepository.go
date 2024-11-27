@@ -14,6 +14,7 @@ type (
 		Delete(id int64) error
 		FindById(id int64) (data Database.DetailAsetLisensi, err error)
 		FindAll() (data []Database.DetailAsetLisensi, err error)
+		TotalLisensi(status string) (total int64, err error)
 	}
 
 	AssetLisensiRepositoryImpl struct {
@@ -67,4 +68,13 @@ func (h *AssetLisensiRepositoryImpl) FindAll() (data []Database.DetailAsetLisens
 		Error
 
 	return data, err
+}
+func (h *AssetLisensiRepositoryImpl) TotalLisensi(status string) (total int64, err error) {
+
+	err = h.DB.Model(&Database.DetailAsetLisensi{}).
+		Joins("JOIN assets ON assets.id = detail_aset_lisensi.asset_id").
+		Where("assets.status != ?", status).
+		Count(&total).
+		Error
+	return total, err
 }

@@ -14,6 +14,7 @@ type (
 		Delete(id int64) error
 		FindById(id int64) (data Database.DetaiAsetAplikasi, err error)
 		FindAll() (data []Database.DetaiAsetAplikasi, err error)
+		TotalAplikasi(status string) (total int64, err error)
 	}
 
 	AssetAplikasiRepositoryImpl struct {
@@ -67,4 +68,13 @@ func (h *AssetAplikasiRepositoryImpl) FindAll() (data []Database.DetaiAsetAplika
 		Error
 
 	return data, err
+}
+func (h *AssetAplikasiRepositoryImpl) TotalAplikasi(status string) (total int64, err error) {
+
+	err = h.DB.Model(&Database.DetaiAsetAplikasi{}).
+		Joins("JOIN assets ON assets.id = detai_aset_aplikasi.asset_id").
+		Where("assets.status != ?", status).
+		Count(&total).
+		Error
+	return total, err
 }

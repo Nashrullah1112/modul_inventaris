@@ -90,6 +90,7 @@ func NewRouter(c *fiber.App) {
 	c.Post("/api/asset-aplikasi", assetAplikasiController.Create)
 	c.Patch("/api/asset-aplikasi/:aplikasiID", assetAplikasiController.Update)
 	c.Delete("/api/asset-aplikasi/:aplikasiID", assetAplikasiController.Delete)
+	c.Get("/api/asset-aplikasi/total", assetAplikasiController.TotalAplikasi)
 
 	// Asset Hardware Routes
 	assetHardwareController := AssetHardwareDI(Config.DB)
@@ -99,6 +100,7 @@ func NewRouter(c *fiber.App) {
 	c.Patch("/api/asset-hardware/:hardwareID", assetHardwareController.Update)
 	c.Delete("/api/asset-hardware/:hardwareID", assetHardwareController.Delete)
 	c.Post("/api/form-hardware", assetHardwareController.FormAssetHardware)
+	c.Get("/api/asset-hardware/total", assetHardwareController.TotalHardware)
 
 	// Asset Lisensi Routes
 	assetLisensiController := AssetLisensiDI(Config.DB)
@@ -107,6 +109,7 @@ func NewRouter(c *fiber.App) {
 	c.Post("/api/asset-lisensi", assetLisensiController.Create)
 	c.Patch("/api/asset-lisensi/:lisensiID", assetLisensiController.Update)
 	c.Delete("/api/asset-lisensi/:lisensiID", assetLisensiController.Delete)
+	c.Get("/api/asset-lisensi/total", assetLisensiController.TotalLisensi)
 
 	// Asset Perangkat Routes
 	assetPerangkatController := AssetPerangkatDI(Config.DB)

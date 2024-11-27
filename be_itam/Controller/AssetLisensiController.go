@@ -16,6 +16,7 @@ type AssetLisensiControllerHandler interface {
 	Delete(c *fiber.Ctx) error
 	FindById(c *fiber.Ctx) error
 	FindAll(c *fiber.Ctx) error
+	TotalLisensi(c *fiber.Ctx) error
 }
 
 type AssetLisensiControllerImpl struct {
@@ -114,4 +115,15 @@ func (h *AssetLisensiControllerImpl) FindAll(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("All DetailAsetLisensis found", response))
+}
+
+// TotalLisensi returns the total number of DetailAsetLisensis
+func (h *AssetLisensiControllerImpl) TotalLisensi(c *fiber.Ctx) error {
+	// Call service to get the total number of DetailAsetLisensis
+	total, serviceErr := h.service.TotalLisensi()
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Total DetailAsetLisensis retrieved successfully", total))
 }

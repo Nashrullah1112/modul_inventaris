@@ -73,8 +73,8 @@ func (h *AssetPerangkatRepositoryImpl) FindAll() (data []Database.DetailAsetPera
 func (h *AssetPerangkatRepositoryImpl) TotalPerangkat(status string) (total int64, err error) {
 
 	err = h.DB.Model(&Database.DetailAsetPerangkat{}).
-		Joins("JOIN assets ON assets.id = detail_aset_perangkats.asset_id").
-		Where("detail_aset_perangkats.status = ?", status).
+		Joins("JOIN assets ON assets.id = detail_aset_perangkat.asset_id").
+		Where("assets.status != ?", status).
 		Count(&total).
 		Error
 	return total, err

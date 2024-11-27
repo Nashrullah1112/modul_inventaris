@@ -19,6 +19,7 @@ type AssetHardwareControllerHandler interface {
 	FindById(c *fiber.Ctx) error
 	FindAll(c *fiber.Ctx) error
 	FormAssetHardware(c *fiber.Ctx) error
+	TotalHardware(c *fiber.Ctx) error
 }
 
 type AssetHardwareControllerImpl struct {
@@ -158,4 +159,12 @@ func (h *AssetHardwareControllerImpl) FormAssetHardware(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Detail asset hardware created successfully", nil))
+}
+func (h *AssetHardwareControllerImpl) TotalHardware(c *fiber.Ctx) error {
+	total, serviceErr := h.service.TotalHardware()
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Total asset hardware retrieved successfully", total))
 }

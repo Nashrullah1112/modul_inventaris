@@ -15,6 +15,7 @@ type (
 		Delete(detaiAsetAplikasiId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(detaiAsetAplikasiId int64) (detaiAsetAplikasi Response.DetaiAsetAplikasiResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (detaiAsetAplikasis []Response.DetaiAsetAplikasiResponse, serviceErr *Web.ServiceErrorDto)
+		TotalAplikasi() (total int64, err *Web.ServiceErrorDto)
 	}
 
 	AssetAplikasiServiceImpl struct {
@@ -185,4 +186,12 @@ func (h *AssetAplikasiServiceImpl) FindAll() (detaiAsetAplikasis []Response.Deta
 	}
 
 	return detaiAsetAplikasis, nil
+}
+
+func (h *AssetAplikasiServiceImpl) TotalAplikasi() (total int64, serviceErr *Web.ServiceErrorDto) {
+	total, err := h.aplikasiRepo.TotalAplikasi("Disposal")
+	if err != nil {
+		return 0, Web.NewInternalServiceError(err)
+	}
+	return total, nil
 }

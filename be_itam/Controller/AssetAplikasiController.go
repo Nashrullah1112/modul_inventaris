@@ -111,3 +111,13 @@ func (h *AssetAplikasiControllerImpl) FindAll(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("All DetaiAsetAplikasis found", response))
 }
+
+func (h *AssetAplikasiControllerImpl) TotalAplikasi(c *fiber.Ctx) error {
+	// Call service to get total count of aplikasi
+	total, serviceErr := h.service.TotalAplikasi()
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Total Aplikasi count retrieved", total))
+}

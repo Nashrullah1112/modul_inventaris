@@ -16,6 +16,7 @@ type (
 		Delete(detailAsetLisensiId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(detailAsetLisensiId int64) (detailAsetLisensi Response.DetailAsetLisensiResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (detailAsetLisensi []Response.DetailAsetLisensiResponse, serviceErr *Web.ServiceErrorDto)
+		TotalLisensi() (total int64, serviceErr *Web.ServiceErrorDto)
 	}
 
 	AssetLisensiServiceImpl struct {
@@ -184,4 +185,13 @@ func (h *AssetLisensiServiceImpl) FindAll() (detailAsetLisensi []Response.Detail
 	}
 
 	return detailAsetLisensi, nil
+}
+
+func (h *AssetLisensiServiceImpl) TotalLisensi() (total int64, serviceErr *Web.ServiceErrorDto) {
+	total, err := h.lisensiRepo.TotalLisensi("Disposal")
+	if err != nil {
+		return 0, Web.NewInternalServiceError(err)
+
+	}
+	return total, nil
 }
