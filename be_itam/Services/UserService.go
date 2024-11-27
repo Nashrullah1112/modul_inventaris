@@ -130,7 +130,7 @@ func (h *UserServiceImpl) FindAll() (users []Response.UserResponse, serviceErr *
 func (h *UserServiceImpl) Login(request Domain.LoginRequest) (token Domain.JwtTokenDetail, serviceErr *Web.ServiceErrorDto) {
 	data, err := h.repo.FindByEmail(request.Email)
 	if err != nil {
-		return Domain.JwtTokenDetail{}, Web.NewCustomServiceError("User dan Password salah", err, http.StatusNotFound)
+		return Domain.JwtTokenDetail{}, Web.NewCustomServiceError("User dan Password salah", err, http.StatusUnauthorized)
 	}
 
 	if !Middleware.CheckPasswordHash(request.Password, []byte(data.Password)) {
