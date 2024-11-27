@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { h, ref } from "vue";
 import DataTable from "@/components/DataTable.vue";
 import { ArrowUpDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "vue-router";
+import { useToast } from '@/components/ui/toast/use-toast'
+import ActionBtnEdit from "~/components/atoms/ActionBtnEdit.vue";
+import ActionBtnDelete from "~/components/atoms/ActionBtnDelete.vue";
 
 const router = useRouter();
 const config = useRuntimeConfig();
+const { toast } = useToast()
 
 interface Application {
   id: number;
@@ -100,19 +104,15 @@ const columns = [
     cell: ({ row }: { row: any }) => {
       return h("div", { class: "flex justify-end space-x-2" }, [
         h(
-          Button,
+          ActionBtnEdit,
           {
-            variant: "outline",
-            class: "bg-blue-500 hover:bg-blue-600 text-white w-[100px]",
-            onClick: () => router.push(`/aplikasi/edit/${row.original.id}`),
+            onClick: () => router.push(`/application/${row.original.id}/edit`),
           },
           () => "Update"
         ),
         h(
-          Button,
+          ActionBtnDelete,
           {
-            variant: "destructive",
-            class: "w-[100px]",
             onClick: () => deleteApplication(row.original.id),
           },
           () => "Delete"
@@ -121,8 +121,6 @@ const columns = [
     },
   },
 ];
-
-console.log(config.public);
 
 /* fetch data from api */
 const {
@@ -134,14 +132,25 @@ const {
 // Delete action
 async function deleteApplication(id: number) {
   try {
-    await $fetch(`http://localhost:5000/api/asset-aplikasi/${id}`, {
-      method: "DELETE",
+    const { status } = await useFetch(config.public.API_URL + `/asset-aplikasi/${id}`, {
+      method: 'DELETE',
     });
-    applications.value = applications.value.filter((app) => app.id !== id);
-    console.log("Application deleted:", id);
+
+    if (status.value == 'success') {
+      console.log('duarrr');
+      toast({
+        title: 'Success',
+        description: 'Data deleted successfully.',
+      })
+      refresh()
+    } else {
+      toast({
+        title: 'Failed',
+        description: `Error when deleting data`,
+      })
+    }
   } catch (error) {
-    console.error("Error deleting application:", error);
-    errorMessage.value = "Failed to delete the application. Please try again.";
+    console.error('Error occured:', error);
   }
 }
 </script>
