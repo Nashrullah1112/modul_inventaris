@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 const router = useRouter()
 </script>
 
@@ -7,4 +7,13 @@ const router = useRouter()
     type="add"
     :data="[]"
   />
+</template> -->
+<template>
+  <div>
+    <ElectronicAdd />
+  </div>
 </template>
+
+<script setup>
+import ElectronicAdd from "~/components/module/electronic/form.vue";
+</script>
