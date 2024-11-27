@@ -4,31 +4,8 @@ import DataTable from "@/components/DataTable.vue";
 import { ArrowUpDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-
-interface Sparepart {
-  id: number;
-  waktu_penerimaan: Date;
-  bukti_penerimaan: string;
-  tipe_aset: string;
-  tanggal_aktivasi_perangkat: Date;
-  hasil_pemeriksaan: string;
-  serial_number: string;
-  model: string;
-  waktu_garansi_mulai: Date;
-  waktu_garansi_berakhir: Date;
-  nomor_kartu_garansi: string;
-  spesifikasi_perangkat: string;
-  status_aset: string;
-  penanggungjawab_aset: string;
-  lokasi_penyimpanan_id: string;
-  jangka_masa_pakai: number;
-  waktu_aset_keluar: Date;
-  kondisi_aset: string;
-  nota_pembelian: string;
-  divisi_id: number;
-  asset_id: number;
-  vendor_id: number;
-}
+import ActionBtnEdit from "~/components/atoms/ActionBtnEdit.vue";
+import ActionBtnDelete from "~/components/atoms/ActionBtnDelete.vue";
 
 const config = useRuntimeConfig();
 
@@ -68,115 +45,117 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "asset_number",
-    header: ({ column }: { column: Column }) => {
-      return h(
+    accessorKey: "tipe_aset",
+    header: ({ column }: { column: any }) =>
+      h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Nomor Aset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", { class: "capitalize" }, row.getValue("asset_number")),
+        () => ["Tipe", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+  {
+    accessorKey: "model",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Model", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
   {
     accessorKey: "serial_number",
-    header: ({ column }: { column: Column }) => {
-      return h(
+    header: ({ column }: { column: any }) =>
+      h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
         () => ["Serial Number", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("serial_number")),
+      ),
   },
   {
-    accessorKey: "asset_type",
-    header: ({ column }: { column: Column }) => {
-      return h(
+    accessorKey: "status_aset",
+    header: ({ column }: { column: any }) =>
+      h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Tipe Aset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("asset_type")),
+        () => ["Status", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
   {
-    accessorKey: "division",
-    header: ({ column }: { column: Column }) => {
-      return h(
+    accessorKey: "lokasi_penyimpanan_id",
+    header: ({ column }: { column: any }) =>
+      h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Divisi Pengguna", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("division")),
+        () => ["Lokasi Penyimpanan", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
   {
-    accessorKey: "current_depreciation",
-    header: ({ column }: { column: Column }) => {
-      return h(
+    accessorKey: "kondisi_aset",
+    header: ({ column }: { column: any }) =>
+      h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Nilai Depresiasi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("current_depreciation")),
+        () => ["Kondisi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
   {
-    accessorKey: "asset_detail",
-    header: ({ column }: { column: Column }) => {
-      return h(
+    accessorKey: "hasil_pemeriksaan",
+    header: ({ column }: { column: any }) =>
+      h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Detail Aset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("asset_detail")),
+        () => ["Hasil Pemeriksaan", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
+  {
+    accessorKey: "penanggungjawab_aset",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Penanggung Jawab", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+
   {
     id: "actions",
-    header: () => h("div", {}, "Aksi"),
-    cell: ({ row }: { row: TableRow }) => {
-      return h("div", { class: "flex gap-2" }, [
+    cell: ({ row }: { row: any }) => {
+      return h("div", { class: "flex justify-end space-x-2" }, [
         h(
-          Button,
+          ActionBtnEdit,
           {
-            variant: "default",
-            class: "bg-blue-500 hover:bg-blue-600",
-            onClick: () => console.log("Update", row.original.id),
+            onClick: () => router.push(`/application/${row.original.id}/edit`),
           },
           () => "Update"
         ),
         h(
-          Button,
+          ActionBtnDelete,
           {
-            variant: "default",
-            class: "bg-red-500 hover:bg-red-600",
-            onClick: () => console.log("Delete", row.original.id),
+            onClick: () => deleteData(row.original.id),
           },
           () => "Delete"
         ),
@@ -190,27 +169,17 @@ const {
   data: result,
   status,
   refresh,
-} = await useFetch(config.public.API_URL + "/t_asset_hardware", {
-  headers: {
-    apiKey: config.public.API_KEY,
-  },
-});
+} = await useFetch(config.public.API_URL + "/asset-hardware");
 </script>
 
 <template>
-  <div>
-    <div class="flex justify-end gap-2">
-      <Button @click="navigateTo('/hardware/add')">Tambah</Button>
+  <div class="bg-white rounded-lg shadow-lg">
+    <div class="px-6 py-2 border-b border-gray-200 flex justify-between">
+      <h1 class="text-2xl font-bold text-gray-800">Data Hardware</h1>
       <Button @click="refresh()" variant="secondary">Refresh</Button>
     </div>
-    <div class="bg-white rounded-lg shadow-lg mt-2">
-      <div class="p-6 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-800">Data Hardware</h1>
-      </div>
-
-      <div class="p-6">
-        <DataTable :columns="columns" :data="result ?? []" :dataStatus="status" />
-      </div>
+    <div class="px-6 py-2">
+      <DataTable :columns="columns" :data="result?.data || []" :dataStatus="status" />
     </div>
   </div>
 </template>

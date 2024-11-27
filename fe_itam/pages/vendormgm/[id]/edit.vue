@@ -3,6 +3,7 @@
 
 <template>
   <div>
-    <ModuleSoftwareLicenseForm type="new" />
+    <ModuleVendormgmForm type="edit" />
   </div>
 </template>
+
