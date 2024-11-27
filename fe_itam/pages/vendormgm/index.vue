@@ -1,162 +1,185 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { h, ref } from "vue";
+import DataTable from "@/components/DataTable.vue";
+import { ArrowUpDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowUpDown } from "lucide-vue-next";
+import { useRouter } from "vue-router";
+import { useToast } from '@/components/ui/toast/use-toast'
+import ActionBtnEdit from "~/components/atoms/ActionBtnEdit.vue";
+import ActionBtnDelete from "~/components/atoms/ActionBtnDelete.vue";
 
-const companies = ref([
+const router = useRouter();
+const config = useRuntimeConfig();
+const { toast } = useToast()
+
+// Define table columns
+const columns = [
   {
-    id: 1,
-    picName: "John Doe",
-    email: "john.doe@company.com",
-    contactNumber: "+62812345678",
-    companyLocation: "Jakarta Selatan",
-    siupNumber: "SIUP/2023/123456",
-    nibNumber: "NIB/2023/789012",
-    npwpNumber: "12.345.678.9-012.000",
+    id: "select",
+    header: ({ table }: { table: any }) =>
+      h(Checkbox, {
+        checked: table.getIsAllPageRowsSelected(),
+        "onUpdate:checked": (value) => table.toggleAllPageRowsSelected(!!value),
+        ariaLabel: "Select all",
+      }),
+    cell: ({ row }: { row: any }) =>
+      h(Checkbox, {
+        checked: row.getIsSelected(),
+        "onUpdate:checked": (value) => row.toggleSelected(!!value),
+        ariaLabel: "Select row",
+      }),
+    enableSorting: false,
+    enableHiding: false,
   },
   {
-    id: 2,
-    picName: "Jane Smith",
-    email: "jane.smith@company.com",
-    contactNumber: "+62887654321",
-    companyLocation: "Jakarta Pusat",
-    siupNumber: "SIUP/2023/654321",
-    nibNumber: "NIB/2023/210987",
-    npwpNumber: "98.765.432.1-098.000",
+    accessorKey: "nama_pic",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Nama PIC", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
-]);
+  {
+    accessorKey: "email",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Email", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+  {
+    accessorKey: "nomor_kontak",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Nomor Kontak", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+  {
+    accessorKey: "lokasi_perusahaan",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Lokasi Perusahaan", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+  {
+    accessorKey: "nomor_siup",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Nomor SIUP", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+  {
+    accessorKey: "nomor_nib",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Nomor NIB", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+  {
+    accessorKey: "nomor_npwp",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Nomor NPWP", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }: { row: any }) => {
+      return h("div", { class: "flex justify-end space-x-2" }, [
+        h(
+          ActionBtnEdit,
+          {
+            onClick: () => router.push(`/vendormgm/${row.original.id}/edit`),
+          },
+          () => "Update"
+        ),
+        h(
+          ActionBtnDelete,
+          {
+            onClick: () => deleteData(row.original.id),
+          },
+          () => "Delete"
+        ),
+      ]);
+    },
+  },
+];
 
-const isOpen = ref(false);
-const selectedRows = ref<number[]>([]);
+/* fetch data from api */
+const {
+  data: result,
+  status,
+  refresh,
+} = await useFetch(config.public.API_URL + '/vendor');
 
-const toggleSelectAll = (checked: boolean) => {
-  if (checked) {
-    selectedRows.value = companies.value.map((company) => company.id);
-  } else {
-    selectedRows.value = [];
+// Delete action
+async function deleteData(id: number) {
+  try {
+    const { status } = await useFetch(config.public.API_URL + `/vendor/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (status.value == 'success') {
+      console.log('duarrr');
+      toast({
+        title: 'Success',
+        description: 'Data deleted successfully.',
+      })
+      refresh()
+    } else {
+      toast({
+        title: 'Failed',
+        description: `Error when deleting data`,
+      })
+    }
+  } catch (error) {
+    console.error('Error occured:', error);
   }
-};
-
-const toggleSelectRow = (id: number) => {
-  const index = selectedRows.value.indexOf(id);
-  if (index === -1) {
-    selectedRows.value.push(id);
-  } else {
-    selectedRows.value.splice(index, 1);
-  }
-};
-
-const handleUpdate = (company: any) => {
-  console.log("Update company:", company);
-  // Implement your update logic here
-};
-
-const handleDelete = (company: any) => {
-  console.log("Delete company:", company);
-  // Implement your delete logic here
-};
+}
 </script>
 
 <template>
-  <div class="p-8" :class="{ 'ml-64': isOpen, 'ml-20': !isOpen }">
-    <div class="bg-white rounded-lg shadow-lg">
-      <div class="p-6 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-800">Data Perusahaan</h1>
-      </div>
-
-      <div class="p-6">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead class="w-12">
-                <Checkbox
-                  :checked="selectedRows.length === companies.length"
-                  :indeterminate="
-                    selectedRows.length > 0 &&
-                    selectedRows.length < companies.length
-                  "
-                  @update:checked="toggleSelectAll"
-                />
-              </TableHead>
-              <TableHead>
-                <div class="flex items-center">
-                  Nama PIC
-                  <ArrowUpDown class="ml-2 h-4 w-4" />
-                </div>
-              </TableHead>
-              <TableHead>
-                <div class="flex items-center">
-                  Email
-                  <ArrowUpDown class="ml-2 h-4 w-4" />
-                </div>
-              </TableHead>
-              <TableHead>Nomor Kontak</TableHead>
-              <TableHead>Lokasi Perusahaan</TableHead>
-              <TableHead>Nomor SIUP</TableHead>
-              <TableHead>Nomor NIB</TableHead>
-              <TableHead>Nomor NPWP</TableHead>
-              <TableHead>Aksi</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow
-              v-for="company in companies"
-              :key="company.id"
-              class="hover:bg-muted/50"
-            >
-              <TableCell class="w-12">
-                <Checkbox
-                  :checked="selectedRows.includes(company.id)"
-                  @update:checked="() => toggleSelectRow(company.id)"
-                />
-              </TableCell>
-              <TableCell>{{ company.picName }}</TableCell>
-              <TableCell>{{ company.email }}</TableCell>
-              <TableCell>{{ company.contactNumber }}</TableCell>
-              <TableCell>{{ company.companyLocation }}</TableCell>
-              <TableCell>{{ company.siupNumber }}</TableCell>
-              <TableCell>{{ company.nibNumber }}</TableCell>
-              <TableCell>{{ company.npwpNumber }}</TableCell>
-              <TableCell>
-                <div class="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="default"
-                    class="bg-blue-500 hover:bg-blue-600 text-white"
-                    @click="handleUpdate(company)"
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="default"
-                    class="bg-red-500 hover:bg-red-600 text-white"
-                    @click="handleDelete(company)"
-                  >
-                    Hapus
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </div>
+  <div class="bg-white rounded-lg shadow-lg">
+    <div class="px-6 py-2 border-b border-gray-200 flex justify-between">
+      <h1 class="text-2xl font-bold text-gray-800">Data Aplikasi</h1>
+      <Button @click="refresh()" variant="secondary">Refresh</Button>
+    </div>
+    <div class="px-6 py-2">
+      <DataTable :columns="columns" :data="result?.data || []" :dataStatus="status" />
     </div>
   </div>
 </template>
-
-<style scoped>
-.button-container {
-  display: flex;
-  gap: 0.5rem;
-}
-</style>

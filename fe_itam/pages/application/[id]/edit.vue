@@ -3,6 +3,7 @@
 
 <template>
   <div>
-    <ModuleApplicationForm type="add" />
+    <ModuleApplicationForm type="edit" />
   </div>
 </template>
+

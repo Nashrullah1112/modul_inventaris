@@ -13,25 +13,6 @@ const router = useRouter();
 const config = useRuntimeConfig();
 const { toast } = useToast()
 
-interface Application {
-  id: number;
-  nama_aplikasi: string;
-  tanggal_pembuatan: Date;
-  tanggal_terima: Date;
-  lokasi_server_penyimpanan: string;
-  tipe_aplikasi: string;
-  link_aplikasi: string;
-  sertifikasi_aplikasi: string;
-  tanggal_aktif: Date;
-  tanggal_kadaluarsa: Date;
-  asset_id: number;
-  vendor_id: number;
-}
-
-// State for application data
-const applications = ref<Application[]>([]);
-const errorMessage = ref<string | null>(null);
-
 // Define table columns
 const columns = [
   {
@@ -113,7 +94,7 @@ const columns = [
         h(
           ActionBtnDelete,
           {
-            onClick: () => deleteApplication(row.original.id),
+            onClick: () => deleteData(row.original.id),
           },
           () => "Delete"
         ),
@@ -130,7 +111,7 @@ const {
 } = await useFetch(config.public.API_URL + "/asset-aplikasi");
 
 // Delete action
-async function deleteApplication(id: number) {
+async function deleteData(id: number) {
   try {
     const { status } = await useFetch(config.public.API_URL + `/asset-aplikasi/${id}`, {
       method: 'DELETE',

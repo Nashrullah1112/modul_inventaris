@@ -41,10 +41,11 @@ import { Input } from "@/components/ui/input";
 
 const props = defineProps<{
   type: string;
-  data: any;
+  data?: any;
 }>();
 
 const config = useRuntimeConfig()
+const route = useRoute()
 const { showLoading, hideLoading } = useLoading()
 const { toast } = useToast()
 
@@ -132,12 +133,15 @@ const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
 });
 
+const dataId = route.params.id
+const endpoint = `/asset-aplikasi${props.type == 'new' ? '' : '/' + dataId}`
+
 const onSubmit = handleSubmit(async (values) => {
   showLoading()
 
   try {
-    const { data, status } = await useFetch(config.public.API_URL + '/asset-aplikasi', {
-      method: 'POST',
+    const { data, status } = await useFetch(config.public.API_URL + endpoint, {
+      method: props.type == 'new' ? 'POST' : 'PUT',
       body: values,
     })
 
@@ -160,6 +164,46 @@ const onSubmit = handleSubmit(async (values) => {
   hideLoading()
 });
 
+let exData = <any>{}
+
+const getExistingData = async () => {
+  showLoading()
+
+  try {
+    const { data, status } = await useFetch(config.public.API_URL + endpoint);
+
+    if (status.value == 'success' && data.value?.data) {
+      exData = data.value.data
+      
+      setFieldValue('link_aplikasi', exData.link_aplikasi)
+      setFieldValue('lokasi_server_penyimpanan', exData.lokasi_server_penyimpanan)
+      setFieldValue('nama_aplikasi', exData.nama_aplikasi)
+      setFieldValue('sertifikasi_aplikasi', exData.sertifikasi_aplikasi)
+      setFieldValue('tanggal_aktif', transformDate(exData.tanggal_aktif))
+      setFieldValue('tanggal_kadaluarsa', transformDate(exData.tanggal_kadaluarsa))
+      setFieldValue('tanggal_pembuatan', transformDate(exData.tanggal_pembuatan))
+      setFieldValue('tanggal_terima', transformDate(exData.tanggal_terima))
+      setFieldValue('tipe_aplikasi', exData.tipe_aplikasi)
+      setFieldValue('vendor_id', exData.vendor_id)
+    }
+  } catch (error) {
+    console.error("Error occured:", error);
+  }
+
+  hideLoading()
+}
+
+if (props.type == 'edit') {
+  getExistingData()
+}
+
+const transformDate = (serverDate: string) => {
+  // Parse the ISO string into a CalendarDate
+  const date = parseDate(serverDate?.split('T')[0]); // Extract the "YYYY-MM-DD" part
+
+  // Format the CalendarDate as YYYY-MM-DD
+  return date.toString();
+}
 </script>
 
 <template>
@@ -203,7 +247,7 @@ const onSubmit = handleSubmit(async (values) => {
                       !tanggalPembuatan && 'text-muted-foreground',
                     )"
                   >
-                    <span>{{ tanggalPembuatan ? df.format(toDate(tanggalPembuatan)) : "Pick a date" }}</span>
+                    <span>{{ tanggalPembuatan || "Pick a date" }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden>
@@ -250,7 +294,7 @@ const onSubmit = handleSubmit(async (values) => {
                       !tanggalTerima && 'text-muted-foreground',
                     )"
                   >
-                    <span>{{ tanggalTerima ? df.format(toDate(tanggalTerima)) : "Pick a date" }}</span>
+                    <span>{{ tanggalTerima || "Pick a date" }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden>
@@ -327,7 +371,7 @@ const onSubmit = handleSubmit(async (values) => {
                       !tanggalAktif && 'text-muted-foreground',
                     )"
                   >
-                    <span>{{ tanggalAktif ? df.format(toDate(tanggalAktif)) : "Pick a date" }}</span>
+                    <span>{{ tanggalAktif || "Pick a date" }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden>
@@ -364,7 +408,7 @@ const onSubmit = handleSubmit(async (values) => {
                       !tanggalKadaluarsa && 'text-muted-foreground',
                     )"
                   >
-                    <span>{{ tanggalKadaluarsa ? df.format(toDate(tanggalKadaluarsa)) : "Pick a date" }}</span>
+                    <span>{{ tanggalKadaluarsa || "Pick a date" }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden>
