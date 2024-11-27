@@ -174,6 +174,12 @@ func ValidateTokenJwt(token string, publicKey string) (*Domain.JwtTokenDetail, e
 	if !ok && !parsedToken.Valid {
 		return nil, err
 	}
+	if exp, ok := claims["exp"].(float64); ok {
+		expTime := time.Unix(int64(exp), 0)
+		if time.Now().After(expTime) {
+			return nil, fmt.Errorf("token is expired")
+		}
+	}
 
 	subStr := fmt.Sprint(claims["sub"])
 	userID, err := strconv.ParseInt(subStr, 10, 64)
