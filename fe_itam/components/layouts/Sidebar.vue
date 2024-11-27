@@ -12,8 +12,10 @@ import {
   LayersIcon,
 } from "@radix-icons/vue";
 import { TrashIcon } from "lucide-vue-next";
+import { handler } from "tailwindcss-animate";
 
 const route = useRoute();
+const router = useRouter();
 
 // State management
 const isOpen = useState("is-sidebar-open", () => false);
@@ -154,11 +156,18 @@ const sidebarItem = reactive({
     },
     {
       title: "Logout",
-      url: "/logout",
+      handler: () => { handleLogout() },
       icon: "",
     },
   ],
 });
+
+const handleLogout = () => {
+	if (process.client) {
+		localStorage.removeItem('token');
+		router.push('/login');
+	}
+};
 
 // Helper functions
 const isActive = (url: string): boolean => {
@@ -247,7 +256,9 @@ const toggleDropdown = (item: any) => {
           :key="item.title"
           :variant="isActive(item.url) ? 'default' : 'ghost'"
           class="justify-start hover:bg-primary hover:text-primary-foreground"
-          @click="handleNavigation(item.url)"
+          @click="() => {
+            item.url ? handleNavigation(item.url) :  item.handler()
+          }"
         >
           <SvgIcon type="mdi" :path="item.icon" class="h-4 w-4 mr-2" />
           {{ item.title }}

@@ -1,13 +1,42 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { useToast } from '@/components/ui/toast/use-toast'
+
+definePageMeta({
+  layout: 'plain'
+})
+
+const config = useRuntimeConfig()
+const router = useRouter()
+const { toast } = useToast()
 
 const username = ref("");
 const password = ref("");
 
-const handleLogin = () => {
-  // Implementasi login
-  console.log("Login:", { username: username.value, password: password.value });
-};
+const handleLogin = async () => {
+  try {
+    const { data, status, error } = await useFetch(config.public.API_URL + '/login', {
+      method: 'POST',
+      body: {
+        username: username.value,
+        password: password.value,
+      }
+    })
+
+    if (status.value == 'success' && data.value?.data?.hasOwnProperty('Token')) {
+      if (process.client) {
+        localStorage.setItem('token', data.value.data.Token);
+        router.push('/');
+      }
+    } else {
+      toast({
+        title: 'Failed',
+        description: `Failed to log in. ${data.value?.message || ''}`,
+      })
+    }
+  } catch (err) {
+    console.error("Error occured:", err);
+  }
+}
 </script>
 
 <template>
