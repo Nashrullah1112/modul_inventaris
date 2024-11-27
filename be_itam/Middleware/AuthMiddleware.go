@@ -197,8 +197,10 @@ func DecodeToken(tokenString string) (jwt.MapClaims, error) {
 	return claims, nil
 }
 
-func CheckPasswordHash(password, hash string) bool {
+func CheckPasswordHash(password string, hash []byte) bool {
+	fmt.Println(password, hash)
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	fmt.Println(err)
 	return err == nil
 }
 

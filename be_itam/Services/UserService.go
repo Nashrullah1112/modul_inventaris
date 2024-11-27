@@ -34,16 +34,17 @@ func UserServiceProvider(repo Repository.UserRepositoryHandler) *UserServiceImpl
 }
 
 func (h *UserServiceImpl) Create(request Response.UserCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
-	password, err := Middleware.HashPassword(request.Password)
-	if err != nil {
-		return 0, Web.NewCustomServiceError("User not created", err, http.StatusInternalServerError)
+	user, _ := h.repo.FindByEmail(request.Email)
+	if user.ID != 0 {
+		return 0, Web.NewCustomServiceError("Email already exist", nil, http.StatusConflict)
 	}
-	id, err = h.repo.Save(&Database.User{
+
+	id, err := h.repo.Save(&Database.User{
 		NIP:              request.NIP,
 		Email:            request.Email,
 		JabatanID:        request.JabatanID,
 		DivisiID:         request.DivisiID,
-		Password:         password,
+		Password:         request.Password,
 		Nama:             request.Nama,
 		TanggalBergabung: time.Now(),
 	})
@@ -132,7 +133,7 @@ func (h *UserServiceImpl) Login(request Domain.LoginRequest) (token Domain.JwtTo
 		return Domain.JwtTokenDetail{}, Web.NewCustomServiceError("User dan Password salah", err, http.StatusNotFound)
 	}
 
-	if !Middleware.CheckPasswordHash(request.Password, data.Password) {
+	if !Middleware.CheckPasswordHash(request.Password, []byte(data.Password)) {
 		return Domain.JwtTokenDetail{}, Web.NewCustomServiceError("User dan Password salah", nil, http.StatusUnauthorized)
 	}
 
