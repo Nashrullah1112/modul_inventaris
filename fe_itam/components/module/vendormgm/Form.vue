@@ -27,6 +27,7 @@ const { toast } = useToast()
 /* handle form */
 const formSchema = toTypedSchema(
   z.object({
+    id: z.number().optional(),
     nama_pic: z.string().min(1),
     email: z.string().email(),
     nomor_kontak: z.string().min(10),
@@ -48,7 +49,7 @@ const onSubmit = handleSubmit(async (values) => {
   showLoading()
 
   try {
-    const { data, status } = await useFetch(config.public.API_URL + endpoint, {
+    const { data, status } = await useFetch(config.public.API_URL + '/vendor', {
       method: props.type == 'new' ? 'POST' : 'PATCH',
       body: values,
     })
@@ -83,6 +84,7 @@ const getExistingData = async () => {
     if (status.value == 'success' && data.value?.data) {
       exData = data.value.data
       
+      setFieldValue('id', Number(dataId))
       setFieldValue('nama_pic', exData.nama_pic)
       setFieldValue('email', exData.email)
       setFieldValue('nomor_kontak', exData.nomor_kontak)
