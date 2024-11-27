@@ -16,7 +16,6 @@ type DetaiAsetAplikasiResponse struct {
 	TanggalAktif            time.Time     `json:"tanggal_aktif"`
 	TanggalKadaluarsa       time.Time     `json:"tanggal_kadaluarsa"`
 	AssetID                 int64         `json:"asset_id"`
-	VendorID                int64         `json:"vendor_id"`
 	Asset                   AssetResponse `json:"asset"`
 }
 
@@ -38,7 +37,6 @@ type DetaiAsetAplikasiCreateRequest struct {
 }
 
 type DetaiAsetAplikasiUpdateRequest struct {
-	Id                      int64     `json:"id" validate:"required"`
 	NamaAplikasi            string    `json:"nama_aplikasi" validate:"required"`
 	TanggalPembuatan        time.Time `json:"tanggal_pembuatan" validate:"required"`
 	TanggalTerima           time.Time `json:"tanggal_terima" validate:"required"`
@@ -48,6 +46,9 @@ type DetaiAsetAplikasiUpdateRequest struct {
 	SertifikasiAplikasi     string    `json:"sertifikasi_aplikasi,omitempty"`
 	TanggalAktif            time.Time `json:"tanggal_aktif" validate:"required"`
 	TanggalKadaluarsa       time.Time `json:"tanggal_kadaluarsa" validate:"required"`
-	AssetID                 int64     `json:"asset_id" validate:"required"`
 	VendorID                int64     `json:"vendor_id" validate:"required"`
+	SerialNumber            string    `json:"serial_number"`
+	Merk                    string    `json:"merk"`
+	Model                   string    `json:"model"`
+	NomorNota               string    `json:"nomor_nota"`
 }

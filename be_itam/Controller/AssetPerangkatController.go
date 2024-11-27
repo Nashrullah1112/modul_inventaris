@@ -50,17 +50,21 @@ func (h *AssetPerangkatControllerImpl) Create(c *fiber.Ctx) error {
 
 func (h *AssetPerangkatControllerImpl) Update(c *fiber.Ctx) error {
 	var (
-		request    Response.DetailAsetPerangkatUpdateRequest
-		serviceErr *Web.ServiceErrorDto
+		request     Response.DetailAsetPerangkatUpdateRequest
+		serviceErr  *Web.ServiceErrorDto
+		perangkatID int
 	)
 
 	// Parse request body
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
 	}
-
+	perangkatID, err := c.ParamsInt("perangkatID")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid Aplikasi ID", err))
+	}
 	// Call service to update DetailAsetPerangkat
-	if _, serviceErr = h.service.Update(request); serviceErr != nil {
+	if _, serviceErr = h.service.Update(int64(perangkatID), request); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 
@@ -69,13 +73,13 @@ func (h *AssetPerangkatControllerImpl) Update(c *fiber.Ctx) error {
 
 func (h *AssetPerangkatControllerImpl) Delete(c *fiber.Ctx) error {
 	// Get detailAsetPerangkat ID from URL query
-	detailAsetPerangkatID, err := c.ParamsInt("detailAsetPerangkatId")
+	detailAsetperangkatID, err := c.ParamsInt("perangkatID")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid Detail Aset Perangkat ID", err))
 	}
 
 	// Call service to delete DetailAsetPerangkat
-	if serviceErr := h.service.Delete(int64(detailAsetPerangkatID)); serviceErr != nil {
+	if serviceErr := h.service.Delete(int64(detailAsetperangkatID)); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 
@@ -84,13 +88,13 @@ func (h *AssetPerangkatControllerImpl) Delete(c *fiber.Ctx) error {
 
 func (h *AssetPerangkatControllerImpl) FindById(c *fiber.Ctx) error {
 	// Get detailAsetPerangkat ID from URL query
-	detailAsetPerangkatID, err := c.ParamsInt("detailAsetPerangkatId")
+	detailAsetperangkatID, err := c.ParamsInt("perangkatID")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid Detail Aset Perangkat ID", err))
 	}
 
 	// Call service to find DetailAsetPerangkat by ID
-	response, serviceErr := h.service.FindById(int64(detailAsetPerangkatID))
+	response, serviceErr := h.service.FindById(int64(detailAsetperangkatID))
 	if serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}

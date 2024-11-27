@@ -16,7 +16,8 @@ type (
 		Delete(detailAsetHardwareId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(detailAsetHardwareId int64) (detailAsetHardware Response.DetailAsetHardwareResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (detailAsetHardwares []Response.DetailAsetHardwareResponse, serviceErr *Web.ServiceErrorDto)
-		FormAssetHardware(request Response.AssetHardwareCreateRequest, TandaTerima string) (id int64, serviceErr *Web.ServiceErrorDto)
+		FormAssetHardware(request Response.AssetHardwareCreateRequest, tandaTerima string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto)
+		UpdateAssetHardware(hardwareID int64, request Response.AssetHardwareUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
 	}
 
 	AssetHardwareServiceImpl struct {
@@ -103,7 +104,7 @@ func (h *AssetHardwareServiceImpl) Delete(detailAsetHardwareId int64) (serviceEr
 		return Web.NewCustomServiceError("Detail Aset Hardware not found", err, http.StatusNotFound)
 	}
 
-	if err := h.hardwareRepo.Delete(asset.AssetID); err != nil {
+	if err := h.assetRepo.Delete(asset.AssetID); err != nil {
 		return Web.NewInternalServiceError(err)
 	}
 
@@ -203,7 +204,7 @@ func (h *AssetHardwareServiceImpl) FindAll() (detailAsetHardwares []Response.Det
 	return detailAsetHardwares, nil
 }
 
-func (h *AssetHardwareServiceImpl) FormAssetHardware(request Response.AssetHardwareCreateRequest, tandaTerima string) (id int64, serviceErr *Web.ServiceErrorDto) {
+func (h *AssetHardwareServiceImpl) FormAssetHardware(request Response.AssetHardwareCreateRequest, tandaTerima string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto) {
 
 	assetId, err := h.assetRepo.Save(&Database.Asset{
 		SerialNumber: request.SerialNumber,
@@ -216,6 +217,7 @@ func (h *AssetHardwareServiceImpl) FormAssetHardware(request Response.AssetHardw
 		return 0, Web.NewCustomServiceError("Aset Hardware not created", err, http.StatusInternalServerError)
 	}
 	fmt.Println("assetId", assetId)
+	fmt.Println("request", request)
 
 	id, err = h.hardwareRepo.Save(&Database.DetailAsetHardware{
 		WaktuPenerimaan:          request.TanggalPenerimaan,
@@ -235,9 +237,56 @@ func (h *AssetHardwareServiceImpl) FormAssetHardware(request Response.AssetHardw
 		JangkaMasaPakai:          request.JangkaMasaPakai,
 		WaktuAsetKeluar:          request.TanggalAsetKeluar,
 		KondisiAset:              request.KondisiAset,
-		NotaPembelian:            request.NotaPembelian,
+		NotaPembelian:            notaPembelian,
 		DivisiID:                 request.DivisiPengguna,
 		AssetID:                  assetId,
+	})
+	if err != nil {
+		return 0, Web.NewCustomServiceError("Detail Aset Hardware not created", err, http.StatusInternalServerError)
+	}
+
+	return id, nil
+}
+func (h *AssetHardwareServiceImpl) UpdateAssetHardware(hardwareID int64, request Response.AssetHardwareUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
+	hardware, err := h.hardwareRepo.FindById(hardwareID)
+	if err != nil {
+		return 0, Web.NewCustomServiceError("Detail Aset Hardware not found", err, http.StatusNotFound)
+	}
+	assetId, err := h.assetRepo.Update(&Database.Asset{
+		ID:           hardware.AssetID,
+		SerialNumber: request.SerialNumber,
+		Model:        request.Model,
+		Merk:         request.MerekPerangkat,
+		NomorNota:    request.NomorNota,
+		VendorID:     request.VendorID,
+	})
+	if err != nil {
+		return 0, Web.NewCustomServiceError("Aset Hardware not created", err, http.StatusInternalServerError)
+	}
+	fmt.Println("assetId", assetId)
+	fmt.Println("request", request)
+
+	id, err = h.hardwareRepo.Update(&Database.DetailAsetHardware{
+		WaktuPenerimaan:          request.TanggalPenerimaan,
+		BuktiPenerimaan:          hardware.BuktiPenerimaan,
+		TipeAset:                 request.TipePerangkat,
+		TanggalAktivasiPerangkat: request.TanggalAktivasiPerangkat,
+		HasilPemeriksaan:         request.HasilPemeriksaanPerangkat,
+		SerialNumber:             request.SerialNumber,
+		Model:                    request.Model,
+		WaktuGaransiMulai:        request.MasaGaransiMulai,
+		WaktuGaransiBerakhir:     request.MasaBerakhirGaransi,
+		NomorKartuGaransi:        request.NomorKartuGaransi,
+		SpesifikasiPerangkat:     request.DetailSpesifikasi,
+		StatusAset:               request.StatusPerangkat,
+		PenanggungjawabAset:      request.PenanggungJawabPerangkat,
+		LokasiPenyimpananID:      request.LokasiPenerima,
+		JangkaMasaPakai:          request.JangkaMasaPakai,
+		WaktuAsetKeluar:          request.TanggalAsetKeluar,
+		KondisiAset:              request.KondisiAset,
+		NotaPembelian:            hardware.NotaPembelian,
+		DivisiID:                 request.DivisiPengguna,
+		AssetID:                  hardware.AssetID,
 	})
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Detail Aset Hardware not created", err, http.StatusInternalServerError)

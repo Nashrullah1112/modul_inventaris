@@ -51,17 +51,21 @@ func (h *AssetLisensiControllerImpl) Create(c *fiber.Ctx) error {
 // Update DetailAsetLisensi
 func (h *AssetLisensiControllerImpl) Update(c *fiber.Ctx) error {
 	var (
-		request    Response.DetailAsetLisensiUpdateRequest
+		request    Response.AssetLicenseUpdateRequest
 		serviceErr *Web.ServiceErrorDto
+		lisensiID  int
 	)
 
 	// Parse request body
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
 	}
-
+	lisensiID, err := c.ParamsInt("lisensiID")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid Aplikasi ID", err))
+	}
 	// Call service to update DetailAsetLisensi
-	if _, serviceErr = h.service.Update(request); serviceErr != nil {
+	if _, serviceErr = h.service.Update(int64(lisensiID), request); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 
@@ -71,13 +75,13 @@ func (h *AssetLisensiControllerImpl) Update(c *fiber.Ctx) error {
 // Delete DetailAsetLisensi
 func (h *AssetLisensiControllerImpl) Delete(c *fiber.Ctx) error {
 	// Get DetailAsetLisensi ID from URL query
-	detailAsetLisensiID, err := c.ParamsInt("detailAsetLisensiId")
+	detailAsetlisensiID, err := c.ParamsInt("lisensiID")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid DetailAsetLisensi ID", err))
 	}
 
 	// Call service to delete DetailAsetLisensi
-	if serviceErr := h.service.Delete(int64(detailAsetLisensiID)); serviceErr != nil {
+	if serviceErr := h.service.Delete(int64(detailAsetlisensiID)); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 
@@ -87,13 +91,13 @@ func (h *AssetLisensiControllerImpl) Delete(c *fiber.Ctx) error {
 // FindById DetailAsetLisensi
 func (h *AssetLisensiControllerImpl) FindById(c *fiber.Ctx) error {
 	// Get DetailAsetLisensi ID from URL query
-	detailAsetLisensiID, err := c.ParamsInt("detailAsetLisensiId")
+	detailAsetlisensiID, err := c.ParamsInt("lisensiID")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid DetailAsetLisensi ID", err))
 	}
 
 	// Call service to find DetailAsetLisensi by ID
-	response, serviceErr := h.service.FindById(int64(detailAsetLisensiID))
+	response, serviceErr := h.service.FindById(int64(detailAsetlisensiID))
 	if serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}

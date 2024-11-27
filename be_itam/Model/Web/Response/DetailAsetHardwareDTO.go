@@ -76,7 +76,6 @@ type DetailAsetHardwareResponse struct {
 	NotaPembelian            string        `json:"nota_pembelian"`
 	DivisiID                 int64         `json:"divisi_id"`
 	AssetID                  int64         `json:"asset_id"`
-	VendorID                 int64         `json:"vendor_id"`
 	Asset                    AssetResponse `json:"asset"`
 }
 type AssetHardwareCreateRequest struct {
@@ -99,7 +98,29 @@ type AssetHardwareCreateRequest struct {
 	StatusPerangkat           string    `form:"status_perangkat"`
 	TanggalAsetKeluar         time.Time `form:"tanggal_aset_keluar"` // Format ISO-8601 (2024-10-13)
 	DivisiPengguna            int64     `form:"divisi_pengguna"`
-	NotaPembelian             string    `form:"nota_pembelian"`
+	DetailSpesifikasi         string    `form:"detail_spesifikasi"`
+	NomorKartuGaransi         string    `form:"nomor_kartu_garansi"`
+}
+type AssetHardwareUpdateRequest struct {
+	MerekPerangkat            string    `form:"merek_perangkat"`
+	VendorID                  int64     `form:"vendor_id"`
+	NomorNota                 string    `form:"nomor_nota"`
+	LokasiPenerima            string    `form:"lokasi_penerima"`
+	TanggalPenerimaan         string    `form:"tanggal_penerimaan"`
+	MasaGaransiMulai          string    `form:"masa_garansi_mulai"`
+	PenanggungJawabPerangkat  string    `form:"penanggung_jawab_perangkat"`
+	Model                     string    `form:"model"`
+	SerialNumber              string    `form:"serial_number"`
+	HargaPerangkat            float64   `form:"harga_perangkat"`
+	KondisiAset               string    `form:"kondisi_aset"`
+	TipePerangkat             string    `form:"tipe_perangkat"`
+	TanggalAktivasiPerangkat  string    `form:"tanggal_aktivasi_perangkat"`
+	MasaBerakhirGaransi       string    `form:"masa_berakhir_garansi"`
+	HasilPemeriksaanPerangkat string    `form:"hasil_pemeriksaan_perangkat"`
+	JangkaMasaPakai           int32     `form:"jangka_masa_pakai"`
+	StatusPerangkat           string    `form:"status_perangkat"`
+	TanggalAsetKeluar         time.Time `form:"tanggal_aset_keluar"`
+	DivisiPengguna            int64     `form:"divisi_pengguna"`
 	DetailSpesifikasi         string    `form:"detail_spesifikasi"`
 	NomorKartuGaransi         string    `form:"nomor_kartu_garansi"`
 }

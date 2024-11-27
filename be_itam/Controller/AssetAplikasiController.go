@@ -51,6 +51,7 @@ func (h *AssetAplikasiControllerImpl) Update(c *fiber.Ctx) error {
 	var (
 		request    Response.DetaiAsetAplikasiUpdateRequest
 		serviceErr *Web.ServiceErrorDto
+		aplikasiID int
 	)
 
 	// Parse request body
@@ -58,8 +59,12 @@ func (h *AssetAplikasiControllerImpl) Update(c *fiber.Ctx) error {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
 	}
 
+	aplikasiID, err := c.ParamsInt("aplikasiID")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid Aplikasi ID", err))
+	}
 	// Call service to update detaiAsetAplikasi
-	if _, serviceErr = h.service.Update(request); serviceErr != nil {
+	if _, serviceErr = h.service.Update(int64(aplikasiID), request); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 
@@ -68,13 +73,13 @@ func (h *AssetAplikasiControllerImpl) Update(c *fiber.Ctx) error {
 
 func (h *AssetAplikasiControllerImpl) Delete(c *fiber.Ctx) error {
 	// Get detaiAsetAplikasi ID from URL query
-	detaiAsetAplikasiID, err := c.ParamsInt("assetAplikasiId")
+	detaiAsetaplikasiID, err := c.ParamsInt("aplikasiID")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid DetaiAsetAplikasi ID", err))
 	}
 
 	// Call service to delete detaiAsetAplikasi
-	if serviceErr := h.service.Delete(int64(detaiAsetAplikasiID)); serviceErr != nil {
+	if serviceErr := h.service.Delete(int64(detaiAsetaplikasiID)); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 
@@ -83,13 +88,13 @@ func (h *AssetAplikasiControllerImpl) Delete(c *fiber.Ctx) error {
 
 func (h *AssetAplikasiControllerImpl) FindById(c *fiber.Ctx) error {
 	// Get detaiAsetAplikasi ID from URL query
-	detaiAsetAplikasiID, err := c.ParamsInt("assetAplikasiId")
+	detaiAsetaplikasiID, err := c.ParamsInt("aplikasiID")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid DetaiAsetAplikasi ID", err))
 	}
 
 	// Call service to find detaiAsetAplikasi by ID
-	response, serviceErr := h.service.FindById(int64(detaiAsetAplikasiID))
+	response, serviceErr := h.service.FindById(int64(detaiAsetaplikasiID))
 	if serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}

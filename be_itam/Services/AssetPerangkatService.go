@@ -11,7 +11,7 @@ import (
 type (
 	AssetPerangkatServiceHandler interface {
 		Create(request Response.DetailAsetPerangkatCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
-		Update(request Response.DetailAsetPerangkatUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
+		Update(perangkatID int64, request Response.DetailAsetPerangkatUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
 		Delete(detailAsetPerangkatId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(detailAsetPerangkatId int64) (detailAsetPerangkat Response.DetailAsetPerangkatResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (detailAsetPerangkat []Response.DetailAsetPerangkatResponse, serviceErr *Web.ServiceErrorDto)
@@ -77,12 +77,22 @@ func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatC
 	return id, nil
 }
 
-func (h *AssetPerangkatServiceImpl) Update(request Response.DetailAsetPerangkatUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
-	existingDetailAsetPerangkat, err := h.perangkatRepo.FindById(request.ID)
+func (h *AssetPerangkatServiceImpl) Update(perangkatID int64, request Response.DetailAsetPerangkatUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
+	existingDetailAsetPerangkat, err := h.perangkatRepo.FindById(perangkatID)
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Detail Aset Perangkat not found", err, http.StatusNotFound)
 	}
-
+	_, err = h.assetRepo.Update(&Database.Asset{
+		ID:           existingDetailAsetPerangkat.AssetID,
+		SerialNumber: request.SerialNumber,
+		Model:        request.Model,
+		Merk:         request.Merk,
+		NomorNota:    request.NomorNota,
+		VendorID:     request.VendorID,
+	})
+	if err != nil {
+		return id, Web.NewCustomServiceError("Aset Hardware not updated", err, http.StatusInternalServerError)
+	}
 	id, err = h.perangkatRepo.Update(&Database.DetailAsetPerangkat{
 		ID:                   existingDetailAsetPerangkat.ID,
 		LokasiPenerima:       request.LokasiPenerima,
@@ -109,7 +119,7 @@ func (h *AssetPerangkatServiceImpl) Update(request Response.DetailAsetPerangkatU
 		NotaPembelian:        request.NotaPembelian,
 		DivisiID:             request.DivisiID,
 		UserID:               request.UserID,
-		AssetID:              request.AssetID,
+		AssetID:              existingDetailAsetPerangkat.AssetID,
 	})
 	if err != nil {
 		return id, Web.NewInternalServiceError(err)
@@ -124,7 +134,7 @@ func (h *AssetPerangkatServiceImpl) Delete(detailAsetPerangkatId int64) (service
 		return Web.NewCustomServiceError("Detail Aset Perangkat not found", err, http.StatusNotFound)
 	}
 
-	if err := h.perangkatRepo.Delete(asset.AssetID); err != nil {
+	if err := h.assetRepo.Delete(asset.AssetID); err != nil {
 		return Web.NewInternalServiceError(err)
 	}
 

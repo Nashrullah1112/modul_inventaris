@@ -36,7 +36,6 @@ type (
 	}
 
 	DetailAsetPerangkatUpdateRequest struct {
-		ID                   int64     `json:"id" binding:"required"`
 		LokasiPenerima       string    `json:"lokasi_penerima" binding:"required"`
 		WaktuPenerimaan      time.Time `json:"waktu_penerimaan" binding:"required"`
 		TandaTerima          string    `json:"tanda_terima" binding:"required"`
@@ -61,8 +60,9 @@ type (
 		NotaPembelian        string    `json:"nota_pembelian" binding:"required"`
 		DivisiID             int64     `json:"divisi_id" binding:"required"`
 		UserID               int64     `json:"user_id" binding:"required"`
-		AssetID              int64     `json:"asset_id" binding:"required"`
 		VendorID             int64     `json:"vendor_id" binding:"required"`
+		Merk                 string    `json:"merk"`
+		NomorNota            string    `json:"nomor_nota"`
 	}
 
 	DetailAsetPerangkatResponse struct {
@@ -92,7 +92,6 @@ type (
 		DivisiID             int64         `json:"divisi_id"`
 		UserID               int64         `json:"user_id"`
 		AssetID              int64         `json:"asset_id"`
-		VendorID             int64         `json:"vendor_id"`
 		Asset                AssetResponse `json:"asset"`
 	}
 )

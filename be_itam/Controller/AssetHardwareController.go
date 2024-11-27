@@ -52,17 +52,22 @@ func (h *AssetHardwareControllerImpl) Create(c *fiber.Ctx) error {
 
 func (h *AssetHardwareControllerImpl) Update(c *fiber.Ctx) error {
 	var (
-		request    Response.DetailAsetHardwareUpdateRequest
+		request    Response.AssetHardwareUpdateRequest
 		serviceErr *Web.ServiceErrorDto
+		hardwareID int
 	)
 
 	// Parse request body
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
 	}
+	hardwareID, err := c.ParamsInt("hardwareID")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid asset hardware ID", err))
+	}
+	fmt.Println(hardwareID)
 
-	// Call service to update detail aset hardware
-	if _, serviceErr = h.service.Update(request); serviceErr != nil {
+	if _, serviceErr = h.service.UpdateAssetHardware(int64(hardwareID), request); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 
@@ -71,13 +76,13 @@ func (h *AssetHardwareControllerImpl) Update(c *fiber.Ctx) error {
 
 func (h *AssetHardwareControllerImpl) Delete(c *fiber.Ctx) error {
 	// Get detail asset hardware ID from URL params
-	detailAsetHardwareID, err := c.ParamsInt("assetHardwareId")
+	detailAsethardwareID, err := c.ParamsInt("hardwareID")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid detail asset hardware ID", err))
 	}
 
 	// Call service to delete detail asset hardware
-	if serviceErr := h.service.Delete(int64(detailAsetHardwareID)); serviceErr != nil {
+	if serviceErr := h.service.Delete(int64(detailAsethardwareID)); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 
@@ -86,13 +91,13 @@ func (h *AssetHardwareControllerImpl) Delete(c *fiber.Ctx) error {
 
 func (h *AssetHardwareControllerImpl) FindById(c *fiber.Ctx) error {
 	// Get detail asset hardware ID from URL params
-	detailAsetHardwareID, err := c.ParamsInt("assetHardwareId")
+	detailAsethardwareID, err := c.ParamsInt("hardwareID")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid detail asset hardware ID", err))
 	}
 
 	// Call service to find detail asset hardware by ID
-	response, serviceErr := h.service.FindById(int64(detailAsetHardwareID))
+	response, serviceErr := h.service.FindById(int64(detailAsethardwareID))
 	if serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
@@ -115,7 +120,6 @@ func (h *AssetHardwareControllerImpl) FormAssetHardware(c *fiber.Ctx) error {
 		serviceErr *Web.ServiceErrorDto
 	)
 
-	// Mengambil file tanda terima dari form
 	file, err := c.FormFile("tanda_terima")
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, err))
@@ -129,6 +133,19 @@ func (h *AssetHardwareControllerImpl) FormAssetHardware(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
 	}
 
+	fileNota, err := c.FormFile("nota_pembelian")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, err))
+	}
+
+	// Tentukan lokasi tujuan penyimpanan file
+	destinationNota := fmt.Sprintf("./public/static/nota_pembelian/%s", file.Filename)
+
+	// Simpan file ke folder yang ditentukan
+	if err = c.SaveFile(fileNota, destinationNota); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
+	}
+
 	// Parse request body (selain file)
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
@@ -136,7 +153,7 @@ func (h *AssetHardwareControllerImpl) FormAssetHardware(c *fiber.Ctx) error {
 	log.Println(request)
 
 	// Call service untuk menyimpan data asset hardware
-	if _, serviceErr = h.service.FormAssetHardware(request, destination); serviceErr != nil {
+	if _, serviceErr = h.service.FormAssetHardware(request, destination, destinationNota); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 

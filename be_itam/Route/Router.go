@@ -19,32 +19,32 @@ import (
 //
 // Asset Aplikasi Routes:
 // - GET    /api/asset-aplikasi                : FindAll
-// - GET    /api/asset-aplikasi/:assetAplikasiId : FindById
+// - GET    /api/asset-aplikasi/:aplikasiID : FindById
 // - POST   /api/asset-aplikasi                : Create
 // - PATCH  /api/asset-aplikasi                : Update
-// - DELETE /api/asset-aplikasi/:assetAplikasiId : Delete
+// - DELETE /api/asset-aplikasi/:aplikasiID : Delete
 //
 // Asset Hardware Routes:
 // - GET    /api/asset-hardware                : FindAll
-// - GET    /api/asset-hardware/:assetHardwareId : FindById
+// - GET    /api/asset-hardware/:hardwareID : FindById
 // - POST   /api/asset-hardware                : Create
 // - PATCH  /api/asset-hardware                : Update
-// - DELETE /api/asset-hardware/:assetHardwareId : Delete
+// - DELETE /api/asset-hardware/:hardwareID : Delete
 // - POST   /api/form-hardware                 : FormAssetHardware
 //
 // Asset Lisensi Routes:
 // - GET    /api/asset-lisensi                : FindAll
-// - GET    /api/asset-lisensi/:assetLisensiId : FindById
+// - GET    /api/asset-lisensi/:assetlisensiID : FindById
 // - POST   /api/asset-lisensi                : Create
 // - PATCH  /api/asset-lisensi                : Update
-// - DELETE /api/asset-lisensi/:assetLisensiId : Delete
+// - DELETE /api/asset-lisensi/:assetlisensiID : Delete
 //
 // Asset Perangkat Routes:
 // - GET    /api/asset-perangkat                : FindAll
-// - GET    /api/asset-perangkat/:assetPerangkatId : FindById
+// - GET    /api/asset-perangkat/:assetperangkatID : FindById
 // - POST   /api/asset-perangkat                : Create
 // - PATCH  /api/asset-perangkat                : Update
-// - DELETE /api/asset-perangkat/:assetPerangkatId : Delete
+// - DELETE /api/asset-perangkat/:assetperangkatID : Delete
 //
 // Vendor Routes:
 // - GET    /api/vendor                : FindAll
@@ -86,35 +86,35 @@ func NewRouter(c *fiber.App) {
 	// Asset Aplikasi Routes
 	assetAplikasiController := AssetAplikasiDI(Config.DB)
 	c.Get("/api/asset-aplikasi", assetAplikasiController.FindAll)
-	c.Get("/api/asset-aplikasi/:assetAplikasiId", assetAplikasiController.FindById)
+	c.Get("/api/asset-aplikasi/:aplikasiID", assetAplikasiController.FindById)
 	c.Post("/api/asset-aplikasi", assetAplikasiController.Create)
-	c.Patch("/api/asset-aplikasi", assetAplikasiController.Update)
-	c.Delete("/api/asset-aplikasi/:assetAplikasiId", assetAplikasiController.Delete)
+	c.Patch("/api/asset-aplikasi/:aplikasiID", assetAplikasiController.Update)
+	c.Delete("/api/asset-aplikasi/:aplikasiID", assetAplikasiController.Delete)
 
 	// Asset Hardware Routes
 	assetHardwareController := AssetHardwareDI(Config.DB)
 	c.Get("/api/asset-hardware", assetHardwareController.FindAll)
-	c.Get("/api/asset-hardware/:assetHardwareId", assetHardwareController.FindById)
+	c.Get("/api/asset-hardware/:hardwareID", assetHardwareController.FindById)
 	c.Post("/api/asset-hardware", assetHardwareController.Create)
-	c.Patch("/api/asset-hardware", assetHardwareController.Update)
-	c.Delete("/api/asset-hardware/:assetHardwareId", assetHardwareController.Delete)
+	c.Patch("/api/asset-hardware/:hardwareID", assetHardwareController.Update)
+	c.Delete("/api/asset-hardware/:hardwareID", assetHardwareController.Delete)
 	c.Post("/api/form-hardware", assetHardwareController.FormAssetHardware)
 
 	// Asset Lisensi Routes
 	assetLisensiController := AssetLisensiDI(Config.DB)
 	c.Get("/api/asset-lisensi", assetLisensiController.FindAll)
-	c.Get("/api/asset-lisensi/:assetLisensiId", assetLisensiController.FindById)
+	c.Get("/api/asset-lisensi/:lisensiID", assetLisensiController.FindById)
 	c.Post("/api/asset-lisensi", assetLisensiController.Create)
-	c.Patch("/api/asset-lisensi", assetLisensiController.Update)
-	c.Delete("/api/asset-lisensi/:assetLisensiId", assetLisensiController.Delete)
+	c.Patch("/api/asset-lisensi/:lisensiID", assetLisensiController.Update)
+	c.Delete("/api/asset-lisensi/:lisensiID", assetLisensiController.Delete)
 
 	// Asset Perangkat Routes
 	assetPerangkatController := AssetPerangkatDI(Config.DB)
 	c.Get("/api/asset-perangkat", assetPerangkatController.FindAll)
-	c.Get("/api/asset-perangkat/:assetPerangkatId", assetPerangkatController.FindById)
+	c.Get("/api/asset-perangkat/:perangkatID", assetPerangkatController.FindById)
 	c.Post("/api/asset-perangkat", assetPerangkatController.Create)
-	c.Patch("/api/asset-perangkat", assetPerangkatController.Update)
-	c.Delete("/api/asset-perangkat/:assetPerangkatId", assetPerangkatController.Delete)
+	c.Patch("/api/asset-perangkat/:perangkatID", assetPerangkatController.Update)
+	c.Delete("/api/asset-perangkat/:perangkatID", assetPerangkatController.Delete)
 	c.Get("/api/asset-perangkat/total", assetPerangkatController.TotalPerangkat)
 
 	// Vendor Routes

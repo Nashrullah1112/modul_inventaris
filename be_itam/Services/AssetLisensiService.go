@@ -12,7 +12,7 @@ import (
 type (
 	AssetLisensiServiceHandler interface {
 		Create(request Response.AssetLicenseCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
-		Update(request Response.DetailAsetLisensiUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
+		Update(lisensiID int64, request Response.AssetLicenseUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
 		Delete(detailAsetLisensiId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(detailAsetLisensiId int64) (detailAsetLisensi Response.DetailAsetLisensiResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (detailAsetLisensi []Response.DetailAsetLisensiResponse, serviceErr *Web.ServiceErrorDto)
@@ -62,10 +62,22 @@ func (h *AssetLisensiServiceImpl) Create(request Response.AssetLicenseCreateRequ
 	return id, nil
 }
 
-func (h *AssetLisensiServiceImpl) Update(request Response.DetailAsetLisensiUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
-	existingDetailAsetLisensi, err := h.lisensiRepo.FindById(request.ID)
+func (h *AssetLisensiServiceImpl) Update(lisensiID int64, request Response.AssetLicenseUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
+	existingDetailAsetLisensi, err := h.lisensiRepo.FindById(lisensiID)
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Detail Aset Lisensi not found", err, http.StatusNotFound)
+	}
+
+	_, err = h.assetRepo.Update(&Database.Asset{
+		ID:           existingDetailAsetLisensi.AssetID,
+		SerialNumber: request.SNPerangkatTerpasang,
+		Model:        request.Model,
+		Merk:         request.Merk,
+		NomorNota:    request.NomorNota,
+		VendorID:     request.VendorID,
+	})
+	if err != nil {
+		return 0, Web.NewCustomServiceError("Aset Hardware not updated", err, http.StatusInternalServerError)
 	}
 
 	if id, err := h.lisensiRepo.Update(&Database.DetailAsetLisensi{
@@ -80,6 +92,7 @@ func (h *AssetLisensiServiceImpl) Update(request Response.DetailAsetLisensiUpdat
 		MaksimalUserAplikasi:     request.MaksimalUserAplikasi,
 		MaksimalPerangkatLisensi: request.MaksimalPerangkatLisensi,
 		TipeLisensi:              request.TipeLisensi,
+		AssetID:                  existingDetailAsetLisensi.AssetID,
 	}); err != nil {
 		return id, Web.NewInternalServiceError(err)
 	}
@@ -93,7 +106,7 @@ func (h *AssetLisensiServiceImpl) Delete(detailAsetLisensiId int64) (serviceErr 
 		return Web.NewCustomServiceError("Detail Aset Lisensi not found", err, http.StatusNotFound)
 	}
 
-	if err := h.lisensiRepo.Delete(asset.AssetID); err != nil {
+	if err := h.assetRepo.Delete(asset.AssetID); err != nil {
 		return Web.NewInternalServiceError(err)
 	}
 
