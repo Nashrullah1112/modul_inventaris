@@ -2,6 +2,6 @@
 
 <template>
   <div>
-    <ModuleVendormgm />
+    <ModuleVendormgmForm type="new" />
   </div>
 </template>

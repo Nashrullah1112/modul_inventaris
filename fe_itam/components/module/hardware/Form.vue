@@ -30,7 +30,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 const props = defineProps<{
   type: string,
-  data: any[],
+  data?: any,
 }>()
 
 const config = useRuntimeConfig()
@@ -57,11 +57,11 @@ const { handleSubmit, setFieldValue, values } = useForm({
 const onSubmit = handleSubmit(async (values) => {
   showLoading()
 
-  const { data, status } = await useFetch(config.public.API_URL + '/t_asset_hardware', {
+  const { data, status } = await useFetch(config.public.API_URL_2 + '/t_asset_hardware', {
     method: 'POST',
     body: values,
     headers: { 
-      apiKey: config.public.API_KEY,
+      apiKey: config.public.API_KEY_2,
     },
   })
 
