@@ -175,7 +175,7 @@ async function deleteData(id: number) {
 <template>
   <div class="bg-white rounded-lg shadow-lg">
     <div class="px-6 py-2 border-b border-gray-200 flex justify-between">
-      <h1 class="text-2xl font-bold text-gray-800">Data Aplikasi</h1>
+      <h1 class="text-2xl font-bold text-gray-800">Data Vendor</h1>
       <Button @click="refresh()" variant="secondary">Refresh</Button>
     </div>
     <div class="px-6 py-2">

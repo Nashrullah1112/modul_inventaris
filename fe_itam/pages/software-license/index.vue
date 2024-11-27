@@ -4,6 +4,13 @@ import DataTable from "@/components/DataTable.vue";
 import { ArrowUpDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from '@/components/ui/toast/use-toast'
+import ActionBtnEdit from "~/components/atoms/ActionBtnEdit.vue";
+import ActionBtnDelete from "~/components/atoms/ActionBtnDelete.vue";
+
+const router = useRouter();
+const config = useRuntimeConfig();
+const { toast } = useToast()
 
 interface TableRow {
   getIsSelected: () => boolean;
@@ -41,73 +48,106 @@ const columns = [
     enableHiding: false,
   },
   {
-    accessorKey: "appName",
-    header: ({ column }: { column: Column }) => {
-      return h(
+    accessorKey: "nama_aplikasi",
+    header: ({ column }: { column: any }) =>
+      h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
         () => ["Nama Aplikasi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", { class: "capitalize" }, row.getValue("appName")),
+      ),
   },
   {
-    accessorKey: "platform",
-    header: ({ column }: { column: Column }) => {
-      return h(
+    accessorKey: "SN_perangkat_terpasang",
+    header: ({ column }: { column: any }) =>
+      h(
         Button,
         {
           variant: "ghost",
           onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
         },
-        () => ["Platform", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
-      );
-    },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("platform")),
+        () => ["SN Perangkat Terpasang", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
   {
-    accessorKey: "expiryDate",
-    header: () => h("div", {}, "Tanggal Berakhir"),
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("expiryDate")),
+    accessorKey: "kategori_lisensi",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Kategori", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
   {
-    accessorKey: "userCount",
-    header: () => h("div", {}, "Jumlah Pengguna"),
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("userCount")),
+    accessorKey: "versi_lisensi",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Versi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
   {
-    accessorKey: "deviceCount",
-    header: () => h("div", {}, "Jumlah Perangkat"),
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("deviceCount")),
+    accessorKey: "tipe_kepemilikan_aset",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Tipe Kepemilikan", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
   },
+  {
+    accessorKey: "waktu_aktivasi",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Tanggal Aktivasi", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+  {
+    accessorKey: "tanggal_expired",
+    header: ({ column }: { column: any }) =>
+      h(
+        Button,
+        {
+          variant: "ghost",
+          onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
+        },
+        () => ["Tanggal Expired", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
+      ),
+  },
+
   {
     id: "actions",
     header: () => h("div", {}, "Aksi"),
     cell: ({ row }: { row: TableRow }) => {
       return h("div", { class: "flex gap-2" }, [
         h(
-          Button,
+          ActionBtnEdit,
           {
-            variant: "default",
-            class: "bg-blue-500 hover:bg-blue-600",
-            onClick: () => console.log("Update", row.original.id),
+            onClick: () => router.push(`/vendormgm/${row.original.id}/edit`),
           },
           () => "Update"
         ),
         h(
-          Button,
+          ActionBtnDelete,
           {
-            variant: "default",
-            class: "bg-red-500 hover:bg-red-600",
-            onClick: () => console.log("Delete", row.original.id),
+            onClick: () => deleteData(row.original.id),
           },
           () => "Delete"
         ),
@@ -116,38 +156,22 @@ const columns = [
   },
 ];
 
-const softwareLicenses = ref([
-  {
-    id: 1,
-    appName: "Microsoft Office 365",
-    platform: "Desktop/Cloud",
-    expiryDate: "2024-12-31",
-    userCount: 100,
-    deviceCount: 150,
-  },
-  {
-    id: 2,
-    appName: "Adobe Creative Cloud",
-    platform: "Desktop",
-    expiryDate: "2024-10-15",
-    userCount: 25,
-    deviceCount: 30,
-  },
-]);
-
-const isOpen = ref(false);
+/* fetch data from api */
+const {
+  data: result,
+  status,
+  refresh,
+} = await useFetch(config.public.API_URL + '/asset-lisensi');
 </script>
 
 <template>
-  <div class="p-8" :class="{ 'ml-64': isOpen, 'ml-20': !isOpen }">
-    <div class="bg-white rounded-lg shadow-lg">
-      <div class="p-6 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-800">Data Lisensi Software</h1>
-      </div>
-
-      <div class="p-6">
-        <DataTable :columns="columns" :data="softwareLicenses" />
-      </div>
+  <div class="bg-white rounded-lg shadow-lg">
+    <div class="px-6 py-2 border-b border-gray-200 flex justify-between">
+      <h1 class="text-2xl font-bold text-gray-800">Data Lisensi Software</h1>
+      <Button @click="refresh()" variant="secondary">Refresh</Button>
+    </div>
+    <div class="px-6 py-2">
+      <DataTable :columns="columns" :data="result?.data || []" :dataStatus="status" />
     </div>
   </div>
 </template>

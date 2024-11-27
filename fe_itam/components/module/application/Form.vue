@@ -141,7 +141,7 @@ const onSubmit = handleSubmit(async (values) => {
 
   try {
     const { data, status } = await useFetch(config.public.API_URL + endpoint, {
-      method: props.type == 'new' ? 'POST' : 'PUT',
+      method: props.type == 'new' ? 'POST' : 'PATCH',
       body: values,
     })
 
@@ -208,9 +208,11 @@ const transformDate = (serverDate: string) => {
 
 <template>
   <div class="p-8 bg-white shadow-lg rounded-lg">
-    <h1 class="text-2xl font-bold mb-6">Registrasi Aplikasi</h1>
+    <h1 class="text-2xl font-bold mb-6">
+      {{ props.type == 'new' ? 'Registrasi' : 'Edit' }} Aplikasi
+    </h1>
 
-    <form @submit="onSubmit">
+    <form>
       <div class="grid grid-cols-2 gap-x-4 gap-y-2">
         <FormField v-slot="{ componentField }" name="vendor_id">
           <FormItem>
@@ -457,11 +459,11 @@ const transformDate = (serverDate: string) => {
           </FormItem>
         </FormField>
       </div>
+    </form>
 
       <div class="flex justify-end mt-4 space-x-2">
-        <Button variant="outline" @click="$router.back()">Cancel</Button>
-        <Button type="submit">Submit</Button>
+        <Button variant="outline" @click="navigateTo('/application')">Cancel</Button>
+        <Button @click="onSubmit">Submit</Button>
       </div>
-    </form>
   </div>
 </template>
