@@ -131,7 +131,9 @@ const onSubmit = handleSubmit(async (values) => {
 
 <template>
   <div class="p-8 bg-white shadow-lg rounded-lg">
-    <h1 class="text-2xl font-bold mb-6">Registrasi Lisensi Software</h1>
+    <h1 class="text-2xl font-bold mb-6">
+      {{ props.type == 'new' ? 'Registrasi' : 'Edit' }} Lisensi Software
+    </h1>
     
     <form>
       <div class="grid grid-cols-2 gap-x-4 gap-y-2">
