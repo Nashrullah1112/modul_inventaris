@@ -4,84 +4,111 @@
 
     <Form @submit="onSubmit">
       <div class="grid grid-cols-2 gap-x-4">
-        <FormField name="namaPIC">
+        <FormField name="namaPerusahaan" v-slot="{ field }">
           <FormItem>
-            <FormLabel>Nama PIC</FormLabel>
+            <FormLabel
+              >Nama Perusahaan <span class="text-red-500">*</span></FormLabel
+            >
             <FormControl>
-              <Input v-model="values.namaPIC" />
+              <Input v-model="values.namaPerusahaan" required />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="email">
+        <FormField name="namaPIC" v-slot="{ field }">
           <FormItem>
-            <FormLabel>Email</FormLabel>
+            <FormLabel>Nama PIC <span class="text-red-500">*</span></FormLabel>
             <FormControl>
-              <Input v-model="values.email" />
+              <Input v-model="values.namaPIC" required />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="nomorKontak">
+        <FormField name="email" v-slot="{ field }">
           <FormItem>
-            <FormLabel>Nomor Kontak</FormLabel>
+            <FormLabel>Email <span class="text-red-500">*</span></FormLabel>
             <FormControl>
-              <Input v-model="values.nomorKontak" />
+              <Input v-model="values.email" type="email" required />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="lokasiPerusahaan">
+        <FormField name="nomorKontak" v-slot="{ field }">
           <FormItem>
-            <FormLabel>Lokasi Perusahaan</FormLabel>
+            <FormLabel
+              >Nomor Kontak <span class="text-red-500">*</span></FormLabel
+            >
             <FormControl>
-              <Input v-model="values.lokasiPerusahaan" />
+              <Input v-model="values.nomorKontak" required />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="nomorSIUP">
+        <FormField name="lokasiPerusahaan" v-slot="{ field }">
           <FormItem>
-            <FormLabel>Nomor SIUP</FormLabel>
+            <FormLabel
+              >Lokasi Perusahaan <span class="text-red-500">*</span></FormLabel
+            >
             <FormControl>
-              <Input v-model="values.nomorSIUP" />
+              <Input v-model="values.lokasiPerusahaan" required />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="nomorNIB">
+        <FormField name="nomorSIUP" v-slot="{ field }">
           <FormItem>
-            <FormLabel>Nomor NIB</FormLabel>
+            <FormLabel
+              >Nomor SIUP <span class="text-red-500">*</span></FormLabel
+            >
             <FormControl>
-              <Input v-model="values.nomorNIB" />
+              <Input v-model="values.nomorSIUP" required />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField name="nomorNPWP">
+        <FormField name="nomorNIB" v-slot="{ field }">
           <FormItem>
-            <FormLabel>Nomor NPWP</FormLabel>
+            <FormLabel>Nomor NIB <span class="text-red-500">*</span></FormLabel>
             <FormControl>
-              <Input v-model="values.nomorNPWP" />
+              <Input v-model="values.nomorNIB" required />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
+
+        <FormField name="nomorNPWP" v-slot="{ field }">
+          <FormItem>
+            <FormLabel
+              >Nomor NPWP <span class="text-red-500">*</span></FormLabel
+            >
+            <FormControl>
+              <Input v-model="values.nomorNPWP" required />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+      </div>
+
+      <div class="mt-6">
+        <Button type="submit" :disabled="isLoading">
+          {{ isLoading ? "Menyimpan..." : "Simpan" }}
+        </Button>
       </div>
     </Form>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 const values = ref({
+  namaPerusahaan: "",
   namaPIC: "",
   email: "",
   nomorKontak: "",
@@ -91,12 +118,54 @@ const values = ref({
   nomorNPWP: "",
 });
 
+const isLoading = ref(false);
+const errorMessage = ref(null);
+
 const onSubmit = async () => {
   try {
-    // Tambahkan logika untuk mengirimkan data ke backend
-    console.log("Data vendor berhasil ditambahkan:", values.value);
+    isLoading.value = true;
+    const response = await $fetch("/api/vendors", {
+      method: "POST",
+      body: values.value,
+    });
+
+    console.log("Data vendor berhasil ditambahkan:", response);
+    // Reset form setelah berhasil
+    values.value = {
+      namaPerusahaan: "",
+      namaPIC: "",
+      email: "",
+      nomorKontak: "",
+      lokasiPerusahaan: "",
+      nomorSIUP: "",
+      nomorNIB: "",
+      nomorNPWP: "",
+    };
   } catch (error) {
     console.error("Terjadi kesalahan saat menambahkan vendor:", error);
+    errorMessage.value = "Gagal menambahkan vendor. Silakan coba lagi.";
+  } finally {
+    isLoading.value = false;
   }
 };
+
+// Fetch data vendor jika diperlukan
+const fetchVendors = async () => {
+  try {
+    isLoading.value = true;
+    const response = await $fetch("/api/vendors", {
+      method: "GET",
+    });
+    console.log("Data vendor:", response);
+  } catch (error) {
+    console.error("Gagal mengambil data vendor:", error);
+    errorMessage.value = "Gagal mengambil data vendor";
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchVendors();
+});
 </script>

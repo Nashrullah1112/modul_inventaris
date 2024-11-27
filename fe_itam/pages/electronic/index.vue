@@ -4,6 +4,7 @@ import DataTable from "@/components/DataTable.vue";
 import { ArrowUpDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import type { ColumnDef } from "@tanstack/vue-table";
 
 interface Device {
   id: number;
@@ -33,6 +34,14 @@ interface Device {
   user_id: number;
   asset_id: number;
   vendor_id: number;
+}
+
+interface Electronic {
+  id: number;
+  serialNumber: string;
+  assetNumber: string;
+  deviceName: string;
+  division: string;
 }
 
 //state for application data
@@ -79,45 +88,28 @@ const electronics = computed(() =>
   }))
 );
 
-//define table columns
-interface TableRow {
-  getIsSelected: () => boolean;
-  toggleSelected: (value: boolean) => void;
-  getValue: (key: string) => any;
-  original: any;
-}
-
-interface TableHeader {
-  getIsAllPageRowsSelected: () => boolean;
-  toggleAllPageRowsSelected: (value: boolean) => void;
-}
-
-interface Column {
-  getIsSorted: () => string;
-  toggleSorting: (asc: boolean) => void;
-}
-
-const columns = [
+const columns: ColumnDef<Electronic>[] = [
   {
     id: "select",
-    header: ({ table }: { table: TableHeader }) =>
+    header: ({ table }) =>
       h(Checkbox, {
         checked: table.getIsAllPageRowsSelected(),
-        "onUpdate:checked": (value) => table.toggleAllPageRowsSelected(!!value),
-        ariaLabel: "Select all",
+        "onUpdate:checked": (value: boolean) =>
+          table.toggleAllPageRowsSelected(value),
+        "aria-label": "Select all",
       }),
-    cell: ({ row }: { row: TableRow }) =>
+    cell: ({ row }) =>
       h(Checkbox, {
         checked: row.getIsSelected(),
-        "onUpdate:checked": (value) => row.toggleSelected(!!value),
-        ariaLabel: "Select row",
+        "onUpdate:checked": (value: boolean) => row.toggleSelected(value),
+        "aria-label": "Select row",
       }),
     enableSorting: false,
     enableHiding: false,
   },
   {
     accessorKey: "serialNumber",
-    header: ({ column }: { column: Column }) => {
+    header: ({ column }) => {
       return h(
         Button,
         {
@@ -127,12 +119,12 @@ const columns = [
         () => ["Serial Number", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
       );
     },
-    cell: ({ row }: { row: TableRow }) =>
+    cell: ({ row }) =>
       h("div", { class: "capitalize" }, row.getValue("serialNumber")),
   },
   {
     accessorKey: "assetNumber",
-    header: ({ column }: { column: Column }) => {
+    header: ({ column }) => {
       return h(
         Button,
         {
@@ -142,25 +134,22 @@ const columns = [
         () => ["Nomor Asset", h(ArrowUpDown, { class: "ml-2 h-4 w-4" })]
       );
     },
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("assetNumber")),
+    cell: ({ row }) => h("div", {}, row.getValue("assetNumber")),
   },
   {
     accessorKey: "deviceName",
     header: () => h("div", {}, "Data Perangkat"),
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("deviceName")),
+    cell: ({ row }) => h("div", {}, row.getValue("deviceName")),
   },
   {
     accessorKey: "division",
     header: () => h("div", {}, "Divisi"),
-    cell: ({ row }: { row: TableRow }) =>
-      h("div", {}, row.getValue("division")),
+    cell: ({ row }) => h("div", {}, row.getValue("division")),
   },
   {
     id: "actions",
     header: () => h("div", {}, "Aksi"),
-    cell: ({ row }: { row: TableRow }) => {
+    cell: ({ row }) => {
       return h("div", { class: "flex gap-2" }, [
         h(
           Button,
@@ -189,10 +178,15 @@ const isOpen = ref(false);
 </script>
 
 <template>
-  <div class="p-8" :class="{ 'ml-64': isOpen, 'ml-20': !isOpen }">
-    <div class="bg-white rounded-lg shadow-lg">
-      <div class="p-6 border-b border-gray-200">
-        <h1 class="text-2xl font-bold text-gray-800">Data Aset Elektronik</h1>
+  <div class="container mx-auto py-10">
+    <div class="rounded-md border">
+      <div class="p-6 border-b">
+        <div class="flex items-center justify-between">
+          <h1 class="text-lg font-medium">Data Aset Elektronik</h1>
+          <Button variant="outline" @click="router.push('/electronic/add')">
+            Tambah Data
+          </Button>
+        </div>
       </div>
 
       <div class="p-6">

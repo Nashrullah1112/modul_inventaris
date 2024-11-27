@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import {
   Table,
   TableBody,
@@ -11,32 +11,44 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const disposalData = ref([
-  {
-    id: 1,
-    assetNumber: "AST-2024-001",
-    assetName: "Laptop Dell XPS 13",
-    assetType: "Perangkat Elektronik",
-    disposalDate: "2024-02-20",
-    status: "Pending",
-  },
-  {
-    id: 2,
-    assetNumber: "AST-2024-002",
-    assetName: "Printer HP LaserJet",
-    assetType: "Perangkat Elektronik",
-    disposalDate: "2024-02-21",
-    status: "Approved",
-  },
-  {
-    id: 3,
-    assetNumber: "AST-2024-003",
-    assetName: "Monitor LG 27inch",
-    assetType: "Hardware",
-    disposalDate: "2024-02-22",
-    status: "Rejected",
-  },
-]);
+interface Disposal {
+  id: number;
+  asset_number: string;
+  asset_name: string;
+  asset_type: string;
+  disposal_date: string;
+  disposal_reason: string;
+  disposal_status: string;
+}
+
+const disposalData = ref<Disposal[]>([]);
+const isLoading = ref(false);
+const errorMessage = ref<string | null>(null);
+
+async function fetchDisposalData() {
+  try {
+    isLoading.value = true;
+    errorMessage.value = null;
+
+    const response = await $fetch<{
+      message: string;
+      data: Disposal[];
+    }>("/api/disposal", {
+      method: "GET",
+    });
+
+    disposalData.value = response.data;
+  } catch (error) {
+    console.error("Error fetching disposal data:", error);
+    errorMessage.value = "Gagal mengambil data disposal";
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+onMounted(() => {
+  fetchDisposalData();
+});
 
 const isOpen = ref(false);
 const selectedRows = ref<number[]>([]);
@@ -56,27 +68,6 @@ const handleSelectRow = (checked: boolean, id: number) => {
     selectedRows.value = selectedRows.value.filter((rowId) => rowId !== id);
   }
 };
-
-const getStatusBadgeVariant = (status: string) => {
-  switch (status) {
-    case "Pending":
-      return "warning";
-    case "Approved":
-      return "success";
-    case "Rejected":
-      return "destructive";
-    default:
-      return "secondary";
-  }
-};
-
-const handleUpdate = (id: number) => {
-  console.log("Update disposal:", id);
-};
-
-const handleDelete = (id: number) => {
-  console.log("Delete disposal:", id);
-};
 </script>
 
 <template>
@@ -87,7 +78,13 @@ const handleDelete = (id: number) => {
       </div>
 
       <div class="p-6">
-        <div class="rounded-md border">
+        <div v-if="isLoading" class="text-center py-4">Memuat data...</div>
+
+        <div v-else-if="errorMessage" class="text-center text-red-500 py-4">
+          {{ errorMessage }}
+        </div>
+
+        <div v-else class="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
@@ -105,8 +102,6 @@ const handleDelete = (id: number) => {
                 <TableHead class="font-semibold">Nama Aset</TableHead>
                 <TableHead class="font-semibold">Tipe Aset</TableHead>
                 <TableHead class="font-semibold">Tanggal Disposal</TableHead>
-                <TableHead class="font-semibold">Status</TableHead>
-                <TableHead class="font-semibold">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -119,34 +114,10 @@ const handleDelete = (id: number) => {
                     "
                   />
                 </TableCell>
-                <TableCell>{{ item.assetNumber }}</TableCell>
-                <TableCell>{{ item.assetName }}</TableCell>
-                <TableCell>{{ item.assetType }}</TableCell>
-                <TableCell>{{ item.disposalDate }}</TableCell>
-                <TableCell>
-                  <Badge :variant="getStatusBadgeVariant(item.status)">
-                    {{ item.status }}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div class="flex items-center gap-2">
-                    <Button
-                      variant="default"
-                      size="sm"
-                      class="bg-blue-500 hover:bg-blue-600 text-white"
-                      @click="handleUpdate(item.id)"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      @click="handleDelete(item.id)"
-                    >
-                      Hapus
-                    </Button>
-                  </div>
-                </TableCell>
+                <TableCell>{{ item.asset_number }}</TableCell>
+                <TableCell>{{ item.asset_name }}</TableCell>
+                <TableCell>{{ item.asset_type }}</TableCell>
+                <TableCell>{{ item.disposal_date }}</TableCell>
               </TableRow>
             </TableBody>
           </Table>

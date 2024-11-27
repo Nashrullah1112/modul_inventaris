@@ -130,13 +130,13 @@ const onSubmit = async (values) => {
               <Select
                 v-if="
                   [
-                    'namasupllier',
-                    'tipeasset',
-                    'kondisiasset',
-                    'status',
-                    'penanggungjawabasset',
-                    'divpengguna',
-                    'jangkamasapakaiaset',
+                    'Nama Supllier',
+                    'Tipe Asset',
+                    'Kondisi Asset',
+                    'Status',
+                    'Penanggung Jawab Asset',
+                    'Divisi Pengguna',
+                    'Jangka Masa Pakai Aset',
                   ].includes(field)
                 "
                 v-bind="formField"
@@ -152,9 +152,11 @@ const onSubmit = async (values) => {
               <!-- File inputs -->
               <Input
                 v-else-if="
-                  ['tandaterima', 'hasilpemeriksaan', 'notapembelian'].includes(
-                    field
-                  )
+                  [
+                    'tanda terima',
+                    'hasil pemeriksaan',
+                    'nota pembelian',
+                  ].includes(field)
                 "
                 type="file"
                 v-bind="formField"
@@ -164,11 +166,11 @@ const onSubmit = async (values) => {
               <Input
                 v-else-if="
                   [
-                    'achievedDate',
-                    'tanggalaktivasi',
-                    'tanggalasetkeluar',
-                    'garansimulai',
-                    'garansiakhir',
+                    'tanggal penerimaan',
+                    'tanggal aktivasi',
+                    'tanggal aset keluar',
+                    'tanggal mulai garansi',
+                    'tanggal akhir garansi',
                   ].includes(field)
                 "
                 type="date"
@@ -177,7 +179,7 @@ const onSubmit = async (values) => {
 
               <!-- Number inputs -->
               <Input
-                v-else-if="['nilaiasset', 'ram', 'rom'].includes(field)"
+                v-else-if="['nilai aset', 'ram', 'rom'].includes(field)"
                 type="number"
                 v-bind="formField"
               />
