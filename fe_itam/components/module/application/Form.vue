@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { cn } from "@/lib/utils";
+import { useToast } from '@/components/ui/toast/use-toast'
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/zod";
 import * as z from "zod";
@@ -36,16 +37,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
 const props = defineProps<{
   type: string;
-  data: any[];
+  data: any;
 }>();
 
 const config = useRuntimeConfig()
 const { showLoading, hideLoading } = useLoading()
+const { toast } = useToast()
 
 const df = new DateFormatter('en-US', {
   dateStyle: 'long',
@@ -90,10 +91,12 @@ const getVendorData = async () => {
 }
 
 onMounted(() => {
-  getVendorData()
-})
-onActivated(() => {
-  getVendorData()
+  const retryInterval = setInterval(() => {
+    if (!vendors.value?.length)
+      getVendorData()
+    else
+      clearInterval(retryInterval);
+  }, 500);
 })
 
 /* handle form */
@@ -130,21 +133,31 @@ const { handleSubmit, setFieldValue, values } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-  try {
-    showLoading()
+  showLoading()
 
+  try {
     const { data, status } = await useFetch(config.public.API_URL + '/asset-aplikasi', {
       method: 'POST',
       body: values,
     })
 
-    hideLoading()
-
-    if (status.value == 'success')
+    if (status.value == 'success') {
+      toast({
+        title: 'Success',
+        description: `Data submitted successfully`,
+      })
       navigateTo('/application')
+    } else {
+      toast({
+        title: 'Failed',
+        description: `Error when submitting data`,
+      })
+    }
   } catch (error) {
-    console.error("Terjadi kesalahan:", error);
+    console.error('Error occured:', error);
   }
+
+  hideLoading()
 });
 
 </script>
