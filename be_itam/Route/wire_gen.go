@@ -69,7 +69,8 @@ func VendorDI(db *gorm.DB) *Controller.VendorControllerImpl {
 // User DI
 func UserDI(db *gorm.DB) *Controller.UserControllerImpl {
 	userRepositoryImpl := Repository.UserRepositoryProvider(db)
-	userServiceImpl := Services.UserServiceProvider(userRepositoryImpl)
+	jabatanRepositoryImpl := Repository.JabatanRepositoryProvider(db)
+	userServiceImpl := Services.UserServiceProvider(userRepositoryImpl, jabatanRepositoryImpl)
 	userControllerImpl := Controller.UserControllerProvider(userServiceImpl)
 	return userControllerImpl
 }

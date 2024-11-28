@@ -1,6 +1,7 @@
 package Services
 
 import (
+	"fmt"
 	"itam/Middleware"
 	"itam/Model/Database"
 	"itam/Model/Domain"
@@ -20,26 +21,29 @@ type (
 		FindById(userId int64) (user Response.UserResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (users []Response.UserResponse, serviceErr *Web.ServiceErrorDto)
 		Login(request Domain.LoginRequest) (token Domain.JwtTokenDetail, serviceErr *Web.ServiceErrorDto)
+		CheckRole(userId int64) (jabatan Database.Jabatan, serviceErr *Web.ServiceErrorDto)
 	}
 
 	UserServiceImpl struct {
-		repo Repository.UserRepositoryHandler
+		userRepo    Repository.UserRepositoryHandler
+		jabatanRepo Repository.JabatanRepositoryHandler
 	}
 )
 
-func UserServiceProvider(repo Repository.UserRepositoryHandler) *UserServiceImpl {
+func UserServiceProvider(userRepo Repository.UserRepositoryHandler, jabatanRepo Repository.JabatanRepositoryHandler) *UserServiceImpl {
 	return &UserServiceImpl{
-		repo: repo,
+		userRepo:    userRepo,
+		jabatanRepo: jabatanRepo,
 	}
 }
 
 func (h *UserServiceImpl) Create(request Response.UserCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
-	user, _ := h.repo.FindByEmail(request.Email)
+	user, _ := h.userRepo.FindByEmail(request.Email)
 	if user.ID != 0 {
 		return 0, Web.NewCustomServiceError("Email already exist", nil, http.StatusConflict)
 	}
 
-	id, err := h.repo.Save(&Database.User{
+	id, err := h.userRepo.Save(&Database.User{
 		NIP:              request.NIP,
 		Email:            request.Email,
 		JabatanID:        request.JabatanID,
@@ -56,12 +60,12 @@ func (h *UserServiceImpl) Create(request Response.UserCreateRequest) (id int64, 
 }
 
 func (h *UserServiceImpl) Update(request Response.UserUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
-	existingUser, err := h.repo.FindById(request.ID)
+	existingUser, err := h.userRepo.FindById(request.ID)
 	if err != nil {
 		return 0, Web.NewCustomServiceError("User not found", err, http.StatusNotFound)
 	}
 
-	id, err = h.repo.Update(&Database.User{
+	id, err = h.userRepo.Update(&Database.User{
 		ID:               existingUser.ID,
 		NIP:              request.NIP,
 		Email:            request.Email,
@@ -77,12 +81,12 @@ func (h *UserServiceImpl) Update(request Response.UserUpdateRequest) (id int64, 
 }
 
 func (h *UserServiceImpl) Delete(userId int64) (serviceErr *Web.ServiceErrorDto) {
-	_, err := h.repo.FindById(userId)
+	_, err := h.userRepo.FindById(userId)
 	if err != nil {
 		return Web.NewCustomServiceError("User not found", err, http.StatusNotFound)
 	}
 
-	if err := h.repo.Delete(userId); err != nil {
+	if err := h.userRepo.Delete(userId); err != nil {
 		return Web.NewInternalServiceError(err)
 	}
 
@@ -90,7 +94,7 @@ func (h *UserServiceImpl) Delete(userId int64) (serviceErr *Web.ServiceErrorDto)
 }
 
 func (h *UserServiceImpl) FindById(userId int64) (user Response.UserResponse, serviceErr *Web.ServiceErrorDto) {
-	data, err := h.repo.FindById(userId)
+	data, err := h.userRepo.FindById(userId)
 	if err != nil {
 		return Response.UserResponse{}, Web.NewCustomServiceError("User not found", err, http.StatusNotFound)
 	}
@@ -108,7 +112,7 @@ func (h *UserServiceImpl) FindById(userId int64) (user Response.UserResponse, se
 }
 
 func (h *UserServiceImpl) FindAll() (users []Response.UserResponse, serviceErr *Web.ServiceErrorDto) {
-	data, err := h.repo.FindAll()
+	data, err := h.userRepo.FindAll()
 	if err != nil {
 		return []Response.UserResponse{}, Web.NewInternalServiceError(err)
 	}
@@ -128,7 +132,7 @@ func (h *UserServiceImpl) FindAll() (users []Response.UserResponse, serviceErr *
 }
 
 func (h *UserServiceImpl) Login(request Domain.LoginRequest) (token Domain.JwtTokenDetail, serviceErr *Web.ServiceErrorDto) {
-	data, err := h.repo.FindByEmail(request.Email)
+	data, err := h.userRepo.FindByEmail(request.Email)
 	if err != nil {
 		return Domain.JwtTokenDetail{}, Web.NewCustomServiceError("User dan Password salah", err, http.StatusUnauthorized)
 	}
@@ -144,4 +148,17 @@ func (h *UserServiceImpl) Login(request Domain.LoginRequest) (token Domain.JwtTo
 	token = *tokenPtr
 
 	return token, nil
+}
+
+func (h *UserServiceImpl) CheckRole(userId int64) (jabatan Database.Jabatan, serviceErr *Web.ServiceErrorDto) {
+	user, err := h.userRepo.FindById(userId)
+	if err != nil {
+		return Database.Jabatan{}, Web.NewCustomServiceError("User not found", err, http.StatusNotFound)
+	}
+	fmt.Println(user.JabatanID)
+	jabatan, err = h.jabatanRepo.FindById(user.JabatanID)
+	if err != nil {
+		return Database.Jabatan{}, Web.NewCustomServiceError("Jabatan not found", err, http.StatusNotFound)
+	}
+	return jabatan, nil
 }

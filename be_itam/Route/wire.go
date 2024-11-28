@@ -108,10 +108,12 @@ func VendorDI(db *gorm.DB) *Controller.VendorControllerImpl {
 // User DI
 func UserDI(db *gorm.DB) *Controller.UserControllerImpl {
 	panic(wire.Build(wire.NewSet(
+		Repository.JabatanRepositoryProvider,
 		Repository.UserRepositoryProvider,
 		Services.UserServiceProvider,
 		Controller.UserControllerProvider,
 
+		wire.Bind(new(Repository.JabatanRepositoryHandler), new(*Repository.JabatanRepositoryImpl)),
 		wire.Bind(new(Repository.UserRepositoryHandler), new(*Repository.UserRepositoryImpl)),
 		wire.Bind(new(Services.UserServiceHandler), new(*Services.UserServiceImpl)),
 		wire.Bind(new(Controller.UserControllerHandler), new(*Controller.UserControllerImpl)),

@@ -18,6 +18,7 @@ type UserControllerHandler interface {
 	FindById(c *fiber.Ctx) error
 	FindAll(c *fiber.Ctx) error
 	Login(c *fiber.Ctx) error
+	CheckRole(c *fiber.Ctx) error
 }
 
 type UserControllerImpl struct {
@@ -128,4 +129,19 @@ func (h *UserControllerImpl) Login(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Login successful", response))
+}
+func (h *UserControllerImpl) CheckRole(c *fiber.Ctx) error {
+	// Get user ID from local context
+	userId, ok := c.Locals("userID").(int64)
+
+	if !ok || userId == 0 {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid user ID", nil))
+	}
+	// Call service to check the role of the user
+	response, serviceErr := h.service.CheckRole(userId)
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Role checked successfully", response))
 }

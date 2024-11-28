@@ -1,6 +1,7 @@
 package Repository
 
 import (
+	"fmt"
 	"itam/Model/Database"
 
 	"gorm.io/gorm"
@@ -51,6 +52,7 @@ func (h *JabatanRepositoryImpl) FindById(id int64) (data Database.Jabatan, err e
 		Where("id = ?", id).
 		Take(&data).
 		Error
+	fmt.Println(data)
 	return data, err
 }
 

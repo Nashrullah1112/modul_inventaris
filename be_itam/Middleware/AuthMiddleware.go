@@ -19,17 +19,22 @@ import (
 
 func JwtMiddleware() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		var acces_token string
+		var (
+			acces_token string
+			tokenClaim  *Domain.JwtUser
+		)
 		// Ambil token JWT dari header Authorization
 		authHeader := c.Get("Authorization")
 		if strings.HasPrefix(authHeader, "Bearer ") {
 			acces_token = strings.TrimPrefix(authHeader, "Bearer ")
 		}
+
 		tokenClaim, err := ValidateTokenJwt(acces_token, os.Getenv("ACCESS_TOKEN_PUBLIC_KEY"))
 		if err != nil {
 			return c.Status(http.StatusUnauthorized).JSON(Web.ErrorResponse(Constant.AuthorizeError, nil))
 
 		}
+		fmt.Println(tokenClaim)
 		// Set data dari token ke dalam lokal untuk digunakan dalam handler selanjutnya
 		c.Locals("userID", tokenClaim.UserID)
 		return c.Next()
@@ -152,7 +157,7 @@ func GenerateTokenJwtV2(jwTokenTime time.Duration, user int64, privateKey string
 
 }
 
-func ValidateTokenJwt(token string, publicKey string) (*Domain.JwtTokenDetail, error) {
+func ValidateTokenJwt(token string, publicKey string) (*Domain.JwtUser, error) {
 	decodePublicKey, err := base64.StdEncoding.DecodeString(publicKey)
 	if err != nil {
 		return nil, err
@@ -167,6 +172,7 @@ func ValidateTokenJwt(token string, publicKey string) (*Domain.JwtTokenDetail, e
 		}
 		return key, nil
 	})
+	fmt.Println(parsedToken)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +192,7 @@ func ValidateTokenJwt(token string, publicKey string) (*Domain.JwtTokenDetail, e
 	if err != nil {
 		return nil, fmt.Errorf("invalid userID: %v", err)
 	}
-	return &Domain.JwtTokenDetail{
+	return &Domain.JwtUser{
 		UserID: userID,
 	}, nil
 }

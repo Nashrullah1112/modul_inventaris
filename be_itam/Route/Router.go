@@ -2,6 +2,7 @@ package Route
 
 import (
 	"itam/Config"
+	"itam/Middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -136,6 +137,7 @@ func NewRouter(c *fiber.App) {
 	c.Patch("/api/user", userController.Update)
 	c.Delete("/api/user/:userId", userController.Delete)
 	c.Post("/api/login", userController.Login)
+	c.Get("/api/check-role", Middleware.JwtMiddleware(), userController.CheckRole)
 
 	// Role Routes
 	roleController := RoleDI(Config.DB)

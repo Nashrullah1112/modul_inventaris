@@ -43,3 +43,6 @@ type JwtTokenDetail struct {
 	UserID    int64
 	ExpiresIn *int64
 }
+type JwtUser struct {
+	UserID int64
+}
