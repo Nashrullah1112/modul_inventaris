@@ -76,11 +76,14 @@ const onSubmit = handleSubmit(async (values) => {
     formData.append("activeNow", values.activeNow.toString());
     formData.append("dateRange", values.dateRange);
     formData.append("overview", values.overview);
-
-    const response = await $fetch("http://localhost:3000/api/dashboard", {
-      method: "POST",
-      body: formData,
-    });
+    q;
+    const response = await $fetch(
+      `${process.env.API_URL}/total/asset-aplikasi`,
+      {
+        method: "GET",
+        body: formData,
+      }
+    );
 
     console.log("Data berhasil disimpan:", response);
     navigateTo("/dashboard");
