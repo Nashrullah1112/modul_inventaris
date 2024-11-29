@@ -10,6 +10,58 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useToast } from "@/components/ui/toast/use-toast";
+
+const { toast } = useToast();
+
+async function handleDelete(id: number) {
+  try {
+    const response = await $fetch(`/api/disposal/${id}`, {
+      method: "DELETE",
+    });
+
+    toast({
+      title: "Berhasil",
+      description: "Data disposal berhasil dihapus",
+    });
+
+    // Refresh data setelah delete
+    await fetchDisposalData();
+  } catch (error) {
+    console.error("Error deleting disposal:", error);
+    toast({
+      title: "Gagal",
+      description: "Gagal menghapus data disposal",
+      variant: "destructive",
+    });
+  }
+}
+
+async function handleBulkDelete() {
+  try {
+    await $fetch("/api/disposal/bulk-delete", {
+      method: "DELETE",
+      body: {
+        ids: selectedRows.value,
+      },
+    });
+
+    toast({
+      title: "Berhasil",
+      description: "Data disposal berhasil dihapus",
+    });
+
+    selectedRows.value = [];
+    await fetchDisposalData();
+  } catch (error) {
+    console.error("Error bulk deleting disposal:", error);
+    toast({
+      title: "Gagal",
+      description: "Gagal menghapus data disposal",
+      variant: "destructive",
+    });
+  }
+}
 
 interface Disposal {
   id: number;
