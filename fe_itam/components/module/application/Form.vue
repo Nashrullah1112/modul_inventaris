@@ -87,8 +87,8 @@ const getVendorData = async () => {
     if (status.value == "success" && data.value?.data?.length) {
       vendors.value = data.value.data.map((item) => {
         return {
-          label: item.nama_pic,
           value: item.id,
+          label: item.nama_pic,
         };
       });
     }
