@@ -111,6 +111,7 @@ func (h *UserServiceImpl) FindById(userId int64) (user Response.UserResponse, se
 	user = Response.UserResponse{
 		ID:        data.ID,
 		NIP:       data.NIP,
+		Nama:      data.Nama,
 		Email:     data.Email,
 		JabatanID: data.JabatanID,
 		Jabatan: Response.JabatanResponse{
@@ -146,6 +147,7 @@ func (h *UserServiceImpl) FindAll() (users []Response.UserResponse, serviceErr *
 		users = append(users, Response.UserResponse{
 			ID:        d.ID,
 			NIP:       d.NIP,
+			Nama:      d.Nama,
 			Email:     d.Email,
 			JabatanID: d.JabatanID,
 			Jabatan: Response.JabatanResponse{
