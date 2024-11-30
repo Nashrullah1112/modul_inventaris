@@ -27,13 +27,15 @@ type UserUpdateRequest struct {
 
 // UserResponse represents the response payload for returning User data
 type UserResponse struct {
-	ID               int64     `json:"id"`
-	NIP              int64     `json:"nip"`
-	Email            string    `json:"email"`
-	JabatanID        int64     `json:"jabatan_id"`
-	DivisiID         int64     `json:"divisi_id"`
-	TanggalBergabung time.Time `json:"tanggal_bergabung"`
-	Nama             string    `json:"nama"`
+	ID               int64           `json:"id"`
+	NIP              int64           `json:"nip"`
+	Email            string          `json:"email"`
+	JabatanID        int64           `json:"jabatan_id"`
+	Jabatan          JabatanResponse `json:"jabatan"`
+	DivisiID         int64           `json:"divisi_id"`
+	Divisi           DivisiResponse  `json:"divisi"`
+	TanggalBergabung time.Time       `json:"tanggal_bergabung"`
+	Nama             string          `json:"nama"`
 }
 
 type LoginRequest struct {

@@ -27,13 +27,15 @@ type (
 	UserServiceImpl struct {
 		userRepo    Repository.UserRepositoryHandler
 		jabatanRepo Repository.JabatanRepositoryHandler
+		divisiRepo  Repository.DivisiRepositoryHandler
 	}
 )
 
-func UserServiceProvider(userRepo Repository.UserRepositoryHandler, jabatanRepo Repository.JabatanRepositoryHandler) *UserServiceImpl {
+func UserServiceProvider(userRepo Repository.UserRepositoryHandler, jabatanRepo Repository.JabatanRepositoryHandler, divisiRepo Repository.DivisiRepositoryHandler) *UserServiceImpl {
 	return &UserServiceImpl{
 		userRepo:    userRepo,
 		jabatanRepo: jabatanRepo,
+		divisiRepo:  divisiRepo,
 	}
 }
 
@@ -98,13 +100,28 @@ func (h *UserServiceImpl) FindById(userId int64) (user Response.UserResponse, se
 	if err != nil {
 		return Response.UserResponse{}, Web.NewCustomServiceError("User not found", err, http.StatusNotFound)
 	}
-
+	jabatan, err := h.jabatanRepo.FindById(data.JabatanID)
+	if err != nil {
+		return Response.UserResponse{}, Web.NewCustomServiceError("Jabatan not found", err, http.StatusNotFound)
+	}
+	divisi, err := h.divisiRepo.FindById(data.DivisiID)
+	if err != nil {
+		return Response.UserResponse{}, Web.NewCustomServiceError("Divisi not found", err, http.StatusNotFound)
+	}
 	user = Response.UserResponse{
-		ID:               data.ID,
-		NIP:              data.NIP,
-		Email:            data.Email,
-		JabatanID:        data.JabatanID,
-		DivisiID:         data.DivisiID,
+		ID:        data.ID,
+		NIP:       data.NIP,
+		Email:     data.Email,
+		JabatanID: data.JabatanID,
+		Jabatan: Response.JabatanResponse{
+			ID:   jabatan.ID,
+			Nama: jabatan.Nama,
+		},
+		DivisiID: data.DivisiID,
+		Divisi: Response.DivisiResponse{
+			ID:   divisi.ID,
+			Nama: divisi.Nama,
+		},
 		TanggalBergabung: data.TanggalBergabung,
 	}
 
@@ -118,12 +135,28 @@ func (h *UserServiceImpl) FindAll() (users []Response.UserResponse, serviceErr *
 	}
 
 	for _, d := range data {
+		jabatan, err := h.jabatanRepo.FindById(d.JabatanID)
+		if err != nil {
+			continue
+		}
+		divisi, err := h.divisiRepo.FindById(d.DivisiID)
+		if err != nil {
+			continue
+		}
 		users = append(users, Response.UserResponse{
-			ID:               d.ID,
-			NIP:              d.NIP,
-			Email:            d.Email,
-			JabatanID:        d.JabatanID,
-			DivisiID:         d.DivisiID,
+			ID:        d.ID,
+			NIP:       d.NIP,
+			Email:     d.Email,
+			JabatanID: d.JabatanID,
+			Jabatan: Response.JabatanResponse{
+				ID:   jabatan.ID,
+				Nama: jabatan.Nama,
+			},
+			DivisiID: d.DivisiID,
+			Divisi: Response.DivisiResponse{
+				ID:   divisi.ID,
+				Nama: divisi.Nama,
+			},
 			TanggalBergabung: d.TanggalBergabung,
 		})
 	}
