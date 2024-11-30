@@ -22,6 +22,7 @@ type (
 		FindAll() (users []Response.UserResponse, serviceErr *Web.ServiceErrorDto)
 		Login(request Domain.LoginRequest) (token Domain.JwtTokenDetail, serviceErr *Web.ServiceErrorDto)
 		CheckRole(userId int64) (jabatan Database.Jabatan, serviceErr *Web.ServiceErrorDto)
+		TotalUser() (total int64, serviceErr *Web.ServiceErrorDto)
 	}
 
 	UserServiceImpl struct {
@@ -196,4 +197,11 @@ func (h *UserServiceImpl) CheckRole(userId int64) (jabatan Database.Jabatan, ser
 		return Database.Jabatan{}, Web.NewCustomServiceError("Jabatan not found", err, http.StatusNotFound)
 	}
 	return jabatan, nil
+}
+func (h *UserServiceImpl) TotalUser() (total int64, serviceErr *Web.ServiceErrorDto) {
+	total, err := h.userRepo.TotalUser()
+	if err != nil {
+		return 0, Web.NewInternalServiceError(err)
+	}
+	return total, nil
 }

@@ -14,6 +14,7 @@ type (
 		FindById(id int64) (data Database.User, err error)
 		FindAll() (data []Database.User, err error)
 		FindByEmail(email string) (data Database.User, err error)
+		TotalUser() (total int64, err error)
 	}
 
 	UserRepositoryImpl struct {
@@ -70,4 +71,11 @@ func (h *UserRepositoryImpl) FindByEmail(email string) (data Database.User, err 
 		Take(&data).
 		Error
 	return data, err
+}
+
+func (h *UserRepositoryImpl) TotalUser() (total int64, err error) {
+	err = h.DB.Model(&Database.User{}).
+		Count(&total).
+		Error
+	return total, err
 }

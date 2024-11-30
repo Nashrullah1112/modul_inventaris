@@ -19,6 +19,7 @@ type UserControllerHandler interface {
 	FindAll(c *fiber.Ctx) error
 	Login(c *fiber.Ctx) error
 	CheckRole(c *fiber.Ctx) error
+	TotalUser(c *fiber.Ctx) error
 }
 
 type UserControllerImpl struct {
@@ -144,4 +145,13 @@ func (h *UserControllerImpl) CheckRole(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Role checked successfully", response))
+}
+
+func (h *UserControllerImpl) TotalUser(c *fiber.Ctx) error {
+	total, serviceErr := h.service.TotalUser()
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Total user found", total))
 }

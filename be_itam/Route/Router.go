@@ -138,6 +138,7 @@ func NewRouter(c *fiber.App) {
 	c.Delete("/api/user/:userId", userController.Delete)
 	c.Post("/api/login", userController.Login)
 	c.Get("/api/check-role", Middleware.JwtMiddleware(), userController.CheckRole)
+	c.Get("/api/total/user", userController.TotalUser)
 
 	// Role Routes
 	roleController := RoleDI(Config.DB)
