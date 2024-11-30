@@ -25,21 +25,23 @@ import {
 /* handle form */
 const formSchema = toTypedSchema(
   z.object({
-    nip: z.string().min(1, { message: "ID Pegawai wajib diisi" }),
+    nip: z.number().min(1, { message: "ID Pegawai wajib diisi" }),
     name: z.string().min(1, { message: "Nama wajib diisi" }),
     email: z.string().email({ message: "Email tidak valid" }),
-    position: z.string().min(1, { message: "Jabatan wajib diisi" }),
-    division: z.string().min(1, { message: "Divisi wajib diisi" }),
+    password: z.string().min(8, { message: "Kata sandi minimal 8 karakter" }),
+    position: z.number().min(1, { message: "Jabatan wajib diisi" }),
+    division: z.number().min(1, { message: "Divisi wajib diisi" }),
     joinDate: z.string().min(1, { message: "Tanggal bergabung wajib diisi" }),
   })
 );
 
 const formData = ref({
-  nip: "",
+  nip: null,
   name: "",
   email: "",
-  position: "",
-  division: "",
+  password: "",
+  position: null,
+  division: null,
   joinDate: "",
 });
 
@@ -66,6 +68,11 @@ const validateForm = () => {
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.value.email)) {
     errors.value.email = "Format email tidak valid";
   }
+  if (!formData.value.password) {
+    errors.value.password = "Kata sandi wajib diisi";
+  } else if (formData.value.password.length < 8) {
+    errors.value.password = "Kata sandi minimal 8 karakter";
+  }
   if (!formData.value.position) {
     errors.value.position = "Jabatan wajib diisi";
   }
@@ -79,7 +86,6 @@ const validateForm = () => {
   return Object.keys(errors.value).length === 0;
 };
 
-
 const getDivisionAndPosition = async () => {
   try {
     const divisionResponse = await $fetch(config.public.API_URL + '/divisi', {
@@ -92,7 +98,6 @@ const getDivisionAndPosition = async () => {
 
     divisions.value = divisionResponse.data;
     positions.value = positionResponse.data;
-
 
   } catch (error) {
     console.error('Terjadi kesalahan:', error instanceof Error ? error.message : error);
@@ -110,12 +115,13 @@ const onSubmit = async () => {
     const response = await $fetch(config.public.API_URL + '/user', {
       method: "POST",
       body: {
-        nip: formData.value.nip,
+        nip: Number(formData.value.nip),
         nama: formData.value.name,
         email: formData.value.email,
-        divisi_id: formData.value.position,
-        jabatan_id: formData.value.division,
-        tanggal_bergabung: formData.value.joinDate,
+        password: formData.value.password,
+        jabatan_id: Number(formData.value.position),
+        divisi_id: Number(formData.value.division),
+        tanggal_bergabung: `${formData.value.joinDate}T00:00:00Z`,
       },
     });
 
@@ -123,6 +129,11 @@ const onSubmit = async () => {
     navigateTo("/employee");
   } catch (error) {
     console.error("Terjadi kesalahan:", error);
+    toast({
+      title: "Error",
+      description: "Gagal menyimpan data karyawan",
+      variant: "destructive"
+    });
   } finally {
     isSubmitting.value = false;
   }
@@ -138,8 +149,6 @@ const updateDate = (date: any) => {
 onMounted(async () => {
   getDivisionAndPosition();
 });
-
-
 </script>
 
 <template>
@@ -190,6 +199,23 @@ onMounted(async () => {
                 </FormControl>
                 <FormMessage v-if="errors.email" class="text-red-500">
                   {{ errors.email }}
+                </FormMessage>
+              </FormItem>
+            </FormField>
+
+            <FormField name="password">
+              <FormItem>
+                <FormLabel>Kata Sandi</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="password" 
+                    v-model="formData.password" 
+                    placeholder="Masukkan Kata Sandi"
+                    :class="{ 'border-red-500': errors.password }" 
+                  />
+                </FormControl>
+                <FormMessage v-if="errors.password" class="text-red-500">
+                  {{ errors.password }}
                 </FormMessage>
               </FormItem>
             </FormField>
