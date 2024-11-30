@@ -34,6 +34,8 @@ interface Division {
   nama: string;
 }
 
+
+// Ini seperti model
 interface Employee {
   id: number;
   nip: number;

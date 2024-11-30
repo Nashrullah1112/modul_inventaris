@@ -3,6 +3,6 @@
 
 <template>
   <div>
-    <ModuleApplicationForm type="add" />
+    <ModuleApplicationForm type="new" />
   </div>
 </template>
