@@ -3,5 +3,5 @@ const router = useRouter()
 </script>
 
 <template>
-  <ModuleHardwareForm type="add" />
+  <ModuleHardwareForm type="new" />
 </template>

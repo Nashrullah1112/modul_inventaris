@@ -84,13 +84,10 @@ const onSubmit = handleSubmit(async (values) => {
   });
 
   const { data, status } = await useFetch(
-    config.public.API_URL_2 + "/t_asset_hardware",
+    config.public.API_URL + "/form-hardware",
     {
       method: "POST",
-      body: formData,
-      headers: {
-        apiKey: config.public.API_KEY_2,
-      },
+      body: formData
     }
   );
 
@@ -133,44 +130,6 @@ const activationDate = computed({
     values.activation_date ? parseDate(values.activation_date) : undefined,
   set: (val) => val,
 });
-
-/* Dummy data */
-const suppliers = [
-  { label: "PT Surya Kencana", value: "1" },
-  { label: "PT DJAJA PUTRA", value: "2" },
-  { label: "PT INDO IT", value: "3" },
-];
-
-const assetTypes = [
-  { label: "Processor", value: "1" },
-  { label: "Motherboard", value: "2" },
-  { label: "RAM", value: "3" },
-  { label: "Storage", value: "4" },
-  { label: "Power Supply", value: "5" },
-  { label: "Casing", value: "6" },
-  { label: "Cooling Fan", value: "7" },
-];
-
-const usagePeriods = [
-  { label: "1 Tahun", value: "1" },
-  { label: "2 Tahun", value: "2" },
-  { label: "3 Tahun", value: "3" },
-  { label: "4 Tahun", value: "4" },
-  { label: "5 Tahun", value: "5" },
-];
-
-const pics = [
-  { label: "John Doe", value: "1" },
-  { label: "Jane Smith", value: "2" },
-  { label: "Bob Wilson", value: "3" },
-];
-
-const assetStatuses = [
-  { label: "Aktif", value: "1" },
-  { label: "Non-Aktif", value: "2" },
-  { label: "Rusak", value: "3" },
-  { label: "Diperbaiki", value: "4" },
-];
 </script>
 
 <template>

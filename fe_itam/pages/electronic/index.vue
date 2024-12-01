@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { ColumnDef } from "@tanstack/vue-table";
 
+
+const config = useRuntimeConfig();
+
 interface Device {
   id: number;
   lokasi_penerima: string;
@@ -58,7 +61,7 @@ async function fetchDevices() {
       message: string;
       data: Device[];
       error: any;
-    }>("http://103.127.139.11:5000/api/asset-perangkat", {
+    }>(config.public.API_URL + "/asset-perangkat", {
       method: "GET",
     });
 
@@ -173,8 +176,6 @@ const columns: ColumnDef<Electronic>[] = [
     },
   },
 ];
-
-const isOpen = ref(false);
 </script>
 
 <template>

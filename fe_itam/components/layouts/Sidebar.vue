@@ -163,10 +163,10 @@ const sidebarItem = reactive({
 });
 
 const handleLogout = () => {
-	if (process.client) {
-		localStorage.removeItem('token');
-		router.push('/login');
-	}
+  if (process.client) {
+    localStorage.removeItem('token');
+    router.push('/login');
+  }
 };
 
 // Helper functions
@@ -186,21 +186,14 @@ const toggleDropdown = (item: any) => {
 </script>
 
 <template>
-  <nav
-    class="fixed top-0 left-0 right-0 h-14 border-b bg-background z-10"
-  ></nav>
+  <nav class="fixed top-0 left-0 right-0 h-14 border-b bg-background z-10"></nav>
 
   <aside
-    class="fixed flex flex-col top-0 left-0 h-screen w-64 bg-background border-r p-4 z-20 transition-transform duration-300"
-    :class="{ '-translate-x-64': !isOpen }"
-  >
+    class="fixed flex flex-col top-0 left-0 h-screen w-64 bg-background border-r p-4 z-20 transition-transform duration-300 overflow-y-auto scrollbar-thin scrollbar-track-background scrollbar-thumb-primary"
+    :class="{ '-translate-x-64': !isOpen }">
     <!-- Toggle Button -->
-    <Button
-      variant="ghost"
-      size="icon"
-      class="absolute top-2.5 -right-14 hover:bg-primary hover:text-primary-foreground"
-      @click="toggleSidebar"
-    >
+    <Button variant="ghost" size="icon"
+      class="absolute top-2.5 -right-14 hover:bg-primary hover:text-primary-foreground" @click="toggleSidebar">
       <HamburgerMenuIcon class="h-4 w-4" />
     </Button>
 
@@ -214,34 +207,24 @@ const toggleDropdown = (item: any) => {
     <div class="flex flex-col flex-1 gap-2 mt-10">
       <div class="flex flex-col flex-1">
         <template v-for="item in sidebarItem.top" :key="item.title">
-          <Button
-            v-if="!item.dropdown"
-            :variant="isActive(item.url!) ? 'default' : 'ghost'"
-            class="justify-start hover:bg-primary hover:text-primary-foreground"
-            @click="handleNavigation(item.url!)"
-          >
+          <Button v-if="!item.dropdown" :variant="isActive(item.url!) ? 'default' : 'ghost'"
+            class="justify-start hover:bg-primary hover:text-primary-foreground" @click="handleNavigation(item.url!)">
             <component :is="item.icon" class="h-4 w-4 mr-2" />
             {{ item.title }}
           </Button>
 
           <div v-else class="mb-2">
-            <Button
-              variant="ghost"
-              class="justify-start w-full hover:bg-primary hover:text-primary-foreground"
-              @click="toggleDropdown(item)"
-            >
+            <Button variant="ghost" class="justify-start w-full hover:bg-primary hover:text-primary-foreground"
+              @click="toggleDropdown(item)">
               <component :is="item.icon" class="h-4 w-4 mr-2" />
               {{ item.title }}
             </Button>
 
             <div v-show="item.isOpen" class="ml-6 flex flex-col gap-1">
-              <Button
-                v-for="child in item.children"
-                :key="child.title"
+              <Button v-for="child in item.children" :key="child.title"
                 :variant="isActive(child.url) ? 'default' : 'ghost'"
                 class="justify-start hover:bg-primary hover:text-primary-foreground"
-                @click="handleNavigation(child.url)"
-              >
+                @click="handleNavigation(child.url)">
                 {{ child.title }}
               </Button>
             </div>
@@ -251,19 +234,31 @@ const toggleDropdown = (item: any) => {
 
       <!-- Bottom Menu -->
       <div class="flex flex-col">
-        <Button
-          v-for="item in sidebarItem.bottom"
-          :key="item.title"
-          :variant="isActive(item.url) ? 'default' : 'ghost'"
-          class="justify-start hover:bg-primary hover:text-primary-foreground"
-          @click="() => {
-            item.url ? handleNavigation(item.url) :  item.handler()
-          }"
-        >
+        <Button v-for="item in sidebarItem.bottom" :key="item.title" :variant="isActive(item.url) ? 'default' : 'ghost'"
+          class="justify-start hover:bg-primary hover:text-primary-foreground" @click="() => {
+            item.url ? handleNavigation(item.url) : item.handler()
+          }">
           <SvgIcon type="mdi" :path="item.icon" class="h-4 w-4 mr-2" />
           {{ item.title }}
         </Button>
       </div>
     </div>
   </aside>
+
 </template>
+
+<style scoped>
+/* Optional: Custom scrollbar styles (requires Tailwind CSS with scrollbar plugin) */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-track-background::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thumb-primary::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary));
+  border-radius: 4px;
+}
+</style>
