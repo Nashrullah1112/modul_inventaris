@@ -8,6 +8,7 @@ import {
   UsersIcon,
   ClockIcon,
 } from "lucide-vue-next";
+import { useFetch } from "@vueuse/core"; // Import useFetch
 
 // Menggunakan state dari sidebar
 const isOpen = useState("is-sidebar-open", () => false);
@@ -19,31 +20,39 @@ const stats = ref({
   pegawai: 0,
 });
 
-const notifications = ref([
-  {
-    id: 1,
-    title: "Lisensi Windows 10 Pro",
-    expiry: "2024-03-20",
-    status: "warning",
-    description: "Perlu perpanjangan dalam 30 hari",
-  },
-  {
-    id: 2,
-    title: "Lisensi Adobe Creative Cloud",
-    expiry: "2024-03-25",
-    status: "danger",
-    description: "Perlu perpanjangan dalam 7 hari",
-  },
-]);
+const notifications = ref([]);
 
+// Fetch data dari API untuk setiap card
+async function fetchData() {
+  try {
+    const [elektronik, aplikasi, lisensi, pegawai] = await Promise.all([
+      useFetch("http://103.127.139.11:5000/api/total/asset-perangkat").json(),
+      useFetch("http://103.127.139.11:5000/api/total/asset-aplikasi").json(),
+      useFetch("http://103.127.139.11:5000/api/total/asset-lisensi").json(),
+      useFetch("http://103.127.139.11:5000/api/total/user").json(),
+    ]);
+
+    const extractData = (response: any) => {
+      if (response.data.value && typeof response.data.value.data === "number") {
+        return response.data.value.data;
+      }
+      return 0;
+    };
+
+    stats.value = {
+      elektronik: extractData(elektronik),
+      aplikasi: extractData(aplikasi),
+      lisensi: extractData(lisensi),
+      pegawai: extractData(pegawai),
+    };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+}
+
+// Panggil fungsi saat komponen dimount
 onMounted(() => {
-  // Di sini nanti fetch data dari API
-  stats.value = {
-    elektronik: 150,
-    aplikasi: 45,
-    lisensi: 30,
-    pegawai: 200,
-  };
+  fetchData();
 });
 </script>
 
@@ -62,6 +71,7 @@ onMounted(() => {
 
       <!-- Stats Cards -->
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        <!-- Card Aset Elektronik -->
         <div
           class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
         >
@@ -76,6 +86,7 @@ onMounted(() => {
           </div>
         </div>
 
+        <!-- Card Aplikasi -->
         <div
           class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
         >
@@ -90,6 +101,7 @@ onMounted(() => {
           </div>
         </div>
 
+        <!-- Card Lisensi Software -->
         <div
           class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
         >
@@ -104,6 +116,7 @@ onMounted(() => {
           </div>
         </div>
 
+        <!-- Card Pegawai -->
         <div
           class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
         >
