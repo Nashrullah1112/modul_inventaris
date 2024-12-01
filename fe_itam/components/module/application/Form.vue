@@ -482,7 +482,7 @@ const transformDate = (serverDate: string) => {
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="dokumentasi">
+        <!-- <FormField v-slot="{ componentField }" name="dokumentasi">
           <FormItem>
             <FormLabel>Dokumentasi</FormLabel>
             <FormControl>
@@ -494,7 +494,7 @@ const transformDate = (serverDate: string) => {
             </FormControl>
             <FormMessage />
           </FormItem>
-        </FormField>
+        </FormField> -->
       </div>
     </form>
 
