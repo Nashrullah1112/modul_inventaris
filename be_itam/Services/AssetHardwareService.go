@@ -2,6 +2,7 @@ package Services
 
 import (
 	"fmt"
+	"itam/Constant"
 	"itam/Model/Database"
 	"itam/Model/Web"
 	"itam/Model/Web/Response"
@@ -44,7 +45,7 @@ func (h *AssetHardwareServiceImpl) Create(request Response.DetailAsetHardwareCre
 		TanggalAktivasiPerangkat: request.TanggalAktivasiPerangkat,
 		HasilPemeriksaan:         request.HasilPemeriksaan,
 		SerialNumber:             request.SerialNumber,
-		Model:                    request.Model,
+		WaktuAsetKeluar:          Constant.ParseTime(request.WaktuAsetKeluar),
 		WaktuGaransiMulai:        request.WaktuGaransiMulai,
 		WaktuGaransiBerakhir:     request.WaktuGaransiBerakhir,
 		NomorKartuGaransi:        request.NomorKartuGaransi,
@@ -53,7 +54,6 @@ func (h *AssetHardwareServiceImpl) Create(request Response.DetailAsetHardwareCre
 		PenanggungjawabAset:      request.PenanggungjawabAset,
 		LokasiPenyimpananID:      request.LokasiPenyimpananID,
 		JangkaMasaPakai:          request.JangkaMasaPakai,
-		WaktuAsetKeluar:          request.WaktuAsetKeluar,
 		KondisiAset:              request.KondisiAset,
 		NotaPembelian:            request.NotaPembelian,
 		DivisiID:                 request.DivisiID,
@@ -88,7 +88,7 @@ func (h *AssetHardwareServiceImpl) Update(request Response.DetailAsetHardwareUpd
 		PenanggungjawabAset:      request.PenanggungjawabAset,
 		LokasiPenyimpananID:      request.LokasiPenyimpananID,
 		JangkaMasaPakai:          request.JangkaMasaPakai,
-		WaktuAsetKeluar:          request.WaktuAsetKeluar,
+		WaktuAsetKeluar:          Constant.ParseTime(request.WaktuAsetKeluar),
 		KondisiAset:              request.KondisiAset,
 		NotaPembelian:            request.NotaPembelian,
 		DivisiID:                 request.DivisiID,
@@ -237,7 +237,7 @@ func (h *AssetHardwareServiceImpl) FormAssetHardware(request Response.AssetHardw
 		PenanggungjawabAset:      request.PenanggungJawabPerangkat,
 		LokasiPenyimpananID:      request.LokasiPenerima,
 		JangkaMasaPakai:          request.JangkaMasaPakai,
-		WaktuAsetKeluar:          request.TanggalAsetKeluar,
+		WaktuAsetKeluar:          Constant.ParseTime(request.TanggalAsetKeluar),
 		KondisiAset:              request.KondisiAset,
 		NotaPembelian:            notaPembelian,
 		DivisiID:                 request.DivisiPengguna,
@@ -284,7 +284,7 @@ func (h *AssetHardwareServiceImpl) UpdateAssetHardware(hardwareID int64, request
 		PenanggungjawabAset:      request.PenanggungJawabPerangkat,
 		LokasiPenyimpananID:      request.LokasiPenerima,
 		JangkaMasaPakai:          request.JangkaMasaPakai,
-		WaktuAsetKeluar:          request.TanggalAsetKeluar,
+		WaktuAsetKeluar:          Constant.ParseTime(request.TanggalAsetKeluar),
 		KondisiAset:              request.KondisiAset,
 		NotaPembelian:            hardware.NotaPembelian,
 		DivisiID:                 request.DivisiPengguna,
