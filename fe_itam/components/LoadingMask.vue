@@ -5,15 +5,11 @@ const { isVisible } = useLoading()
 </script>
 
 <template>
-  <div v-if="isVisible" class="loading-mask">
-    <Vue3Lottie 
-      :animationData="loadingAnimation" 
-      :height="300" 
-      :width="300" 
-      :loop="true"
-      :speed="0.8"
-    />
-  </div>
+  <client-only>
+    <div v-if="isVisible" class="loading-mask">
+      <Vue3Lottie :animationData="loadingAnimation" :height="300" :width="300" :loop="true" :speed="0.8" />
+    </div>
+  </client-only>
 </template>
 
 <style scoped>
