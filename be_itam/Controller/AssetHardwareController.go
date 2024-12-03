@@ -127,10 +127,10 @@ func (h *AssetHardwareControllerImpl) FormAssetHardware(c *fiber.Ctx) error {
 	}
 
 	// Tentukan lokasi tujuan penyimpanan file
-	destination := fmt.Sprintf("./public/static/tanda_terima/%s", file.Filename)
+	destination := fmt.Sprintf("/tanda_terima/%s", file.Filename)
 
 	// Simpan file ke folder yang ditentukan
-	if err = c.SaveFile(file, destination); err != nil {
+	if err = c.SaveFile(file, "./public/static"+destination); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
 	}
 
@@ -140,10 +140,10 @@ func (h *AssetHardwareControllerImpl) FormAssetHardware(c *fiber.Ctx) error {
 	}
 
 	// Tentukan lokasi tujuan penyimpanan file
-	destinationNota := fmt.Sprintf("./public/static/nota_pembelian/%s", file.Filename)
+	destinationNota := fmt.Sprintf("/nota_pembelian/%s", file.Filename)
 
 	// Simpan file ke folder yang ditentukan
-	if err = c.SaveFile(fileNota, destinationNota); err != nil {
+	if err = c.SaveFile(fileNota, "./public/static"+destinationNota); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
 	}
 

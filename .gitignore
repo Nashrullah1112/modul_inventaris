@@ -1,4 +1,6 @@
 node_modules
 be_itam/.env
-be_itam/tmp/main
+tmp/main
+tmp/build-errors.log
 
+be_itam/tmp/main
