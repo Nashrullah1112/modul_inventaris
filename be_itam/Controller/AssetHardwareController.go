@@ -132,7 +132,7 @@ func (h *AssetHardwareControllerImpl) FormAssetHardware(c *fiber.Ctx) error {
 	destination := fmt.Sprintf("%s-%s", time.Now().Format("20060102"), strings.ReplaceAll(file.Filename, " ", ""))
 
 	// Simpan file ke folder yang ditentukan
-	if err = c.SaveFile(file, "./public/static/tanda_terima"+destination); err != nil {
+	if err = c.SaveFile(file, "./public/static/tanda_terima/"+destination); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
 	}
 
