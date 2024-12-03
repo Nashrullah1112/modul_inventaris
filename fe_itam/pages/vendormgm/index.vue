@@ -154,7 +154,6 @@ async function deleteData(id: number) {
     });
 
     if (status.value == 'success') {
-      console.log('duarrr');
       toast({
         title: 'Success',
         description: 'Data deleted successfully.',

@@ -86,7 +86,7 @@ const onSubmit = handleSubmit(async (values) => {
     );
 
     console.log("Data berhasil disimpan:", response);
-    navigateTo("/dashboard");
+    navigateTo("/");
   } catch (error) {
     console.error("Terjadi kesalahan:", error);
   }

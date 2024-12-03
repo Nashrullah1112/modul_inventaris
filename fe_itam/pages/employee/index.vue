@@ -137,7 +137,7 @@ const columns = [
     },
     cell: ({ row }: { row: any }) => {
       // Get the raw date from the row and format it using the `parseDate` function
-      const formattedDate = parseDate(row.getValue("joinDate"), "FULL-DD/MM/YYYY");
+      const formattedDate = parseDate(row.getValue("joinDate"));
       return formattedDate;
     },
   },

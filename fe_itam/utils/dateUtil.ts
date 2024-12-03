@@ -8,7 +8,7 @@
  */
 export function parseDate(
     dateString: string | Date,
-    format: "YYYY-MM-DD" | "DD/MM/YYYY" | "MM/DD/YYYY" | "FULL-DD/MM/YYYY" = "YYYY-MM-DD"
+    format: "YYYY-MM-DD" | "DD/MM/YYYY" | "MM/DD/YYYY" | "FULL-DD/MM/YYYY" = "FULL-DD/MM/YYYY"
 ): string {
     // If already a Date object, convert to string
     const inputDate = dateString instanceof Date ? dateString : new Date(dateString);
@@ -49,7 +49,7 @@ export function parseDate(
         case "FULL-DD/MM/YYYY":
             return `${dayName}, ${day} ${monthName} ${year}`;
         default:
-            return `${year}-${month}-${day}`;  // Default format if not recognized
+            return `${dayName}, ${day} ${monthName} ${year}`;
     }
 }
 

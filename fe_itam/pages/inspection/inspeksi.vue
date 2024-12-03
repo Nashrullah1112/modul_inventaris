@@ -1,5 +1,5 @@
 <template>
-  <div class="p-8" :class="{ 'ml-64': isOpen, 'ml-20': !isOpen }">
+  <div class="p-8">
     <div class="bg-white rounded-lg shadow-lg">
       <div class="p-6 border-b border-gray-200">
         <h1 class="text-2xl font-bold text-gray-800">Data Inspeksi Aset</h1>

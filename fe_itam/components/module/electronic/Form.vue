@@ -23,12 +23,13 @@ import * as z from "zod";
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-
+const config = useRuntimeConfig();
 
 const props = defineProps<{
   type: string;
   data: any[];
 }>();
+const currentStep = ref(1);
 
 const emit = defineEmits(['asset-registered']);
 
@@ -94,8 +95,6 @@ const form = useForm({
     rom: 0,
   },
 });
-
-const currentStep = ref(1);
 
 const step1Fields = [
   'namasupllier',
@@ -204,6 +203,12 @@ const getOptionsForField = (field: string) => {
 
 const onSubmit = async (values) => {
   try {
+    console.log("The values are:", values);
+
+    const response = $fetch(config.public.API_URL + "/asset-perangkat", {
+      method: "POST",
+      body: JSON.stringify(values),
+    });
 
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -258,16 +263,29 @@ const submitButtonClasses = computed(() => {
       </h1>
 
       <!-- Progress Indicator -->
-      <div class="flex justify-center mb-6">
+      <div class="flex justify-center mb-6 relative">
         <div class="flex items-center">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center mr-2"
-            :class="currentStep === 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'">
-            1
+          <!-- Step 1 Indicator -->
+          <div class="relative">
+            <div v-if="currentStep === 1" class="absolute -inset-2 bg-blue-500 bg-opacity-25 rounded-full animate-ping">
+            </div>
+            <div class="w-10 h-10 rounded-full flex items-center justify-center relative z-10"
+              :class="currentStep === 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'">
+              1
+            </div>
           </div>
+
+          <!-- Connector Line -->
           <div class="w-24 h-1 bg-gray-200 mx-2"></div>
-          <div class="w-10 h-10 rounded-full flex items-center justify-center"
-            :class="currentStep === 2 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'">
-            2
+
+          <!-- Step 2 Indicator -->
+          <div class="relative">
+            <div v-if="currentStep === 2" class="absolute -inset-2 bg-blue-500 bg-opacity-25 rounded-full animate-ping">
+            </div>
+            <div class="w-10 h-10 rounded-full flex items-center justify-center relative z-10"
+              :class="currentStep === 2 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'">
+              2
+            </div>
           </div>
         </div>
       </div>

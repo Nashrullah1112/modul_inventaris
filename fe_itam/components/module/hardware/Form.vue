@@ -1,27 +1,30 @@
 <script setup lang="ts">
 import { cn } from "@/lib/utils";
-import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as z from "zod";
-import { toDate } from "radix-vue/date";
 import {
-  CalendarDate,
   DateFormatter,
-  getLocalTimeZone,
-  parseDate,
-  today,
+  parseDate
 } from "@internationalized/date";
 import { CalendarIcon } from "@radix-icons/vue";
+import { toTypedSchema } from "@vee-validate/zod";
+import { toDate } from "radix-vue/date";
+import { useForm } from "vee-validate";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -30,14 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 
 const props = defineProps<{
   type: string;
@@ -50,24 +46,37 @@ const { showLoading, hideLoading } = useLoading();
 /* handle form */
 const formSchema = toTypedSchema(
   z.object({
-    supplier: z.string().min(1, "Supplier harus dipilih"),
-    serial_number: z.string().min(1, "Serial number harus diisi"),
-    asset_type: z.string().min(1, "Tipe aset harus dipilih"),
-    nota_number: z.string().min(1, "Nomor nota harus diisi"),
-    achieved_date: z.string().min(1, "Tanggal penerimaan harus diisi"),
-    out_date: z.string().min(1, "Tanggal keluar harus diisi"),
-    brand: z.string().min(1, "Merek harus diisi"),
+    vendor_id: z.string().min(1, "Vendor harus dipilih"),
+    merek_perangkat: z.string().min(1, "Merek perangkat harus diisi"),
+    nomor_nota: z.string().min(1, "Nomor nota harus diisi"),
+    lokasi_penerima: z.string().min(1, "Lokasi penerima harus diisi"),
+    tanggal_penerimaan: z.string().min(1, "Tanggal penerimaan harus diisi"),
+    masa_garansi_mulai: z.string().min(1, "Masa garansi mulai harus diisi"),
+    penanggung_jawab_perangkat: z
+      .string()
+      .min(1, "Penanggung jawab harus dipilih"),
     model: z.string().min(1, "Model harus diisi"),
-    warranty_number: z.string().min(1, "Nomor garansi harus diisi"),
-    warranty_start: z.string().min(1, "Tanggal mulai garansi harus diisi"),
-    warranty_end: z.string().min(1, "Tanggal akhir garansi harus diisi"),
-    activation_date: z.string().min(1, "Tanggal aktivasi harus diisi"),
-    usage_period: z.string().min(1, "Jangka masa pakai harus dipilih"),
-    pic: z.string().min(1, "Penanggung jawab harus dipilih"),
-    asset_status: z.string().min(1, "Status aset harus dipilih"),
-    inspection_result: z.string().min(1, "Hasil pemeriksaan harus diisi"),
-    storage_location: z.string().min(1, "Lokasi penyimpanan harus diisi"),
-    purchase_note: z.any(),
+    serial_number: z.string().min(1, "Serial number harus diisi"),
+    harga_perangkat: z.string().min(1, "Harga perangkat harus diisi"),
+    depresiasi_perangkat: z.string().min(1, "Depresiasi perangkat harus diisi"),
+    tanda_terima: z.any(),
+    kondisi_aset: z.string().min(1, "Kondisi aset harus dipilih"),
+    tipe_perangkat: z.string().min(1, "Tipe perangkat harus dipilih"),
+    tanggal_aktivasi_perangkat: z
+      .string()
+      .min(1, "Tanggal aktivasi harus diisi"),
+    masa_berakhir_garansi: z
+      .string()
+      .min(1, "Masa berakhir garansi harus diisi"),
+    hasil_pemeriksaan_perangkat: z
+      .string()
+      .min(1, "Hasil pemeriksaan harus diisi"),
+    jangka_masa_pakai: z.string().min(1, "Jangka masa pakai harus diisi"),
+    status_perangkat: z.string().min(1, "Status perangkat harus dipilih"),
+    nota_pembelian: z.any(),
+    detail_spesifikasi: z.string().min(1, "Detail spesifikasi harus diisi"),
+    nomor_kartu_garansi: z.string().min(1, "Nomor kartu garansi harus diisi"),
+    divisi_pengguna: z.string().min(1, "Divisi pengguna harus dipilih"),
   })
 );
 
@@ -87,7 +96,7 @@ const onSubmit = handleSubmit(async (values) => {
     config.public.API_URL + "/form-hardware",
     {
       method: "POST",
-      body: formData
+      body: formData,
     }
   );
 
@@ -101,33 +110,63 @@ const onSubmit = handleSubmit(async (values) => {
 const df = new DateFormatter("id-ID", {
   dateStyle: "long",
 });
+/* data select vendor */
+const vendors = ref([]);
 
-/* hold datefield values */
-const achievedDate = computed({
-  get: () =>
-    values.achieved_date ? parseDate(values.achieved_date) : undefined,
-  set: (val) => val,
+const getVendorData = async () => {
+  try {
+    const { data, status } = await useFetch(config.public.API_URL + "/vendor");
+
+    if (status.value == "success" && data.value?.data?.length) {
+      vendors.value = data.value.data.map((item) => {
+        return {
+          value: item.id,
+          label: item.nama_pic,
+        };
+      });
+    }
+  } catch (error) {
+    console.error("Terjadi kesalahan:", error);
+  }
+};
+
+onMounted(() => {
+  const retryInterval = setInterval(() => {
+    if (!vendors.value?.length) getVendorData();
+    else clearInterval(retryInterval);
+  }, 500);
 });
 
-const outDate = computed({
-  get: () => (values.out_date ? parseDate(values.out_date) : undefined),
+/* hold datefield values */
+const receivedDate = computed({
+  get: () =>
+    values.tanggal_penerimaan
+      ? parseDate(values.tanggal_penerimaan)
+      : undefined,
   set: (val) => val,
 });
 
 const warrantyStart = computed({
   get: () =>
-    values.warranty_start ? parseDate(values.warranty_start) : undefined,
+    values.masa_garansi_mulai
+      ? parseDate(values.masa_garansi_mulai)
+      : undefined,
   set: (val) => val,
 });
 
 const warrantyEnd = computed({
-  get: () => (values.warranty_end ? parseDate(values.warranty_end) : undefined),
+  get: () =>
+    values.masa_berakhir_garansi
+      ? parseDate(values.masa_berakhir_garansi)
+      : undefined,
   set: (val) => val,
 });
 
 const activationDate = computed({
   get: () =>
-    values.activation_date ? parseDate(values.activation_date) : undefined,
+    values.tanggal_aktivasi_perangkat
+      ? parseDate(values.tanggal_aktivasi_perangkat)
+      : undefined,
   set: (val) => val,
 });
 </script>
@@ -136,25 +175,25 @@ const activationDate = computed({
   <div class="p-8 bg-white shadow-lg rounded-lg">
     <h1 class="text-2xl font-bold mb-6">Registrasi Aset Hardware</h1>
     <form class="grid grid-cols-2 gap-x-4 gap-y-3">
-      <FormField v-slot="{ componentField }" name="supplier">
+      <FormField v-slot="{ componentField }" name="vendor_id">
         <FormItem>
-          <FormLabel>Nama Supplier</FormLabel>
-          <Select v-bind="componentField">
-            <FormControl>
+          <FormLabel>Vendor</FormLabel>
+          <FormControl>
+            <Select v-bind="componentField">
               <SelectTrigger>
-                <SelectValue placeholder="Pilih Supplier" />
+                <SelectValue placeholder="Pilih Vendor" />
               </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <template v-for="item in suppliers">
-                  <SelectItem :value="item.value">
-                    {{ item.label }}
-                  </SelectItem>
-                </template>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+              <SelectContent>
+                <SelectGroup>
+                  <template v-for="item in vendors" :key="item.value">
+                    <SelectItem :value="item.value">
+                      {{ item.label }}
+                    </SelectItem>
+                  </template>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -169,9 +208,9 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="asset_type">
+      <FormField v-slot="{ componentField }" name="tipe_perangkat">
         <FormItem>
-          <FormLabel>Tipe Asset</FormLabel>
+          <FormLabel>Tipe Perangkat</FormLabel>
           <Select v-bind="componentField">
             <FormControl>
               <SelectTrigger>
@@ -180,11 +219,15 @@ const activationDate = computed({
             </FormControl>
             <SelectContent>
               <SelectGroup>
-                <template v-for="item in assetTypes">
-                  <SelectItem :value="item.value">
-                    {{ item.label }}
-                  </SelectItem>
-                </template>
+                <SelectItem value="SSD">SSD</SelectItem>
+                <SelectItem value="Kabel Internet">Kabel Internet</SelectItem>
+                <SelectItem value="RAM">RAM</SelectItem>
+                <SelectItem value="HDD">HDD</SelectItem>
+                <SelectItem value="Prosesor">Prosesor</SelectItem>
+                <SelectItem value="Casing">Casing</SelectItem>
+                <SelectItem value="Mainboard">Mainboard</SelectItem>
+                <SelectItem value="FAN">FAN</SelectItem>
+                <SelectItem value="Cooling Pasta">Cooling Pasta</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -192,7 +235,7 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="nota_number">
+      <FormField v-slot="{ componentField }" name="nomor_nota">
         <FormItem>
           <FormLabel>Nomor Nota</FormLabel>
           <FormControl>
@@ -202,7 +245,7 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField name="achieved_date">
+      <FormField name="tanggal_penerimaan">
         <FormItem class="flex flex-col">
           <FormLabel>Tanggal Penerimaan</FormLabel>
           <Popover>
@@ -213,13 +256,13 @@ const activationDate = computed({
                   :class="
                     cn(
                       'ps-3 text-start font-normal',
-                      !achievedDate && 'text-muted-foreground'
+                      !receivedDate && 'text-muted-foreground'
                     )
                   "
                 >
                   <span>{{
-                    achievedDate
-                      ? df.format(toDate(achievedDate))
+                    receivedDate
+                      ? df.format(toDate(receivedDate))
                       : "Pilih tanggal"
                   }}</span>
                   <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
@@ -228,9 +271,9 @@ const activationDate = computed({
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
               <Calendar
-                v-model="achievedDate"
+                v-model="receivedDate"
                 @update:model-value="
-                  (v) => setFieldValue('achieved_date', v?.toString())
+                  (v) => setFieldValue('tanggal_penerimaan', v?.toString())
                 "
               />
             </PopoverContent>
@@ -239,44 +282,19 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField name="out_date">
-        <FormItem class="flex flex-col">
-          <FormLabel>Tanggal Keluar</FormLabel>
-          <Popover>
-            <PopoverTrigger as-child>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  :class="
-                    cn(
-                      'ps-3 text-start font-normal',
-                      !outDate && 'text-muted-foreground'
-                    )
-                  "
-                >
-                  <span>{{
-                    outDate ? df.format(toDate(outDate)) : "Pilih tanggal"
-                  }}</span>
-                  <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent class="w-auto p-0">
-              <Calendar
-                v-model="outDate"
-                @update:model-value="
-                  (v) => setFieldValue('out_date', v?.toString())
-                "
-              />
-            </PopoverContent>
-          </Popover>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-
-      <FormField v-slot="{ componentField }" name="brand">
+      <FormField v-slot="{ componentField }" name="lokasi_penerima">
         <FormItem>
-          <FormLabel>Merek</FormLabel>
+          <FormLabel>Lokasi Penerima</FormLabel>
+          <FormControl>
+            <Input type="text" placeholder="" v-bind="componentField" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="merek_perangkat">
+        <FormItem>
+          <FormLabel>Merek Perangkat</FormLabel>
           <FormControl>
             <Input type="text" placeholder="" v-bind="componentField" />
           </FormControl>
@@ -294,7 +312,7 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="warranty_number">
+      <FormField v-slot="{ componentField }" name="nomor_kartu_garansi">
         <FormItem>
           <FormLabel>Nomor Kartu Garansi</FormLabel>
           <FormControl>
@@ -304,7 +322,7 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField name="warranty_start">
+      <FormField name="masa_garansi_mulai">
         <FormItem class="flex flex-col">
           <FormLabel>Garansi Mulai</FormLabel>
           <Popover>
@@ -332,7 +350,7 @@ const activationDate = computed({
               <Calendar
                 v-model="warrantyStart"
                 @update:model-value="
-                  (v) => setFieldValue('warranty_start', v?.toString())
+                  (v) => setFieldValue('masa_garansi_mulai', v?.toString())
                 "
               />
             </PopoverContent>
@@ -341,7 +359,7 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField name="warranty_end">
+      <FormField name="masa_berakhir_garansi">
         <FormItem class="flex flex-col">
           <FormLabel>Garansi Berakhir</FormLabel>
           <Popover>
@@ -369,7 +387,7 @@ const activationDate = computed({
               <Calendar
                 v-model="warrantyEnd"
                 @update:model-value="
-                  (v) => setFieldValue('warranty_end', v?.toString())
+                  (v) => setFieldValue('masa_berakhir_garansi', v?.toString())
                 "
               />
             </PopoverContent>
@@ -378,7 +396,7 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField name="activation_date">
+      <FormField name="tanggal_aktivasi_perangkat">
         <FormItem class="flex flex-col">
           <FormLabel>Aktivasi Perangkat</FormLabel>
           <Popover>
@@ -406,7 +424,8 @@ const activationDate = computed({
               <Calendar
                 v-model="activationDate"
                 @update:model-value="
-                  (v) => setFieldValue('activation_date', v?.toString())
+                  (v) =>
+                    setFieldValue('tanggal_aktivasi_perangkat', v?.toString())
                 "
               />
             </PopoverContent>
@@ -415,55 +434,29 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="usage_period">
+      <FormField v-slot="{ componentField }" name="jangka_masa_pakai">
         <FormItem>
-          <FormLabel>Jangka Masa Pakai</FormLabel>
-          <Select v-bind="componentField">
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih Jangka Waktu" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <template v-for="item in usagePeriods">
-                  <SelectItem :value="item.value">
-                    {{ item.label }}
-                  </SelectItem>
-                </template>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <FormLabel>Jangka Masa Pakai (Tahun)</FormLabel>
+          <FormControl>
+            <Input type="number" placeholder="" v-bind="componentField" />
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="pic">
+      <FormField v-slot="{ componentField }" name="penanggung_jawab_perangkat">
         <FormItem>
           <FormLabel>Penanggung Jawab</FormLabel>
-          <Select v-bind="componentField">
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih Penanggung Jawab" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              <SelectGroup>
-                <template v-for="item in pics">
-                  <SelectItem :value="item.value">
-                    {{ item.label }}
-                  </SelectItem>
-                </template>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <FormControl>
+            <Input type="text" placeholder="" v-bind="componentField" />
+          </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="asset_status">
+      <FormField v-slot="{ componentField }" name="status_perangkat">
         <FormItem>
-          <FormLabel>Status Asset</FormLabel>
+          <FormLabel>Status Perangkat</FormLabel>
           <Select v-bind="componentField">
             <FormControl>
               <SelectTrigger>
@@ -472,7 +465,7 @@ const activationDate = computed({
             </FormControl>
             <SelectContent>
               <SelectGroup>
-                <template v-for="item in assetStatuses">
+                <template v-for="item in deviceStatuses">
                   <SelectItem :value="item.value">
                     {{ item.label }}
                   </SelectItem>
@@ -484,7 +477,7 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="inspection_result">
+      <FormField v-slot="{ componentField }" name="hasil_pemeriksaan_perangkat">
         <FormItem>
           <FormLabel>Hasil Pemeriksaan</FormLabel>
           <FormControl>
@@ -498,24 +491,110 @@ const activationDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="storage_location">
+      <FormField v-slot="{ componentField }" name="detail_spesifikasi">
         <FormItem>
-          <FormLabel>Lokasi Penyimpanan</FormLabel>
+          <FormLabel>Detail Spesifikasi</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="" v-bind="componentField" />
+            <Textarea
+              placeholder=""
+              class="resize-none"
+              v-bind="componentField"
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="purchase_note">
+      <FormField v-slot="{ componentField }" name="harga_perangkat">
+        <FormItem>
+          <FormLabel>Harga Perangkat</FormLabel>
+          <FormControl>
+            <Input type="number" placeholder="" v-bind="componentField" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="depresiasi_perangkat">
+        <FormItem>
+          <FormLabel>Depresiasi Perangkat</FormLabel>
+          <FormControl>
+            <Input type="number" placeholder="" v-bind="componentField" />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="divisi_pengguna">
+        <FormItem>
+          <FormLabel>Divisi Pengguna</FormLabel>
+          <Select v-bind="componentField">
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Pilih Divisi" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectGroup>
+                <template v-for="item in divisions">
+                  <SelectItem :value="item.value">
+                    {{ item.label }}
+                  </SelectItem>
+                </template>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="kondisi_aset">
+        <FormItem>
+          <FormLabel>Kondisi Aset</FormLabel>
+          <Select v-bind="componentField">
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Pilih Kondisi" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectGroup>
+                <template v-for="item in assetConditions">
+                  <SelectItem :value="item.value">
+                    {{ item.label }}
+                  </SelectItem>
+                </template>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="tanda_terima">
+        <FormItem>
+          <FormLabel>Tanda Terima</FormLabel>
+          <FormControl>
+            <Input
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              @change="(e) => setFieldValue('tanda_terima', e.target.files[0])"
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+      <FormField v-slot="{ componentField }" name="nota_pembelian">
         <FormItem>
           <FormLabel>Nota Pembelian</FormLabel>
           <FormControl>
             <Input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png"
-              @change="(e) => setFieldValue('purchase_note', e.target.files[0])"
+              @change="
+                (e) => setFieldValue('nota_pembelian', e.target.files[0])
+              "
             />
           </FormControl>
           <FormMessage />

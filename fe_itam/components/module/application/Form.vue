@@ -1,28 +1,30 @@
 <script setup lang="ts">
-import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast/use-toast";
-import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as z from "zod";
-import { toDate } from "radix-vue/date";
+import { cn } from "@/lib/utils";
 import {
-  CalendarDate,
   DateFormatter,
-  getLocalTimeZone,
-  parseDate,
-  today,
+  parseDate
 } from "@internationalized/date";
 import { CalendarIcon } from "@radix-icons/vue";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -31,13 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
 
 const props = defineProps<{
   type: string;
@@ -482,7 +477,7 @@ const transformDate = (serverDate: string) => {
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ componentField }" name="dokumentasi">
+        <!-- <FormField v-slot="{ componentField }" name="dokumentasi">
           <FormItem>
             <FormLabel>Dokumentasi</FormLabel>
             <FormControl>
@@ -494,7 +489,7 @@ const transformDate = (serverDate: string) => {
             </FormControl>
             <FormMessage />
           </FormItem>
-        </FormField>
+        </FormField> -->
       </div>
     </form>
 
