@@ -126,7 +126,7 @@ func (h *AssetHardwareServiceImpl) FindById(detailAsetHardwareId int64) (detailA
 	detailAsetHardware = Response.DetailAsetHardwareResponse{
 		Id:                       data.ID,
 		WaktuPenerimaan:          data.WaktuPenerimaan,
-		BuktiPenerimaan:          os.Getenv("PUBLIC_URL_STORAGE") + "tanda_terim" + data.BuktiPenerimaan,
+		BuktiPenerimaan:          os.Getenv("PUBLIC_URL_STORAGE") + "tanda_terima/" + data.BuktiPenerimaan,
 		TipeAset:                 data.TipeAset,
 		TanggalAktivasiPerangkat: data.TanggalAktivasiPerangkat,
 		HasilPemeriksaan:         data.HasilPemeriksaan,
@@ -142,7 +142,7 @@ func (h *AssetHardwareServiceImpl) FindById(detailAsetHardwareId int64) (detailA
 		JangkaMasaPakai:          data.JangkaMasaPakai,
 		WaktuAsetKeluar:          data.WaktuAsetKeluar,
 		KondisiAset:              data.KondisiAset,
-		NotaPembelian:            os.Getenv("PUBLIC_URL_STORAGE") + "nota_pembelian" + data.NotaPembelian,
+		NotaPembelian:            os.Getenv("PUBLIC_URL_STORAGE") + "nota_pembelian/" + data.NotaPembelian,
 		DivisiID:                 data.DivisiID,
 		AssetID:                  data.AssetID,
 		Asset: Response.AssetResponse{
@@ -173,7 +173,7 @@ func (h *AssetHardwareServiceImpl) FindAll() (detailAsetHardwares []Response.Det
 			detailAsetHardwares = append(detailAsetHardwares, Response.DetailAsetHardwareResponse{
 				Id:                       d.ID,
 				WaktuPenerimaan:          d.WaktuPenerimaan,
-				BuktiPenerimaan:          os.Getenv("PUBLIC_URL_STORAGE") + "tanda_terima" + d.BuktiPenerimaan,
+				BuktiPenerimaan:          os.Getenv("PUBLIC_URL_STORAGE") + "tanda_terima/" + d.BuktiPenerimaan,
 				TipeAset:                 d.TipeAset,
 				TanggalAktivasiPerangkat: d.TanggalAktivasiPerangkat,
 				HasilPemeriksaan:         d.HasilPemeriksaan,
@@ -189,7 +189,7 @@ func (h *AssetHardwareServiceImpl) FindAll() (detailAsetHardwares []Response.Det
 				JangkaMasaPakai:          d.JangkaMasaPakai,
 				WaktuAsetKeluar:          d.WaktuAsetKeluar,
 				KondisiAset:              d.KondisiAset,
-				NotaPembelian:            os.Getenv("PUBLIC_URL_STORAGE") + "nota_pembelian" + d.NotaPembelian,
+				NotaPembelian:            os.Getenv("PUBLIC_URL_STORAGE") + "nota_pembelian/" + d.NotaPembelian,
 				DivisiID:                 d.DivisiID,
 				AssetID:                  d.AssetID,
 				Asset: Response.AssetResponse{
