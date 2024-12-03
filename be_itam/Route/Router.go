@@ -75,6 +75,7 @@ import (
 // - PATCH  /api/divisi                : Update
 // - DELETE /api/divisi/:divisiId       : Delete
 func NewRouter(c *fiber.App) {
+	c.Static("/api", "./public/static")
 
 	assetController := AssetDI(Config.DB)
 	c.Get("/api/asset", assetController.FindAll)
