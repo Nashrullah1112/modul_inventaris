@@ -49,7 +49,7 @@ const sidebarItem = reactive({
   top: [
     {
       title: "Dashboard",
-      url: "/dashboard/Dashboard",
+      url: "/",
       icon: HomeIcon,
       dropdown: false,
     },

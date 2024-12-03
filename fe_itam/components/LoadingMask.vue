@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import { Vue3Lottie } from 'vue3-lottie'
+import loadingAnimation from '~/assets/raw/loading-anim.json'
 const { isVisible } = useLoading()
 </script>
 
 <template>
   <div v-if="isVisible" class="loading-mask">
-    <div class="spinner"></div>
+    <Vue3Lottie 
+      :animationData="loadingAnimation" 
+      :height="300" 
+      :width="300" 
+      :loop="true"
+      :speed="0.8"
+    />
   </div>
 </template>
 
@@ -20,20 +28,5 @@ const { isVisible } = useLoading()
   align-items: center;
   justify-content: center;
   z-index: 1000;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #ccc;
-  border-top: 5px solid #000;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 </style>
