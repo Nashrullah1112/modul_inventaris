@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { cn } from "@/lib/utils";
 import {
   DateFormatter,
@@ -34,6 +35,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "~/components/ui/toast";
 
 const props = defineProps<{
   type: string;
@@ -41,12 +43,43 @@ const props = defineProps<{
 }>();
 
 const config = useRuntimeConfig();
+const router = useRouter();
 const { showLoading, hideLoading } = useLoading();
+const { toast } = useToast();
+const vendors = ref<Vendor[]>([]);
+const divisions = ref<Division[]>([]);
+const users = ref<User[]>([]);
+const assetConditions = [
+  { label: "Baik", value: "Baik" },
+  { label: "Rusak", value: "Rusak" },
+  { label: "Hilang", value: "Hilang" },
+];
+
+const deviceStatuses = [
+  { label: "Aktif", value: "Aktif" },
+  { label: "Tidak Aktif", value: "Tidak Aktif" },
+];
+
+interface User {
+  id: number;
+  nama: string;
+}
+
+interface Division {
+  id: number;
+  nama: string;
+}
+
+interface Vendor {
+  id: number;
+  nama: string;
+}
+
 
 /* handle form */
 const formSchema = toTypedSchema(
   z.object({
-    vendor_id: z.string().min(1, "Vendor harus dipilih"),
+    vendor_id: z.number().min(1, "Vendor harus dipilih"),
     merek_perangkat: z.string().min(1, "Merek perangkat harus diisi"),
     nomor_nota: z.string().min(1, "Nomor nota harus diisi"),
     lokasi_penerima: z.string().min(1, "Lokasi penerima harus diisi"),
@@ -57,11 +90,12 @@ const formSchema = toTypedSchema(
       .min(1, "Penanggung jawab harus dipilih"),
     model: z.string().min(1, "Model harus diisi"),
     serial_number: z.string().min(1, "Serial number harus diisi"),
-    harga_perangkat: z.string().min(1, "Harga perangkat harus diisi"),
-    depresiasi_perangkat: z.string().min(1, "Depresiasi perangkat harus diisi"),
+    harga_perangkat: z.number().min(1, "Harga perangkat harus diisi"),
+    depresiasi_perangkat: z.number().min(1, "Depresiasi perangkat harus diisi"),
     tanda_terima: z.any(),
     kondisi_aset: z.string().min(1, "Kondisi aset harus dipilih"),
     tipe_perangkat: z.string().min(1, "Tipe perangkat harus dipilih"),
+    tanggal_aset_keluar: z.string().date().min(1, "Tanggal aset keluar harus diisi"),
     tanggal_aktivasi_perangkat: z
       .string()
       .min(1, "Tanggal aktivasi harus diisi"),
@@ -71,12 +105,12 @@ const formSchema = toTypedSchema(
     hasil_pemeriksaan_perangkat: z
       .string()
       .min(1, "Hasil pemeriksaan harus diisi"),
-    jangka_masa_pakai: z.string().min(1, "Jangka masa pakai harus diisi"),
+    jangka_masa_pakai: z.number().min(1, "Jangka masa pakai harus diisi"),
     status_perangkat: z.string().min(1, "Status perangkat harus dipilih"),
     nota_pembelian: z.any(),
     detail_spesifikasi: z.string().min(1, "Detail spesifikasi harus diisi"),
     nomor_kartu_garansi: z.string().min(1, "Nomor kartu garansi harus diisi"),
-    divisi_pengguna: z.string().min(1, "Divisi pengguna harus dipilih"),
+    divisi_pengguna: z.number().min(1, "Divisi pengguna harus dipilih"),
   })
 );
 
@@ -84,57 +118,99 @@ const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
 });
 
+
+const endpoint = props.type === "new" ? "/form-hardware" : "/asset/hardware" + props.data.id;
+
+``
 const onSubmit = handleSubmit(async (values) => {
-  showLoading();
+  try {
+    showLoading();
 
-  const formData = new FormData();
-  Object.keys(values).forEach((key) => {
-    formData.append(key, values[key]);
-  });
+    const formData = new FormData();
 
-  const { data, status } = await useFetch(
-    config.public.API_URL + "/form-hardware",
-    {
-      method: "POST",
-      body: formData,
+    (Object.keys(values) as Array<keyof typeof values>).forEach(key => {
+      const value = values[key];
+
+      if ((key === 'tanda_terima' || key === 'nota_pembelian') && value instanceof File) {
+        formData.append(key, value);
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
+      }
+    });
+
+    const { data, status, error } = await useFetch(
+      config.public.API_URL + endpoint,
+      {
+        method: props.type == "new" ? "POST" : "PATCH",
+        body: formData,
+      }
+    )
+
+    if (status.value === 'success') {
+      toast({
+        title: 'Success',
+        description: `Data submitted successfully`,
+      })
+      router.push('/hardware');
     }
-  );
 
-  hideLoading();
-
-  if (status.value == "success") {
-    navigateTo("/hardware");
+  } catch (error) {
+    hideLoading();
+    toast({
+      title: 'Gagal Menyimpan Data',
+      description: `Gagal menyimpan data, silahkan coba lagi`,
+      variant: 'destructive'
+    })
+    console.log("Terjadi kesalahan:", error);
+  } finally {
+    hideLoading();
   }
 });
 
 const df = new DateFormatter("id-ID", {
   dateStyle: "long",
 });
-/* data select vendor */
-const vendors = ref([]);
 
-const getVendorData = async () => {
+async function fetchDropdownData() {
   try {
-    const { data, status } = await useFetch(config.public.API_URL + "/vendor");
+    showLoading();
 
-    if (status.value == "success" && data.value?.data?.length) {
-      vendors.value = data.value.data.map((item) => {
-        return {
-          value: item.id,
-          label: item.nama_pic,
-        };
-      });
-    }
+    const userResponse = await $fetch<ApiResponse<{ id: number; nama: string }>>(
+      config.public.API_URL + "/user"
+    );
+
+    users.value = userResponse.data.map(user => ({
+      id: user.id,
+      nama: user.nama
+    }));
+
+    const divisionResponse = await $fetch<ApiResponse<{ id: number; nama: string }>>(
+      config.public.API_URL + "/divisi"
+    );
+
+    divisions.value = divisionResponse.data.map(division => ({
+      id: division.id,
+      nama: division.nama
+    }));
+
+    const vendorResponse = await $fetch<ApiResponse<{ id: number; nama_pic: string }>>(
+      config.public.API_URL + "/vendor"
+    );
+
+    vendors.value = vendorResponse.data.map(vendor => ({
+      id: vendor.id,
+      nama: vendor.nama_pic
+    }));
   } catch (error) {
     console.error("Terjadi kesalahan:", error);
+  } finally {
+    hideLoading();
   }
-};
+}
+
 
 onMounted(() => {
-  const retryInterval = setInterval(() => {
-    if (!vendors.value?.length) getVendorData();
-    else clearInterval(retryInterval);
-  }, 500);
+  fetchDropdownData();
 });
 
 /* hold datefield values */
@@ -169,6 +245,14 @@ const activationDate = computed({
       : undefined,
   set: (val) => val,
 });
+
+const assetOutDate = computed({
+  get: () =>
+    values.tanggal_aset_keluar
+      ? parseDate(values.tanggal_aset_keluar)
+      : undefined,
+  set: (val) => val,
+});
 </script>
 
 <template>
@@ -185,9 +269,9 @@ const activationDate = computed({
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <template v-for="item in vendors" :key="item.value">
-                    <SelectItem :value="item.value">
-                      {{ item.label }}
+                  <template v-for="item in vendors" :key="item.id">
+                    <SelectItem :value="item.id">
+                      {{ item.nama }}
                     </SelectItem>
                   </template>
                 </SelectGroup>
@@ -251,15 +335,11 @@ const activationDate = computed({
           <Popover>
             <PopoverTrigger as-child>
               <FormControl>
-                <Button
-                  variant="outline"
-                  :class="
-                    cn(
-                      'ps-3 text-start font-normal',
-                      !receivedDate && 'text-muted-foreground'
-                    )
-                  "
-                >
+                <Button variant="outline" :class="cn(
+                  'ps-3 text-start font-normal',
+                  !receivedDate && 'text-muted-foreground'
+                )
+                  ">
                   <span>{{
                     receivedDate
                       ? df.format(toDate(receivedDate))
@@ -270,12 +350,8 @@ const activationDate = computed({
               </FormControl>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
-              <Calendar
-                v-model="receivedDate"
-                @update:model-value="
-                  (v) => setFieldValue('tanggal_penerimaan', v?.toString())
-                "
-              />
+              <Calendar v-model="receivedDate" @update:model-value="(v) => setFieldValue('tanggal_penerimaan', v?.toString())
+                " />
             </PopoverContent>
           </Popover>
           <FormMessage />
@@ -328,15 +404,11 @@ const activationDate = computed({
           <Popover>
             <PopoverTrigger as-child>
               <FormControl>
-                <Button
-                  variant="outline"
-                  :class="
-                    cn(
-                      'ps-3 text-start font-normal',
-                      !warrantyStart && 'text-muted-foreground'
-                    )
-                  "
-                >
+                <Button variant="outline" :class="cn(
+                  'ps-3 text-start font-normal',
+                  !warrantyStart && 'text-muted-foreground'
+                )
+                  ">
                   <span>{{
                     warrantyStart
                       ? df.format(toDate(warrantyStart))
@@ -347,12 +419,8 @@ const activationDate = computed({
               </FormControl>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
-              <Calendar
-                v-model="warrantyStart"
-                @update:model-value="
-                  (v) => setFieldValue('masa_garansi_mulai', v?.toString())
-                "
-              />
+              <Calendar v-model="warrantyStart" @update:model-value="(v) => setFieldValue('masa_garansi_mulai', v?.toString())
+                " />
             </PopoverContent>
           </Popover>
           <FormMessage />
@@ -365,15 +433,11 @@ const activationDate = computed({
           <Popover>
             <PopoverTrigger as-child>
               <FormControl>
-                <Button
-                  variant="outline"
-                  :class="
-                    cn(
-                      'ps-3 text-start font-normal',
-                      !warrantyEnd && 'text-muted-foreground'
-                    )
-                  "
-                >
+                <Button variant="outline" :class="cn(
+                  'ps-3 text-start font-normal',
+                  !warrantyEnd && 'text-muted-foreground'
+                )
+                  ">
                   <span>{{
                     warrantyEnd
                       ? df.format(toDate(warrantyEnd))
@@ -384,12 +448,8 @@ const activationDate = computed({
               </FormControl>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
-              <Calendar
-                v-model="warrantyEnd"
-                @update:model-value="
-                  (v) => setFieldValue('masa_berakhir_garansi', v?.toString())
-                "
-              />
+              <Calendar v-model="warrantyEnd" @update:model-value="(v) => setFieldValue('masa_berakhir_garansi', v?.toString())
+                " />
             </PopoverContent>
           </Popover>
           <FormMessage />
@@ -402,15 +462,11 @@ const activationDate = computed({
           <Popover>
             <PopoverTrigger as-child>
               <FormControl>
-                <Button
-                  variant="outline"
-                  :class="
-                    cn(
-                      'ps-3 text-start font-normal',
-                      !activationDate && 'text-muted-foreground'
-                    )
-                  "
-                >
+                <Button variant="outline" :class="cn(
+                  'ps-3 text-start font-normal',
+                  !activationDate && 'text-muted-foreground'
+                )
+                  ">
                   <span>{{
                     activationDate
                       ? df.format(toDate(activationDate))
@@ -421,18 +477,46 @@ const activationDate = computed({
               </FormControl>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
-              <Calendar
-                v-model="activationDate"
-                @update:model-value="
-                  (v) =>
-                    setFieldValue('tanggal_aktivasi_perangkat', v?.toString())
-                "
-              />
+              <Calendar v-model="activationDate" @update:model-value="(v) =>
+                setFieldValue('tanggal_aktivasi_perangkat', v?.toString())
+                " />
             </PopoverContent>
           </Popover>
           <FormMessage />
         </FormItem>
       </FormField>
+
+      <FormField name="tanggal_aset_keluar">
+        <FormItem class="flex flex-col">
+          <FormLabel>Tanggal Aset Keluar</FormLabel>
+          <Popover>
+            <PopoverTrigger as-child>
+              <FormControl>
+                <Button variant="outline" :class="cn(
+                  'ps-3 text-start font-normal',
+                  !assetOutDate && 'text-muted-foreground'
+                )
+                  ">
+                  <span>{{
+                    assetOutDate
+                      ? df.format(toDate(assetOutDate))
+                      : "Pilih tanggal"
+                  }}</span>
+                  <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent class="w-auto p-0">
+              <Calendar v-model="assetOutDate" @update:model-value="(v) =>
+                setFieldValue('tanggal_aset_keluar', v?.toString())
+                " />
+            </PopoverContent>
+          </Popover>
+          <FormMessage />
+        </FormItem>
+      </FormField>
+
+
 
       <FormField v-slot="{ componentField }" name="jangka_masa_pakai">
         <FormItem>
@@ -446,10 +530,23 @@ const activationDate = computed({
 
       <FormField v-slot="{ componentField }" name="penanggung_jawab_perangkat">
         <FormItem>
-          <FormLabel>Penanggung Jawab</FormLabel>
-          <FormControl>
-            <Input type="text" placeholder="" v-bind="componentField" />
-          </FormControl>
+          <FormLabel>Penanggung Jawab Perangkat</FormLabel>
+          <Select v-bind="componentField">
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Pilih Penanggung Jawab Perangkat" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectGroup>
+                <template v-for="item in users">
+                  <SelectItem :value="item.nama">
+                    {{ item.nama }}
+                  </SelectItem>
+                </template>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
           <FormMessage />
         </FormItem>
       </FormField>
@@ -481,11 +578,7 @@ const activationDate = computed({
         <FormItem>
           <FormLabel>Hasil Pemeriksaan</FormLabel>
           <FormControl>
-            <Textarea
-              placeholder=""
-              class="resize-none"
-              v-bind="componentField"
-            />
+            <Textarea placeholder="" class="resize-none" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -495,11 +588,7 @@ const activationDate = computed({
         <FormItem>
           <FormLabel>Detail Spesifikasi</FormLabel>
           <FormControl>
-            <Textarea
-              placeholder=""
-              class="resize-none"
-              v-bind="componentField"
-            />
+            <Textarea placeholder="" class="resize-none" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -535,12 +624,10 @@ const activationDate = computed({
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectGroup>
-                <template v-for="item in divisions">
-                  <SelectItem :value="item.value">
-                    {{ item.label }}
-                  </SelectItem>
-                </template>
+              <SelectGroup label="Divisions">
+                <SelectItem v-for="item in divisions" :key="item.id" :value="item.id">
+                  {{ item.nama }}
+                </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -575,11 +662,10 @@ const activationDate = computed({
         <FormItem>
           <FormLabel>Tanda Terima</FormLabel>
           <FormControl>
-            <Input
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-              @change="(e) => setFieldValue('tanda_terima', e.target.files[0])"
-            />
+            <Input type="file" accept=".pdf,.jpg,.jpeg,.png" @change="(e: any) => {
+              const file = e.target.files[0];
+              setFieldValue('tanda_terima', file ? file : null);
+            }" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -589,13 +675,10 @@ const activationDate = computed({
         <FormItem>
           <FormLabel>Nota Pembelian</FormLabel>
           <FormControl>
-            <Input
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png"
-              @change="
-                (e) => setFieldValue('nota_pembelian', e.target.files[0])
-              "
-            />
+            <Input type="file" accept=".pdf,.jpg,.jpeg,.png" @change="(e: any) => {
+              const file = e.target.files[0];
+              setFieldValue('nota_pembelian', file ? file : null);
+            }" />
           </FormControl>
           <FormMessage />
         </FormItem>

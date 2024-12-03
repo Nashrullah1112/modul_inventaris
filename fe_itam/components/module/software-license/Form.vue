@@ -1,20 +1,16 @@
 <script setup lang="ts">
-import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/toast/use-toast";
-import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
-import * as z from "zod";
-import { toDate } from "radix-vue/date";
+import { cn } from "@/lib/utils";
 import {
-  CalendarDate,
-  DateFormatter,
-  getLocalTimeZone,
-  parseDate,
-  today,
+  parseDate
 } from "@internationalized/date";
 import { CalendarIcon } from "@radix-icons/vue";
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   FormControl,
   FormField,
@@ -22,6 +18,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -30,13 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
 
 const props = defineProps<{
   type: string;
@@ -47,6 +42,7 @@ const config = useRuntimeConfig();
 const route = useRoute();
 const { showLoading, hideLoading } = useLoading();
 const { toast } = useToast();
+const vendors = ref([]);
 
 /* hold datefield value */
 const waktuPembelian = computed({
@@ -68,7 +64,6 @@ const tanggalExpired = computed({
 });
 
 /* data select vendor */
-const vendors = ref([]);
 
 const getVendorData = async () => {
   try {
