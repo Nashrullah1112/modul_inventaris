@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -8,11 +8,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/toast/use-toast";
-
+import { onMounted, ref } from "vue";
+const config = useRuntimeConfig();
+const { showLoading, hideLoading } = useLoading();
 const { toast } = useToast();
+const isOpen = ref(false);
+const selectedRows = ref<number[]>([]);
+const disposalData = ref<Disposal[]>([]);
+const errorMessage = ref<string | null>(null);
+
+interface Disposal {
+  id: number;
+  vendor_id: number;
+  serial_number: string;
+  merk: string,
+  model: string,
+  nomor_nota: string,
+}
 
 async function handleDelete(id: number) {
   try {
@@ -63,47 +76,35 @@ async function handleBulkDelete() {
   }
 }
 
-interface Disposal {
-  id: number;
-  asset_number: string;
-  asset_name: string;
-  asset_type: string;
-  disposal_date: string;
-  disposal_reason: string;
-  disposal_status: string;
-}
-
-const disposalData = ref<Disposal[]>([]);
-const isLoading = ref(false);
-const errorMessage = ref<string | null>(null);
-
 async function fetchDisposalData() {
   try {
-    isLoading.value = true;
+    showLoading();
     errorMessage.value = null;
 
-    const response = await $fetch<{
-      message: string;
+    const { data, error } = await useFetch<{
       data: Disposal[];
-    }>("/api/disposal", {
+    }>(config.public.API_URL + "/disposal", {
       method: "GET",
     });
 
-    disposalData.value = response.data;
+    if (error.value) {
+      throw error.value;
+    }
+
+    disposalData.value = data.value?.data || [];
+
+
   } catch (error) {
     console.error("Error fetching disposal data:", error);
     errorMessage.value = "Gagal mengambil data disposal";
   } finally {
-    isLoading.value = false;
+    hideLoading();
   }
 }
 
 onMounted(() => {
   fetchDisposalData();
 });
-
-const isOpen = ref(false);
-const selectedRows = ref<number[]>([]);
 
 const handleSelectAll = (checked: boolean) => {
   if (checked) {
@@ -123,7 +124,7 @@ const handleSelectRow = (checked: boolean, id: number) => {
 </script>
 
 <template>
-  <div class="p-8" :class="{ 'ml-64': isOpen, 'ml-20': !isOpen }">
+  <div class="">
     <div class="bg-white rounded-lg shadow-lg">
       <div class="p-6 border-b border-gray-200">
         <h1 class="text-2xl font-bold text-gray-800">Data Disposal</h1>
@@ -141,35 +142,28 @@ const handleSelectRow = (checked: boolean, id: number) => {
             <TableHeader>
               <TableRow>
                 <TableHead class="w-12">
-                  <Checkbox
-                    :checked="selectedRows.length === disposalData.length"
-                    :indeterminate="
-                      selectedRows.length > 0 &&
-                      selectedRows.length < disposalData.length
-                    "
-                    @update:checked="handleSelectAll"
-                  />
+                  <Checkbox :checked="selectedRows.length === disposalData.length" :indeterminate="selectedRows.length > 0 &&
+                    selectedRows.length < disposalData.length
+                    " @update:checked="handleSelectAll" />
                 </TableHead>
-                <TableHead class="font-semibold">Nomor Aset</TableHead>
-                <TableHead class="font-semibold">Nama Aset</TableHead>
-                <TableHead class="font-semibold">Tipe Aset</TableHead>
-                <TableHead class="font-semibold">Tanggal Disposal</TableHead>
+                <TableHead class="font-semibold">Id Aset</TableHead>
+                <TableHead class="font-semibold">Nomor Serial</TableHead>
+                <TableHead class="font-semibold">Merek Aset</TableHead>
+                <TableHead class="font-semibold">Model Aset</TableHead>
+                <TableHead class="font-semibold">Nomor Nota</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow v-for="item in disposalData" :key="item.id">
                 <TableCell>
-                  <Checkbox
-                    :checked="selectedRows.includes(item.id)"
-                    @update:checked="
-                      (checked) => handleSelectRow(checked, item.id)
-                    "
-                  />
+                  <Checkbox :checked="selectedRows.includes(item.id)" @update:checked="(checked) => handleSelectRow(checked, item.id)
+                    " />
                 </TableCell>
-                <TableCell>{{ item.asset_number }}</TableCell>
-                <TableCell>{{ item.asset_name }}</TableCell>
-                <TableCell>{{ item.asset_type }}</TableCell>
-                <TableCell>{{ item.disposal_date }}</TableCell>
+                <TableCell>{{ item.id }}</TableCell>
+                <TableCell>{{ item.serial_number }}</TableCell>
+                <TableCell>{{ item.merk }}</TableCell>
+                <TableCell>{{ item.model }}</TableCell>
+                <TableCell>{{ item.nomor_nota }}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -183,9 +177,11 @@ const handleSelectRow = (checked: boolean, id: number) => {
 .badge-pending {
   @apply bg-yellow-100 text-yellow-800;
 }
+
 .badge-approved {
   @apply bg-green-100 text-green-800;
 }
+
 .badge-rejected {
   @apply bg-red-100 text-red-800;
 }

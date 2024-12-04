@@ -8,7 +8,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { CalendarIcon } from "@radix-icons/vue";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -21,6 +23,8 @@ import { useForm } from "vee-validate";
 import { computed, ref } from 'vue';
 import * as z from "zod";
 import { useRouter } from 'vue-router';
+import { DateFormatter } from "@internationalized/date";
+import { toDate } from "date-fns";
 
 const router = useRouter();
 const config = useRuntimeConfig();
@@ -32,6 +36,9 @@ const props = defineProps<{
 const currentStep = ref(1);
 
 const emit = defineEmits(['asset-registered']);
+const df = new DateFormatter("id-ID", {
+  dateStyle: "long",
+});
 
 const formSchema = z.object({
   namasupllier: z.string().min(1, "Supplier harus dipilih"),
@@ -95,6 +102,11 @@ const form = useForm({
     rom: 0,
   },
 });
+
+const { handleSubmit, setFieldValue, values } = useForm({
+  validationSchema: formSchema,
+});
+
 
 const step1Fields = [
   'namasupllier',
@@ -253,6 +265,14 @@ const submitButtonClasses = computed(() => {
     ? "px-6 py-2 bg-green-600 text-white hover:bg-green-700"
     : "px-6 py-2 bg-blue-600 text-white hover:bg-blue-700";
 });
+
+const achievedDate = computed({
+  get: () =>
+    values.tanggal_penerimaan
+      ? parseDate(values.tanggal_penerimaan)
+      : undefined,
+  set: (val) => val,
+});
 </script>
 
 <template>
@@ -299,13 +319,8 @@ const submitButtonClasses = computed(() => {
                 {{ getFieldLabel(field) }}
               </FormLabel>
               <FormControl>
-
-                <Select v-if="[
-                  'namasupllier',
-                  'tipeasset',
-                  'kondisiasset',
-                  'status'
-                ].includes(field)" v-bind="formField">
+                <Select v-if="['namasupllier', 'tipeasset', 'kondisiasset', 'status'].includes(field)"
+                  v-bind="formField">
                   <SelectTrigger class="w-full">
                     <SelectValue :placeholder="`Pilih ${getFieldLabel(field)}`" />
                   </SelectTrigger>
@@ -319,7 +334,32 @@ const submitButtonClasses = computed(() => {
                 <Input v-else-if="['tandaterima', 'hasilpemeriksaan'].includes(field)" type="file" class="w-full"
                   v-bind="formField" />
 
-                <Input v-else-if="['achievedDate'].includes(field)" type="date" class="w-full" v-bind="formField" />
+                <FormField v-else-if="['achievedDate'].includes(field)" name="achieved_date">
+                  <FormItem class="flex flex-col">
+                    <Popover>
+                      <PopoverTrigger as-child>
+                        <FormControl>
+                          <Button variant="outline" :class="cn(
+                            'ps-3 text-start font-normal',
+                            !achievedDate && 'text-muted-foreground'
+                          )">
+                            <span>{{
+                              achievedDate
+                                ? df.format(toDate(achievedDate))
+                                : "Pilih tanggal"
+                            }}</span>
+                            <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent class="w-auto p-0">
+                        <Calendar v-model="achievedDate"
+                          @update:model-value="(v) => setFieldValue('tanggal_penerimaan', v?.toString())" />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
 
                 <Input v-else-if="['nilaiasset'].includes(field)" type="number" class="w-full" v-bind="formField" />
 

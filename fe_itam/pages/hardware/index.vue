@@ -6,12 +6,28 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import ActionBtnEdit from "~/components/atoms/ActionBtnEdit.vue";
 import ActionBtnDelete from "~/components/atoms/ActionBtnDelete.vue";
-import { toast } from "~/components/ui/toast";
+import { useToast } from "~/components/ui/toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+
 
 const config = useRuntimeConfig();
+const { showLoading, hideLoading } = useLoading();
+const { toast } = useToast();
+const router = useRouter();
 const hardwareData = ref<Hardware[]>([]);
-const isLoading = ref(false);
 const errorMessage = ref<string | null>(null);
+const isDeleteDialogOpen = ref(false);
+const hardwareToDelete = ref<number | null>(null);
 
 
 
@@ -68,7 +84,7 @@ interface HardwareAsset {
 
 const fetchHardware = async () => {
   try {
-    isLoading.value = true;
+    showLoading();
     errorMessage.value = null;
 
     const response = await $fetch<{
@@ -91,10 +107,57 @@ const fetchHardware = async () => {
       description: "Data hardware loaded successfully",
     })
   } catch (error) {
+    hideLoading();
     console.error("Error fetching devices:", error);
     errorMessage.value = "Failed to load device data. Please try again.";
   } finally {
-    isLoading.value = false;
+    hideLoading();
+  }
+}
+
+const deleteData = async (id: number) => {
+  try {
+    showLoading();
+    errorMessage.value = null;
+
+    const { status, data, error } = await useFetch<{
+      message: string;
+      data: Hardware[];
+      error: any;
+    }>(config.public.API_URL + "/asset-hardware/" + id, {
+      method: "DELETE",
+    });
+
+    hardwareData.value = hardwareData.value.filter(item => item.id !== id);
+
+    toast({
+      title: "Deletion Successful",
+      description: "The hardware item has been deleted.",
+      variant: "default"
+    });
+
+  } catch (error) {
+    hideLoading();
+    console.error("Error deleting device:", error);
+    errorMessage.value = "Failed to delete device. Please try again.";
+    toast({
+      title: "Deletion Failed",
+      description: "Could not delete the hardware item." + error,
+      variant: "destructive"
+    });
+  } finally {
+    hideLoading();
+  }
+}
+
+const openDeleteConfirmation = (id: number) => {
+  hardwareToDelete.value = id;
+  isDeleteDialogOpen.value = true;
+}
+
+const confirmDeletion = () => {
+  if (hardwareToDelete.value !== null) {
+    deleteData(hardwareToDelete.value);
   }
 }
 
@@ -231,7 +294,7 @@ const columns = [
         h(
           ActionBtnDelete,
           {
-            onClick: () => deleteData(row.original.id),
+            onClick: () => openDeleteConfirmation(row.original.id),
           },
           () => "Delete"
         ),
@@ -239,6 +302,7 @@ const columns = [
     },
   },
 ];
+
 </script>
 
 <template>
@@ -250,5 +314,23 @@ const columns = [
     <div class="px-6 py-2">
       <DataTable :columns="columns" :data="hardwareData || []" :dataStatus="status" />
     </div>
+
+    <AlertDialog v-model:open="isDeleteDialogOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Apakah Anda yakin ingin menghapus?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Data yang Anda pilih akan dipindahkan ke disposal dan tidak akan dihapus secara permanen.
+            Tindakan ini tidak dapat dibatalkan.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Batal</AlertDialogCancel>
+          <AlertDialogAction @click="confirmDeletion" class="bg-red-600 hover:bg-red-700 text-white">
+            Hapus
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
