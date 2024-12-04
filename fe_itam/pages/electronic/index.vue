@@ -8,10 +8,25 @@ import type { ColumnDef } from "@tanstack/vue-table";
 import { useToast } from '@/components/ui/toast/use-toast'
 import ActionBtnEdit from "~/components/atoms/ActionBtnEdit.vue";
 import ActionBtnDelete from "~/components/atoms/ActionBtnDelete.vue";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 const config = useRuntimeConfig();
 const router = useRouter();
 const { toast } = useToast()
+const { showLoading, hideLoading } = useLoading();
+const devices = ref<Device[]>([]);
+const isDeleteDialogOpen = ref(false);
+const deviceToDelete = ref<number | null>(null);
 
 interface Device {
   id: number;
@@ -43,15 +58,7 @@ interface Device {
   vendor_id: number;
 }
 
-interface Electronic {
-  id: number;
-  serialNumber: string;
-  assetNumber: string;
-  deviceName: string;
-  division: string;
-}
-
-const columns: ColumnDef<Electronic>[] = [
+const columns: ColumnDef<Device>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -152,7 +159,7 @@ const columns: ColumnDef<Electronic>[] = [
         h(
           ActionBtnDelete,
           {
-            onClick: () => deleteData(row.original.id),
+            onClick: () => openDeleteConfirmation(row.original.id),
           },
           () => "Delete"
         ),
@@ -161,34 +168,79 @@ const columns: ColumnDef<Electronic>[] = [
   },
 ];
 
-// fetch assets list
-const {
-  data: result,
-  status,
-  refresh,
-} = await useFetch(config.public.API_URL + "/asset-perangkat");
+const fetchDeviceData = async () => {
+  try {
+    showLoading();
+    const response = await $fetch<{ data: Device[] }>(config.public.API_URL + '/asset-perangkat', {
+      method: 'GET'
+    });
 
-// Delete action
+    if (response && response.data) {
+      hideLoading();
+      devices.value = response.data;
+    } else {
+      hideLoading();
+      toast({
+        title: 'Gagal Mengambil Data Perangkat Elektronik',
+        description: 'Data perangkat elektronik gagal diambil dari server.',
+        variant: 'destructive',
+      });
+    }
+  } catch (error) {
+    hideLoading();
+    console.error('Error occurred:', error);
+    toast({
+      title: 'Error',
+      description: 'Terjadi kesalahan saat mengambil data.',
+      variant: 'destructive',
+    });
+  } finally {
+    hideLoading();
+  }
+}
+
+
+onMounted(() => {
+  fetchDeviceData();
+})
+
 async function deleteData(id: number) {
   try {
+    showLoading();
     const { status } = await useFetch(config.public.API_URL + `/asset-perangkat/${id}`, {
       method: 'DELETE',
     });
 
     if (status.value == 'success') {
+      hideLoading();
       toast({
-        title: 'Success',
-        description: 'Data deleted successfully.',
+        title: 'Data Elektronik Berhasil Dihapus',
+        description: 'Data elektronik dengan ID ' + id + ' berhasil dihapus.',
       })
-      refresh()
+      devices.value = devices.value.filter(item => item.id !== id);
+      await fetchDeviceData();
+      isDeleteDialogOpen.value = false;
     } else {
+      hideLoading();
       toast({
-        title: 'Failed',
-        description: `Error when deleting data`,
+        title: 'Gagal Menghapus Data Elektronik',
+        description: `Data elektronik dengan ID ${id} gagal dihapus.`,
       })
     }
   } catch (error) {
+    hideLoading();
     console.error('Error occured:', error);
+  }
+}
+
+const openDeleteConfirmation = (id: number) => {
+  deviceToDelete.value = id;
+  isDeleteDialogOpen.value = true;
+}
+
+const confirmDeletion = () => {
+  if (deviceToDelete.value !== null) {
+    deleteData(deviceToDelete.value);
   }
 }
 </script>
@@ -197,10 +249,28 @@ async function deleteData(id: number) {
   <div class="bg-white rounded-lg shadow-lg">
     <div class="px-6 py-2 border-b border-gray-200 flex justify-between">
       <h1 class="text-2xl font-bold text-gray-800">Data Aset Elektronik</h1>
-      <Button @click="refresh()" variant="secondary">Refresh</Button>
+      <Button @click="fetchDeviceData()" variant="secondary">Refresh</Button>
     </div>
     <div class="px-6 py-2">
-      <DataTable :columns="columns" :data="result?.data || []" :dataStatus="status" />
+      <DataTable :columns="columns" :data="devices || []" :dataStatus="status" />
     </div>
+
+    <AlertDialog v-model:open="isDeleteDialogOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Apakah Anda yakin ingin menghapus?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Data yang Anda pilih akan dipindahkan ke disposal dan tidak akan dihapus secara permanen.
+            Tindakan ini tidak dapat dibatalkan.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Batal</AlertDialogCancel>
+          <AlertDialogAction @click="confirmDeletion" class="bg-red-600 hover:bg-red-700 text-white">
+            Hapus
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>

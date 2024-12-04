@@ -95,17 +95,10 @@ const fetchHardware = async () => {
       method: "GET",
     });
 
-    console.log("Response" + response.data);
-
     if (response.error) {
       throw new Error(response.error);
     }
     hardwareData.value = response.data;
-    console.log("Data hardware loaded successfully" + response.data);
-    toast({
-      title: "Data loaded",
-      description: "Data hardware loaded successfully",
-    })
   } catch (error) {
     hideLoading();
     console.error("Error fetching devices:", error);

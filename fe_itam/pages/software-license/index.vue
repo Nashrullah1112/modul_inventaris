@@ -7,10 +7,41 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/toast/use-toast";
 import ActionBtnEdit from "~/components/atoms/ActionBtnEdit.vue";
 import ActionBtnDelete from "~/components/atoms/ActionBtnDelete.vue";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import type { ColumnDef } from "@tanstack/vue-table";
 
 const router = useRouter();
 const config = useRuntimeConfig();
 const { toast } = useToast();
+const { showLoading, hideLoading } = useLoading();
+const licenses = ref<License[]>([]);
+const isDeleteDialogOpen = ref(false);
+const licenseToDelete = ref<number | null>(null);
+
+interface License {
+  id: number;
+  waktu_pembelian: string;
+  SN_perangkat_terpasang: string;
+  waktu_aktivasi: string;
+  tanggal_expired: string;
+  tipe_kepemilikan_aset: string;
+  kategori_lisensi: string;
+  versi_lisensi: string;
+  maksimal_user_aplikasi: number;
+  maksimal_perangkat_lisensi: number;
+  tipe_lisensi: string;
+  asset_id: number;
+}
 
 interface TableRow {
   getIsSelected: () => boolean;
@@ -29,7 +60,7 @@ interface Column {
   toggleSorting: (asc: boolean) => void;
 }
 
-const columns = [
+const columns: ColumnDef<License>[] = [
   {
     id: "select",
     header: ({ table }: { table: TableHeader }) =>
@@ -50,7 +81,7 @@ const columns = [
   {
     id: "nama_aplikasi",
     accessorFn: (row) => row.asset?.merk || "-", // Ubah bagian ini
-    header: ({ column }: { column: Column }) =>
+    header: ({ column }) =>
       h(
         Button,
         {
@@ -68,7 +99,7 @@ const columns = [
   },
   {
     accessorKey: "SN_perangkat_terpasang",
-    header: ({ column }: { column: Column }) =>
+    header: ({ column }) =>
       h(
         Button,
         {
@@ -83,7 +114,7 @@ const columns = [
   },
   {
     accessorKey: "kategori_lisensi",
-    header: ({ column }: { column: Column }) =>
+    header: ({ column }) =>
       h(
         Button,
         {
@@ -95,7 +126,7 @@ const columns = [
   },
   {
     accessorKey: "versi_lisensi",
-    header: ({ column }: { column: Column }) =>
+    header: ({ column }) =>
       h(
         Button,
         {
@@ -107,7 +138,7 @@ const columns = [
   },
   {
     accessorKey: "tipe_kepemilikan_aset",
-    header: ({ column }: { column: Column }) =>
+    header: ({ column }) =>
       h(
         Button,
         {
@@ -119,7 +150,7 @@ const columns = [
   },
   {
     accessorKey: "waktu_aktivasi",
-    header: ({ column }: { column: Column }) =>
+    header: ({ column }) =>
       h(
         Button,
         {
@@ -131,7 +162,7 @@ const columns = [
   },
   {
     accessorKey: "tanggal_expired",
-    header: ({ column }: { column: Column }) =>
+    header: ({ column }) =>
       h(
         Button,
         {
@@ -157,7 +188,7 @@ const columns = [
         h(
           ActionBtnDelete,
           {
-            onClick: () => deleteData(row.original.id),
+            onClick: () => openDeleteConfirmation(row.original.id),
           },
           () => "Delete"
         ),
@@ -166,25 +197,109 @@ const columns = [
   },
 ];
 
-const {
-  data: result,
-  status,
-  refresh,
-} = await useFetch(config.public.API_URL + "/asset-lisensi");
+const openDeleteConfirmation = (id: number) => {
+  licenseToDelete.value = id;
+  isDeleteDialogOpen.value = true;
+}
+
+const confirmDeletion = () => {
+  if (licenseToDelete.value !== null) {
+    deleteData(licenseToDelete.value);
+  }
+}
+
+const fetchLicenseData = async () => {
+  try {
+    showLoading();
+    const response = await $fetch<{ data: License[] }>(config.public.API_URL + '/asset-lisensi', {
+      method: 'GET'
+    });
+
+    if (response && response.data) {
+      hideLoading();
+      licenses.value = response.data;
+    } else {
+      hideLoading();
+      toast({
+        title: 'Gagal Mengambil Data Lisensi',
+        description: 'Data lisensi gagal diambil dari server.',
+        variant: 'destructive',
+      });
+    }
+  } catch (error) {
+    hideLoading();
+    console.error('Error occurred:', error);
+    toast({
+      title: 'Error',
+      description: 'Terjadi kesalahan saat mengambil data.',
+      variant: 'destructive',
+    });
+  } finally {
+    hideLoading();
+  }
+}
+
+
+async function deleteData(id: number) {
+  try {
+    showLoading
+    const { status } = await useFetch(config.public.API_URL + `/asset-lisensi/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (status.value == 'success') {
+      hideLoading();
+      toast({
+        title: 'Data Lisensi Berhasil Dihapus',
+        description: 'Data dengan ID lisensi' + id + ' berhasil dihapus.',
+      })
+      licenses.value = licenses.value.filter(item => item.id !== id);
+      await fetchLicenseData();
+      isDeleteDialogOpen.value = false;
+    } else {
+      hideLoading();
+      toast({
+        title: 'Gagal Menghapus Data Lisensi',
+        description: `Data lisensi dengan ID ${id} gagal dihapus.`,
+        variant: 'destructive',
+      })
+    }
+  } catch (error) {
+    hideLoading();
+    console.error('Error occured:', error);
+  }
+}
+
+onMounted(async () => {
+  await fetchLicenseData();
+});
 </script>
 
 <template>
   <div class="bg-background rounded-lg border shadow-sm">
     <div class="flex items-center justify-between p-6 border-b">
       <h1 class="text-lg font-semibold">Data Lisensi Software</h1>
-      <Button @click="refresh()" variant="outline" size="sm"> Refresh </Button>
+      <Button @click="fetchLicenseData()" variant="outline" size="sm"> Refresh </Button>
     </div>
     <div class="p-6">
-      <DataTable
-        :columns="columns"
-        :data="result?.data || []"
-        :dataStatus="status"
-      />
+      <DataTable :columns="columns" :data="licenses || []" :dataStatus="status" />
     </div>
+    <AlertDialog v-model:open="isDeleteDialogOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Apakah Anda yakin ingin menghapus?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Data yang Anda pilih akan dipindahkan ke disposal dan tidak akan dihapus secara permanen.
+            Tindakan ini tidak dapat dibatalkan.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Batal</AlertDialogCancel>
+          <AlertDialogAction @click="confirmDeletion" class="bg-red-600 hover:bg-red-700 text-white">
+            Hapus
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
