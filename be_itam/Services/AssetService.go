@@ -138,6 +138,16 @@ func (h *AssetServiceImpl) FindDisposal() (assets []Response.AssetResponse, serv
 			Merk:         d.Merk,
 			Model:        d.Model,
 			NomorNota:    d.NomorNota,
+			Vendor: Response.VendorResponse{
+				ID:               d.Vendor.ID,
+				PIC:              d.Vendor.PIC,
+				Email:            d.Vendor.Email,
+				NomorKontak:      d.Vendor.NomorKontak,
+				LokasiPerusahaan: d.Vendor.Lokasi,
+				NomorSIUP:        d.Vendor.NomorSIUP,
+				NomorNIB:         d.Vendor.NomorNIB,
+				NomorNPWP:        d.Vendor.NomorNPWP,
+			},
 		})
 	}
 

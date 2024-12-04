@@ -1,11 +1,14 @@
 package Controller
 
 import (
+	"fmt"
 	"itam/Constant"
 	"itam/Model/Web"
 	"itam/Model/Web/Response"
 	"itam/Services"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -34,6 +37,44 @@ func (h *AssetPerangkatControllerImpl) Create(c *fiber.Ctx) error {
 		request    Response.DetailAsetPerangkatCreateRequest
 		serviceErr *Web.ServiceErrorDto
 	)
+	fileTerima, err := c.FormFile("tanda_terima")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, err))
+	}
+
+	// Tentukan lokasi tujuan penyimpanan fileTerima
+	destinationTerima := fmt.Sprintf("%s-%s", time.Now().Format("20060102"), strings.ReplaceAll(fileTerima.Filename, " ", ""))
+
+	// Simpan fileTerima ke folder yang ditentukan
+	if err = c.SaveFile(fileTerima, "./public/static/perangkat/tanda_terima/"+destinationTerima); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
+	}
+
+	fileNota, err := c.FormFile("nota_pembelian")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, err))
+	}
+
+	// Tentukan lokasi tujuan penyimpanan file
+	destinationNota := fmt.Sprintf("%s-%s", time.Now().Format("20060102"), strings.ReplaceAll(fileNota.Filename, " ", ""))
+
+	// Simpan file ke folder yang ditentukan
+	if err = c.SaveFile(fileNota, "./public/static/perangkat/nota_pembelian/"+destinationNota); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
+	}
+
+	filePemeriksaan, err := c.FormFile("hasil_pemeriksaan")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, err))
+	}
+
+	// Tentukan lokasi tujuan penyimpanan file
+	destinationPemeriksaan := fmt.Sprintf("%s-%s", time.Now().Format("20060102"), strings.ReplaceAll(filePemeriksaan.Filename, " ", ""))
+
+	// Simpan file ke folder yang ditentukan
+	if err = c.SaveFile(fileNota, "./public/static/perangkat/hasil_pemeriksaan/"+destinationPemeriksaan); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
+	}
 
 	// Parse request body
 	if err := c.BodyParser(&request); err != nil {
@@ -41,7 +82,7 @@ func (h *AssetPerangkatControllerImpl) Create(c *fiber.Ctx) error {
 	}
 
 	// Call service to create DetailAsetPerangkat
-	if _, serviceErr = h.service.Create(request); serviceErr != nil {
+	if _, serviceErr = h.service.Create(request, destinationTerima, destinationNota, destinationPemeriksaan); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 

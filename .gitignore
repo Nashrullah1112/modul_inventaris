@@ -4,3 +4,10 @@ tmp/main
 tmp/build-errors.log
 
 be_itam/tmp/main
+be_itam/public/static/tanda_terima
+be_itam/public/static/nota_pembelian
+be_itam/tmp
+be_itam/public/static/hardware/nota_pembelian
+be_itam/public/static/hardware/tanda_terima
+be_itam/public/static/perangkat/nota_pembelian
+be_itam/public/static/perangkat/tanda_terima

@@ -2,6 +2,7 @@ package Repository
 
 import (
 	"itam/Model/Database"
+	"log"
 	"time"
 
 	"gorm.io/gorm"
@@ -69,10 +70,10 @@ func (h *AssetRepositoryImpl) FindAll() (data []Database.Asset, err error) {
 	return data, err
 }
 func (h *AssetRepositoryImpl) FindDisposal() (data []Database.Asset, err error) {
-	err = h.DB.Model(&Database.Asset{}).
+	err = h.DB.Model(&Database.Asset{}).Joins("Vendor").
 		Where("status = ?", "Disposal").
 		Find(&data).
 		Error
-
+	log.Println(data)
 	return data, err
 }

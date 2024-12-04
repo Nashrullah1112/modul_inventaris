@@ -132,7 +132,7 @@ func (h *AssetHardwareControllerImpl) FormAssetHardware(c *fiber.Ctx) error {
 	destination := fmt.Sprintf("%s-%s", time.Now().Format("20060102"), strings.ReplaceAll(file.Filename, " ", ""))
 
 	// Simpan file ke folder yang ditentukan
-	if err = c.SaveFile(file, "./public/static/tanda_terima/"+destination); err != nil {
+	if err = c.SaveFile(file, "./public/static/hardware/tanda_terima/"+destination); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
 	}
 
@@ -145,7 +145,7 @@ func (h *AssetHardwareControllerImpl) FormAssetHardware(c *fiber.Ctx) error {
 	destinationNota := fmt.Sprintf("%s-%s", time.Now().Format("20060102"), strings.ReplaceAll(fileNota.Filename, " ", ""))
 
 	// Simpan file ke folder yang ditentukan
-	if err = c.SaveFile(fileNota, "./public/static/nota_pembelian/"+destinationNota); err != nil {
+	if err = c.SaveFile(fileNota, "./public/static/hardware/nota_pembelian/"+destinationNota); err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
 	}
 

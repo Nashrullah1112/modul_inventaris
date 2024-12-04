@@ -10,7 +10,7 @@ import (
 
 type (
 	AssetPerangkatServiceHandler interface {
-		Create(request Response.DetailAsetPerangkatCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
+		Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, hasilPemeriksaan string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto)
 		Update(perangkatID int64, request Response.DetailAsetPerangkatUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
 		Delete(detailAsetPerangkatId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(detailAsetPerangkatId int64) (detailAsetPerangkat Response.DetailAsetPerangkatResponse, serviceErr *Web.ServiceErrorDto)
@@ -31,7 +31,7 @@ func AssetPerangkatServiceProvider(perangkatRepo Repository.AssetPerangkatReposi
 	}
 }
 
-func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
+func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, hasilPemeriksaan string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto) {
 	assetId, err := h.assetRepo.Save(&Database.Asset{
 		SerialNumber: request.SerialNumber,
 		Model:        request.Model,
@@ -46,10 +46,10 @@ func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatC
 	id, err = h.perangkatRepo.Save(&Database.DetailAsetPerangkat{
 		LokasiPenerima:       request.LokasiPenerima,
 		WaktuPenerimaan:      request.WaktuPenerimaan,
-		TandaTerima:          request.TandaTerima,
+		TandaTerima:          tandaTerima,
 		TipeAset:             request.TipeAset,
 		WaktuAktivasiAset:    request.WaktuAktivasiAset,
-		HasilPemeriksaanAset: request.HasilPemeriksaanAset,
+		HasilPemeriksaanAset: hasilPemeriksaan,
 		SerialNumber:         request.SerialNumber,
 		Model:                request.Model,
 		MasaGaransiMulai:     request.MasaGaransiMulai,
@@ -58,14 +58,14 @@ func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatC
 		KapasitasRAM:         request.KapasitasRAM,
 		KapasitasRom:         request.KapasitasRom,
 		TipeRAM:              request.TipeRAM,
-		TipePenyimpnanan:     request.TipePenyimpnanan,
+		TipePenyimpanan:      request.TipePenyimpanan,
 		StatusAset:           request.StatusAset,
 		NilaiAset:            request.NilaiAset,
 		NilaiDepresiasi:      depresiasi,
 		JangkaMasaPakai:      request.JangkaMasaPakai,
 		WaktuAsetKeluar:      request.WaktuAsetKeluar,
 		KondisiAsetKeluar:    request.KondisiAsetKeluar,
-		NotaPembelian:        request.NotaPembelian,
+		NotaPembelian:        notaPembelian,
 		DivisiID:             request.DivisiID,
 		UserID:               request.UserID,
 		AssetID:              assetId,
@@ -94,32 +94,29 @@ func (h *AssetPerangkatServiceImpl) Update(perangkatID int64, request Response.D
 		return id, Web.NewCustomServiceError("Aset Hardware not updated", err, http.StatusInternalServerError)
 	}
 	id, err = h.perangkatRepo.Update(&Database.DetailAsetPerangkat{
-		ID:                   existingDetailAsetPerangkat.ID,
-		LokasiPenerima:       request.LokasiPenerima,
-		WaktuPenerimaan:      request.WaktuPenerimaan,
-		TandaTerima:          request.TandaTerima,
-		TipeAset:             request.TipeAset,
-		WaktuAktivasiAset:    request.WaktuAktivasiAset,
-		HasilPemeriksaanAset: request.HasilPemeriksaanAset,
-		SerialNumber:         request.SerialNumber,
-		Model:                request.Model,
-		MasaGaransiMulai:     request.MasaGaransiMulai,
-		NomorKartuGaransi:    request.NomorKartuGaransi,
-		Prosesor:             request.Prosesor,
-		KapasitasRAM:         request.KapasitasRAM,
-		KapasitasRom:         request.KapasitasRom,
-		TipeRAM:              request.TipeRAM,
-		TipePenyimpnanan:     request.TipePenyimpnanan,
-		StatusAset:           request.StatusAset,
-		NilaiAset:            request.NilaiAset,
-		NilaiDepresiasi:      request.NilaiDepresiasi,
-		JangkaMasaPakai:      request.JangkaMasaPakai,
-		WaktuAsetKeluar:      request.WaktuAsetKeluar,
-		KondisiAsetKeluar:    request.KondisiAsetKeluar,
-		NotaPembelian:        request.NotaPembelian,
-		DivisiID:             request.DivisiID,
-		UserID:               request.UserID,
-		AssetID:              existingDetailAsetPerangkat.AssetID,
+		ID:                existingDetailAsetPerangkat.ID,
+		LokasiPenerima:    request.LokasiPenerima,
+		WaktuPenerimaan:   request.WaktuPenerimaan,
+		TipeAset:          request.TipeAset,
+		WaktuAktivasiAset: request.WaktuAktivasiAset,
+		SerialNumber:      request.SerialNumber,
+		Model:             request.Model,
+		MasaGaransiMulai:  request.MasaGaransiMulai,
+		NomorKartuGaransi: request.NomorKartuGaransi,
+		Prosesor:          request.Prosesor,
+		KapasitasRAM:      request.KapasitasRAM,
+		KapasitasRom:      request.KapasitasRom,
+		TipeRAM:           request.TipeRAM,
+		TipePenyimpanan:   request.TipePenyimpanan,
+		StatusAset:        request.StatusAset,
+		NilaiAset:         request.NilaiAset,
+		NilaiDepresiasi:   request.NilaiDepresiasi,
+		JangkaMasaPakai:   request.JangkaMasaPakai,
+		WaktuAsetKeluar:   request.WaktuAsetKeluar,
+		KondisiAsetKeluar: request.KondisiAsetKeluar,
+		DivisiID:          request.DivisiID,
+		UserID:            request.UserID,
+		AssetID:           existingDetailAsetPerangkat.AssetID,
 	})
 	if err != nil {
 		return id, Web.NewInternalServiceError(err)
@@ -166,7 +163,7 @@ func (h *AssetPerangkatServiceImpl) FindById(detailAsetPerangkatId int64) (detai
 		KapasitasRAM:         data.KapasitasRAM,
 		KapasitasRom:         data.KapasitasRom,
 		TipeRAM:              data.TipeRAM,
-		TipePenyimpnanan:     data.TipePenyimpnanan,
+		TipePenyimpanan:      data.TipePenyimpanan,
 		StatusAset:           data.StatusAset,
 		NilaiAset:            data.NilaiAset,
 		NilaiDepresiasi:      data.NilaiDepresiasi,
@@ -218,7 +215,7 @@ func (h *AssetPerangkatServiceImpl) FindAll() (detailAsetPerangkat []Response.De
 				KapasitasRAM:         d.KapasitasRAM,
 				KapasitasRom:         d.KapasitasRom,
 				TipeRAM:              d.TipeRAM,
-				TipePenyimpnanan:     d.TipePenyimpnanan,
+				TipePenyimpanan:      d.TipePenyimpanan,
 				StatusAset:           d.StatusAset,
 				NilaiAset:            d.NilaiAset,
 				NilaiDepresiasi:      d.NilaiDepresiasi,

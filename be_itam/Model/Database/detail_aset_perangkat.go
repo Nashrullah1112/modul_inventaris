@@ -23,7 +23,7 @@ type DetailAsetPerangkat struct {
 	KapasitasRAM         int32     `gorm:"column:kapasitas_ram" json:"kapasitas_ram"`
 	KapasitasRom         int32     `gorm:"column:kapasitas_rom" json:"kapasitas_rom"`
 	TipeRAM              string    `gorm:"column:tipe_ram" json:"tipe_ram"`
-	TipePenyimpnanan     string    `gorm:"column:tipe_penyimpnanan;not null" json:"tipe_penyimpnanan"`
+	TipePenyimpanan      string    `gorm:"column:tipe_penyimpnanan;not null" json:"tipe_penyimpnanan"`
 	StatusAset           string    `gorm:"column:status_aset;not null" json:"status_aset"`
 	NilaiAset            int64     `gorm:"column:nilai_aset;not null" json:"nilai_aset"`
 	NilaiDepresiasi      int64     `gorm:"column:nilai_depresiasi;not null" json:"nilai_depresiasi"`
