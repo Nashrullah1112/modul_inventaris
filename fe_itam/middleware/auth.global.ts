@@ -6,6 +6,6 @@ export default defineNuxtRouteMiddleware((to) => {
   const publicPaths = ["/login"];
 
   if (!token && !publicPaths.includes(to.path)) {
-    return navigateTo("/login");
+    // return navigateTo("/login");
   }
 });

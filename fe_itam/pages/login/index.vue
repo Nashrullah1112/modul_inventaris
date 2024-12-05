@@ -1,42 +1,48 @@
 <script setup lang="ts">
-import { useToast } from '@/components/ui/toast/use-toast'
+import { useToast } from "@/components/ui/toast/use-toast";
 
 definePageMeta({
-  layout: 'plain'
-})
+  layout: "plain",
+});
 
-const config = useRuntimeConfig()
-const router = useRouter()
-const { toast } = useToast()
+const config = useRuntimeConfig();
+const router = useRouter();
+const { toast } = useToast();
 
 const username = ref("");
 const password = ref("");
 
 const handleLogin = async () => {
   try {
-    const { data, status, error } = await useFetch(config.public.API_URL + '/login', {
-      method: 'POST',
-      body: {
-        username: username.value,
-        password: password.value,
+    const { data, status, error } = await useFetch(
+      config.public.API_URL + "/login",
+      {
+        method: "POST",
+        body: {
+          email: username.value,
+          password: password.value,
+        },
       }
-    })
+    );
 
-    if (status.value == 'success' && data.value?.data?.hasOwnProperty('Token')) {
+    if (
+      status.value == "success" &&
+      data.value?.data?.hasOwnProperty("Token")
+    ) {
       if (process.client) {
-        localStorage.setItem('token', data.value.data.Token);
-        router.push('/');
+        localStorage.setItem("token", data.value.data.Token);
+        router.push("/");
       }
     } else {
       toast({
-        title: 'Failed',
-        description: `Failed to log in. ${data.value?.message || ''}`,
-      })
+        title: "Failed",
+        description: `Failed to log in. ${data.value?.message || ""}`,
+      });
     }
   } catch (err) {
     console.error("Error occured:", err);
   }
-}
+};
 </script>
 
 <template>
