@@ -117,8 +117,8 @@ const { handleSubmit, setFieldValue, values } = useForm({
     tipe_ram: "",
     tipe_penyimpanan: "",
     status_aset: "",
-    nilai_aset: 0,
-    nilai_sisa: 0,
+    nilai_aset: undefined,
+    nilai_sisa: undefined,
     jangka_masa_pakai: undefined,
     waktu_aset_keluar: "",
     kondisi_aset_keluar: "",
@@ -187,7 +187,7 @@ const assetUsagePeriod = [
 ];
 
 const assetCondition = ["Baik", "Rusak", "Perlu Perbaikan"];
-const assetStatus = ["Aktif", "Tidak Aktif", "Sedang Digunakan"];
+const assetStatus = ["Digunakan", "Disimpan"];
 const ramCapacity = [
   {
     capacity: 256,

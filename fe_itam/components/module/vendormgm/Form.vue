@@ -40,6 +40,16 @@ const formSchema = toTypedSchema(
 
 const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    id: undefined,
+    nama_pic: '',
+    email: '',
+    nomor_kontak: '',
+    lokasi_perusahaan: '',
+    nomor_siup: '',
+    nomor_nib: '',
+    nomor_npwp: '',
+  }
 });
 
 const dataId = route.params.id
@@ -83,7 +93,7 @@ const getExistingData = async () => {
 
     if (status.value == 'success' && data.value?.data) {
       exData = data.value.data
-      
+
       setFieldValue('id', Number(dataId))
       setFieldValue('nama_pic', exData.nama_pic)
       setFieldValue('email', exData.email)
@@ -117,7 +127,7 @@ if (props.type == 'edit') {
           <FormItem>
             <FormLabel>Nama PIC</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Nama PIC" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -127,7 +137,7 @@ if (props.type == 'edit') {
           <FormItem>
             <FormLabel>Email</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Email" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -137,7 +147,7 @@ if (props.type == 'edit') {
           <FormItem>
             <FormLabel>Nomor Kontak</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Nomor Kontak" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -147,7 +157,7 @@ if (props.type == 'edit') {
           <FormItem>
             <FormLabel>Lokasi Perusahaan</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Lokasi Perusahaan" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -157,7 +167,7 @@ if (props.type == 'edit') {
           <FormItem>
             <FormLabel>Nomor SIUP</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Nomor SIUP" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -167,7 +177,7 @@ if (props.type == 'edit') {
           <FormItem>
             <FormLabel>Nomor NIB</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Nomor NIB" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -177,14 +187,14 @@ if (props.type == 'edit') {
           <FormItem>
             <FormLabel>Nomor NPWP</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Nomor NPWP" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
       </div>
     </form>
-    
+
     <div class="flex justify-end mt-4 space-x-2">
       <Button variant="outline" @click="navigateTo('/vendormgm')">Cancel</Button>
       <Button @click="onSubmit">Submit</Button>
