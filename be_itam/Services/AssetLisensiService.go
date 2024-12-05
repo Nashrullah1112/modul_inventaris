@@ -39,6 +39,7 @@ func (h *AssetLisensiServiceImpl) Create(request Response.AssetLicenseCreateRequ
 		Merk:         request.Merk,
 		NomorNota:    request.NomorNota,
 		VendorID:     request.VendorID,
+		Status:       "Approval",
 	})
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Aset Hardware not created", err, http.StatusInternalServerError)
@@ -159,7 +160,7 @@ func (h *AssetLisensiServiceImpl) FindAll() (detailAsetLisensi []Response.Detail
 		if err != nil {
 			return []Response.DetailAsetLisensiResponse{}, Web.NewInternalServiceError(err)
 		}
-		if asset.Status != "Disposal" {
+		if asset.Status == "Approved" {
 			detailAsetLisensi = append(detailAsetLisensi, Response.DetailAsetLisensiResponse{
 				ID:                       d.ID,
 				WaktuPembelian:           d.WaktuPembelian,

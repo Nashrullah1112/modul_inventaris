@@ -38,6 +38,7 @@ func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatC
 		Merk:         request.Merk,
 		NomorNota:    request.NomorNota,
 		VendorID:     request.VendorID,
+		Status:       "Approval",
 	})
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Aset Hardware not created", err, http.StatusInternalServerError)
@@ -198,7 +199,7 @@ func (h *AssetPerangkatServiceImpl) FindAll() (detailAsetPerangkat []Response.De
 		if err != nil {
 			return []Response.DetailAsetPerangkatResponse{}, Web.NewInternalServiceError(err)
 		}
-		if asset.Status != "Disposal" {
+		if asset.Status == "Approved" {
 			detailAsetPerangkat = append(detailAsetPerangkat, Response.DetailAsetPerangkatResponse{
 				ID:                   d.ID,
 				LokasiPenerima:       d.LokasiPenerima,

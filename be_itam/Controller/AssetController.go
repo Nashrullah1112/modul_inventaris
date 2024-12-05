@@ -116,3 +116,30 @@ func (h *AssetControllerImpl) FindDisposal(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("All assets disposal found", response))
 }
+func (h *AssetControllerImpl) FindApproval(c *fiber.Ctx) error {
+	// Call service to find all assets
+	response, serviceErr := h.service.FindApproval()
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("All assets approval found", response))
+}
+func (h *AssetControllerImpl) Approval(c *fiber.Ctx) error {
+	var (
+		request    Response.IDAsset
+		serviceErr *Web.ServiceErrorDto
+	)
+
+	// Parse request body
+	if err := c.BodyParser(&request); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
+	}
+
+	// Call service to update asset
+	if _, serviceErr = h.service.Approval(request); serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Asset updated successfully", nil))
+}

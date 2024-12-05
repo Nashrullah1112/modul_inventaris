@@ -17,6 +17,8 @@ type (
 		FindById(assetId int64) (asset Response.AssetResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto)
 		FindDisposal() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto)
+		FindApproval() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto)
+		Approval(request Response.IDAsset) (id int64, serviceErr *Web.ServiceErrorDto)
 	}
 
 	AssetServiceImpl struct {
@@ -152,4 +154,48 @@ func (h *AssetServiceImpl) FindDisposal() (assets []Response.AssetResponse, serv
 	}
 
 	return assets, nil
+
+}
+func (h *AssetServiceImpl) FindApproval() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto) {
+	data, err := h.repo.FindApproval()
+	if err != nil {
+		return []Response.AssetResponse{}, Web.NewInternalServiceError(err)
+	}
+
+	for _, d := range data {
+		assets = append(assets, Response.AssetResponse{
+			Id:           d.ID,
+			VendorID:     d.VendorID,
+			SerialNumber: d.SerialNumber,
+			Merk:         d.Merk,
+			Model:        d.Model,
+			NomorNota:    d.NomorNota,
+			Vendor: Response.VendorResponse{
+				ID:               d.Vendor.ID,
+				PIC:              d.Vendor.PIC,
+				Email:            d.Vendor.Email,
+				NomorKontak:      d.Vendor.NomorKontak,
+				LokasiPerusahaan: d.Vendor.Lokasi,
+				NomorSIUP:        d.Vendor.NomorSIUP,
+				NomorNIB:         d.Vendor.NomorNIB,
+				NomorNPWP:        d.Vendor.NomorNPWP,
+			},
+		})
+	}
+
+	return assets, nil
+
+}
+
+func (h *AssetServiceImpl) Approval(request Response.IDAsset) (id int64, serviceErr *Web.ServiceErrorDto) {
+	// Find the asset by ID
+	existingAsset, err := h.repo.FindById(request.Id)
+	if err != nil {
+		return 0, Web.NewCustomServiceError("Asset not found", err, http.StatusNotFound)
+	}
+
+	if err := h.repo.UpdateStatus(existingAsset.ID, "Approved"); err != nil {
+		return existingAsset.ID, Web.NewInternalServiceError(err)
+	}
+	return id, nil
 }

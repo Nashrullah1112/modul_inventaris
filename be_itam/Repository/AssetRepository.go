@@ -16,6 +16,8 @@ type (
 		FindById(id int64) (data Database.Asset, err error)
 		FindAll() (data []Database.Asset, err error)
 		FindDisposal() (data []Database.Asset, err error)
+		FindApproval() (data []Database.Asset, err error)
+		UpdateStatus(id int64, status string) error
 	}
 
 	AssetRepositoryImpl struct {
@@ -76,4 +78,19 @@ func (h *AssetRepositoryImpl) FindDisposal() (data []Database.Asset, err error) 
 		Error
 	log.Println(data)
 	return data, err
+}
+func (h *AssetRepositoryImpl) FindApproval() (data []Database.Asset, err error) {
+	err = h.DB.Model(&Database.Asset{}).
+		Where("status = ? OR status = ?", "Approval", "").
+		Find(&data).
+		Error
+	return data, err
+}
+func (h *AssetRepositoryImpl) UpdateStatus(id int64, status string) error {
+	err := h.DB.Model(&Database.Asset{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{
+			"status": status,
+		}).Error
+	return err
 }

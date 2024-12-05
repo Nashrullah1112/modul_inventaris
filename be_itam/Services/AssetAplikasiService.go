@@ -38,6 +38,7 @@ func (h *AssetAplikasiServiceImpl) Create(request Response.DetaiAsetAplikasiCrea
 		Merk:         request.Merk,
 		NomorNota:    request.NomorNota,
 		VendorID:     request.VendorID,
+		Status:       "Approval",
 	})
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Aset Hardware not created", err, http.StatusInternalServerError)
@@ -158,30 +159,29 @@ func (h *AssetAplikasiServiceImpl) FindAll() (detaiAsetAplikasis []Response.Deta
 		if err != nil {
 			return []Response.DetaiAsetAplikasiResponse{}, Web.NewInternalServiceError(err)
 		}
-		if asset.Status == "Disposal" {
-			continue
+		if asset.Status == "Approved" {
+			detaiAsetAplikasis = append(detaiAsetAplikasis, Response.DetaiAsetAplikasiResponse{
+				Id:                      d.ID,
+				NamaAplikasi:            d.NamaAplikasi,
+				TanggalPembuatan:        d.TanggalPembuatan,
+				TanggalTerima:           d.TanggalTerima,
+				LokasiServerPenyimpanan: d.LokasiServerPenyimpanan,
+				TipeAplikasi:            d.TipeAplikasi,
+				LinkAplikasi:            d.LinkAplikasi,
+				SertifikasiAplikasi:     d.SertifikasiAplikasi,
+				TanggalAktif:            d.TanggalAktif,
+				TanggalKadaluarsa:       d.TanggalKadaluarsa,
+				AssetID:                 d.AssetID,
+				Asset: Response.AssetResponse{
+					Id:           asset.ID,
+					SerialNumber: asset.SerialNumber,
+					Model:        asset.Model,
+					Merk:         asset.Merk,
+					NomorNota:    asset.NomorNota,
+					VendorID:     asset.VendorID,
+				},
+			})
 		}
-		detaiAsetAplikasis = append(detaiAsetAplikasis, Response.DetaiAsetAplikasiResponse{
-			Id:                      d.ID,
-			NamaAplikasi:            d.NamaAplikasi,
-			TanggalPembuatan:        d.TanggalPembuatan,
-			TanggalTerima:           d.TanggalTerima,
-			LokasiServerPenyimpanan: d.LokasiServerPenyimpanan,
-			TipeAplikasi:            d.TipeAplikasi,
-			LinkAplikasi:            d.LinkAplikasi,
-			SertifikasiAplikasi:     d.SertifikasiAplikasi,
-			TanggalAktif:            d.TanggalAktif,
-			TanggalKadaluarsa:       d.TanggalKadaluarsa,
-			AssetID:                 d.AssetID,
-			Asset: Response.AssetResponse{
-				Id:           asset.ID,
-				SerialNumber: asset.SerialNumber,
-				Model:        asset.Model,
-				Merk:         asset.Merk,
-				NomorNota:    asset.NomorNota,
-				VendorID:     asset.VendorID,
-			},
-		})
 
 	}
 
