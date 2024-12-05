@@ -34,6 +34,7 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
+const route = useRoute();
 const config = useRuntimeConfig();
 const { showLoading, hideLoading } = useLoading();
 const { toast } = useToast();
@@ -434,7 +435,8 @@ const mapAssetData = (values: any) => {
   };
 };
 
-const endpoint = props.type === "new" ? "/asset-perangkat" : "/asset/hardware" + props.data.id;
+const dataId = route.params.id;
+const endpoint = props.type === "new" ? "/asset-perangkat" : "/asset/hardware" + dataId;
 
 const onSubmit = handleSubmit(async (values) => {
   console.log("Form values:", values);

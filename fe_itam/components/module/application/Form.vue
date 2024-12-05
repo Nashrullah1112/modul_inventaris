@@ -10,7 +10,6 @@ import { CalendarIcon } from "@radix-icons/vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import * as z from "zod";
-
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -21,6 +20,16 @@ import {
   FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
 import {
   Popover,
   PopoverContent,
@@ -42,6 +51,7 @@ const props = defineProps<{
 
 const config = useRuntimeConfig();
 const route = useRoute();
+const isEditDialogOpen = ref(false);
 const { showLoading, hideLoading } = useLoading();
 const { toast } = useToast();
 
@@ -214,7 +224,7 @@ const getExistingData = async () => {
       );
       setFieldValue("tanggal_terima", transformDate(exData.tanggal_terima));
       setFieldValue("tipe_aplikasi", exData.tipe_aplikasi);
-      setFieldValue("vendor_id", exData.vendor_id);
+      setFieldValue("vendor_id", exData.asset.vendor_id);
     }
   } catch (error) {
     console.error("Error occured:", error);
@@ -225,6 +235,15 @@ const getExistingData = async () => {
 
 if (props.type == "edit") {
   getExistingData();
+}
+
+const openEditConfirmation = () => {
+  isEditDialogOpen.value = true;
+}
+
+const confirmEdit = () => {
+  onSubmit()
+  isEditDialogOpen.value = false;
 }
 
 const transformDate = (serverDate: string) => {
@@ -288,12 +307,12 @@ const transformDate = (serverDate: string) => {
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
                 <Calendar v-model="tanggalPembuatan" calendar-label="Date of birth" @update:model-value="(v) => {
-                    if (v) {
-                      setFieldValue('tanggal_pembuatan', v.toString());
-                    } else {
-                      setFieldValue('tanggal_pembuatan', undefined);
-                    }
+                  if (v) {
+                    setFieldValue('tanggal_pembuatan', v.toString());
+                  } else {
+                    setFieldValue('tanggal_pembuatan', undefined);
                   }
+                }
                   " />
               </PopoverContent>
             </Popover>
@@ -332,12 +351,12 @@ const transformDate = (serverDate: string) => {
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
                 <Calendar v-model="tanggalTerima" calendar-label="Date of birth" @update:model-value="(v) => {
-                    if (v) {
-                      setFieldValue('tanggal_terima', v.toString());
-                    } else {
-                      setFieldValue('tanggal_terima', undefined);
-                    }
+                  if (v) {
+                    setFieldValue('tanggal_terima', v.toString());
+                  } else {
+                    setFieldValue('tanggal_terima', undefined);
                   }
+                }
                   " />
               </PopoverContent>
             </Popover>
@@ -406,12 +425,12 @@ const transformDate = (serverDate: string) => {
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
                 <Calendar v-model="tanggalAktif" calendar-label="Date of birth" @update:model-value="(v) => {
-                    if (v) {
-                      setFieldValue('tanggal_aktif', v.toString());
-                    } else {
-                      setFieldValue('tanggal_aktif', undefined);
-                    }
+                  if (v) {
+                    setFieldValue('tanggal_aktif', v.toString());
+                  } else {
+                    setFieldValue('tanggal_aktif', undefined);
                   }
+                }
                   " />
               </PopoverContent>
             </Popover>
@@ -440,12 +459,12 @@ const transformDate = (serverDate: string) => {
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
                 <Calendar v-model="tanggalKadaluarsa" calendar-label="Date of birth" @update:model-value="(v) => {
-                    if (v) {
-                      setFieldValue('tanggal_kadaluarsa', v.toString());
-                    } else {
-                      setFieldValue('tanggal_kadaluarsa', undefined);
-                    }
+                  if (v) {
+                    setFieldValue('tanggal_kadaluarsa', v.toString());
+                  } else {
+                    setFieldValue('tanggal_kadaluarsa', undefined);
                   }
+                }
                   " />
               </PopoverContent>
             </Popover>
@@ -481,7 +500,28 @@ const transformDate = (serverDate: string) => {
 
     <div class="flex justify-end mt-4 space-x-2">
       <Button variant="outline" @click="navigateTo('/application')">Cancel</Button>
-      <Button @click="onSubmit">Submit</Button>
+      <Button v-if="props.type === 'new'" @click="onSubmit">
+        Submit
+      </Button>
+      <Button v-else @click="openEditConfirmation">
+        Edit
+      </Button>
     </div>
+    <AlertDialog v-model:open="isEditDialogOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Apakah Anda yakin ingin mengubah data?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Data yang sudah diubah tidak dapat dikembalikan.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Batal</AlertDialogCancel>
+          <AlertDialogAction @click="confirmEdit" class="bg-blue-600 hover:bg-blue-400 text-white">
+            Ubah
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>

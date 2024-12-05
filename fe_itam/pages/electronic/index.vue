@@ -175,17 +175,8 @@ const fetchDeviceData = async () => {
       method: 'GET'
     });
 
-    if (response && response.data) {
-      hideLoading();
-      devices.value = response.data;
-    } else {
-      hideLoading();
-      toast({
-        title: 'Gagal Mengambil Data Perangkat Elektronik',
-        description: 'Data perangkat elektronik gagal diambil dari server.',
-        variant: 'destructive',
-      });
-    }
+    hideLoading();
+    devices.value = response.data;
   } catch (error) {
     hideLoading();
     console.error('Error occurred:', error);

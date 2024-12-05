@@ -44,6 +44,7 @@ const props = defineProps<{
 
 const config = useRuntimeConfig();
 const router = useRouter();
+const route = useRoute();
 const { showLoading, hideLoading } = useLoading();
 const { toast } = useToast();
 const vendors = ref<Vendor[]>([]);
@@ -144,8 +145,8 @@ const { handleSubmit, setFieldValue, values } = useForm({
   },
 });
 
-
-const endpoint = props.type === "new" ? "/form-hardware" : "/asset/hardware" + props.data.id;
+const dataId = route.params.id;
+const endpoint = props.type === "new" ? "/form-hardware" : "/asset/hardware" + dataId;
 
 ``
 const onSubmit = handleSubmit(async (values) => {

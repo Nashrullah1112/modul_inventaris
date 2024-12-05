@@ -215,17 +215,8 @@ const fetchLicenseData = async () => {
       method: 'GET'
     });
 
-    if (response && response.data) {
-      hideLoading();
-      licenses.value = response.data;
-    } else {
-      hideLoading();
-      toast({
-        title: 'Gagal Mengambil Data Lisensi',
-        description: 'Data lisensi gagal diambil dari server.',
-        variant: 'destructive',
-      });
-    }
+    licenses.value = response.data;
+    hideLoading();
   } catch (error) {
     hideLoading();
     console.error('Error occurred:', error);

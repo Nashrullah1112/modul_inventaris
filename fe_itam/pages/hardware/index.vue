@@ -99,6 +99,7 @@ const fetchHardware = async () => {
       throw new Error(response.error);
     }
     hardwareData.value = response.data;
+    hideLoading();
   } catch (error) {
     hideLoading();
     console.error("Error fetching devices:", error);
@@ -280,7 +281,7 @@ const columns = [
         h(
           ActionBtnEdit,
           {
-            onClick: () => router.push(`/application/${row.original.id}/edit`),
+            onClick: () => router.push(`/hardware/${row.original.id}/edit`),
           },
           () => "Update"
         ),

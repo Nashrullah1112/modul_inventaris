@@ -2,5 +2,8 @@
 </script>
 
 <template>
-  <ModuleHardwareForm type="edit" />
+  <div>
+    <ModuleHardwareForm type="edit"/>
+  </div>
 </template>
+
