@@ -188,7 +188,6 @@ const getExistingData = async () => {
   showLoading()
 
   try {
-    // First, ensure vendors are loaded
     await getVendorData()
 
     const { data, status } = await useFetch(config.public.API_URL + endpoint);

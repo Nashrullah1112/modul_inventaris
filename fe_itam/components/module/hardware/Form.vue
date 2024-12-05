@@ -60,6 +60,7 @@ const deviceStatuses = [
   { label: "Digunakan", value: "Digunakan" },
   { label: "Disimpan", value: "Disimpan" },
 ];
+let exData = <any>{}
 
 interface User {
   id: number;
@@ -91,8 +92,8 @@ const formSchema = toTypedSchema(
       .min(1, "Penanggung jawab harus dipilih"),
     model: z.string().min(1, "Model harus diisi"),
     serial_number: z.string().min(1, "Serial number harus diisi"),
-    harga_perangkat: z.number().min(1, "Harga perangkat harus diisi"),
-    depresiasi_perangkat: z.number().min(1, "Depresiasi perangkat harus diisi"),
+    // harga_perangkat: z.number().min(1, "Harga perangkat harus diisi"),
+    // depresiasi_perangkat: z.number().min(1, "Depresiasi perangkat harus diisi"),
     tanda_terima: z.any(),
     kondisi_aset: z.string().min(1, "Kondisi aset harus dipilih"),
     tipe_perangkat: z.string().min(1, "Tipe perangkat harus dipilih"),
@@ -127,8 +128,8 @@ const { handleSubmit, setFieldValue, values } = useForm({
     penanggung_jawab_perangkat: "",
     model: "",
     serial_number: "",
-    harga_perangkat: undefined,
-    depresiasi_perangkat: undefined,
+    // harga_perangkat: undefined,
+    // depresiasi_perangkat: undefined,
     tanda_terima: null,
     kondisi_aset: "",
     tipe_perangkat: "",
@@ -146,24 +147,55 @@ const { handleSubmit, setFieldValue, values } = useForm({
 });
 
 const dataId = route.params.id;
-const endpoint = props.type === "new" ? "/form-hardware" : "/asset/hardware" + dataId;
+const endpoint = props.type === "new" ? "/form-hardware" : "/asset-hardware/" + dataId;
 
 ``
 const onSubmit = handleSubmit(async (values) => {
   try {
     showLoading();
 
+    const payload = {
+      merek_perangkat: values.merek_perangkat,
+      vendor_id: values.vendor_id,
+      nomor_nota: values.nomor_nota,
+      lokasi_penerima: values.lokasi_penerima,
+      tanggal_penerimaan: values.tanggal_penerimaan,
+      masa_garansi_mulai: values.masa_garansi_mulai,
+      penanggung_jawab_perangkat: values.penanggung_jawab_perangkat,
+      model: values.model,
+      serial_number: values.serial_number,
+      // Uncomment if you want to include these fields
+      // harga_perangkat: values.harga_perangkat,
+      // depresiasi_perangkat: values.depresiasi_perangkat,
+      kondisi_aset: values.kondisi_aset,
+      tipe_perangkat: values.tipe_perangkat,
+      tanggal_aktivasi_perangkat: values.tanggal_aktivasi_perangkat,
+      masa_berakhir_garansi: values.masa_berakhir_garansi,
+      hasil_pemeriksaan_perangkat: values.hasil_pemeriksaan_perangkat,
+      jangka_masa_pakai: values.jangka_masa_pakai,
+      status_perangkat: values.status_perangkat,
+      detail_spesifikasi: values.detail_spesifikasi,
+      nomor_kartu_garansi: values.nomor_kartu_garansi,
+      divisi_pengguna: values.divisi_pengguna,
+      // Hardcoded user_id (you might want to get this dynamically)
+    };
+
     const formData = new FormData();
 
-    (Object.keys(values) as Array<keyof typeof values>).forEach(key => {
-      const value = values[key];
-
-      if ((key === 'tanda_terima' || key === 'nota_pembelian') && value instanceof File) {
-        formData.append(key, value);
-      } else if (value !== undefined && value !== null) {
+    Object.keys(payload).forEach(key => {
+      const value = payload[key];
+      if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }
     });
+
+    // Handle file uploads separately
+    if (values.tanda_terima instanceof File) {
+      formData.append('tanda_terima', values.tanda_terima);
+    }
+    if (values.nota_pembelian instanceof File) {
+      formData.append('nota_pembelian', values.nota_pembelian);
+    }
 
     const { data, status, error } = await useFetch(
       config.public.API_URL + endpoint,
@@ -235,6 +267,66 @@ async function fetchDropdownData() {
   }
 }
 
+const getExistingData = async () => {
+  showLoading()
+
+  try {
+
+
+    const { data, status } = await useFetch(config.public.API_URL + endpoint);
+
+    if (status.value == 'success' && data.value?.data) {
+      exData = data.value.data
+
+      // Ensure dates are formatted correctly
+      const formatDate = (dateString: string) => {
+        if (!dateString) return undefined;
+        // Parse the date and convert to ISO string in YYYY-MM-DD format
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+      };
+
+      setFieldValue('vendor_id', exData.asset.vendor_id)
+      setFieldValue('serial_number', exData.asset.serial_number)
+      setFieldValue('merek_perangkat', exData.asset.merk)
+      setFieldValue('model', exData.asset.model)
+      setFieldValue('nomor_nota', exData.asset.nomor_nota)
+      setFieldValue('tanggal_penerimaan', formatDate(exData.waktu_penerimaan))
+      setFieldValue('lokasi_penerima', exData.lokasi_penyimpanan_id)
+      setFieldValue('tipe_perangkat', exData.tipe_aset)
+      setFieldValue('nomor_kartu_garansi', exData.nomor_kartu_garansi)
+      setFieldValue('masa_garansi_mulai', formatDate(exData.waktu_garansi_mulai))
+      setFieldValue('masa_berakhir_garansi', formatDate(exData.waktu_garansi_berakhir))
+      setFieldValue('tanggal_aktivasi_perangkat', formatDate(exData.tanggal_aktivasi_perangkat))
+      setFieldValue('tanggal_aset_keluar', formatDate(exData.waktu_aset_keluar))
+      setFieldValue('jangka_masa_pakai', exData.jangka_masa_pakai)
+      setFieldValue('penanggung_jawab_perangkat', exData.penanggungjawab_aset)
+      setFieldValue('status_perangkat', exData.status_aset)
+      setFieldValue('hasil_pemeriksaan_perangkat', exData.hasil_pemeriksaan)
+      setFieldValue('detail_spesifikasi', exData.spesifikasi_perangkat)
+      // setFieldValue('harga_perangkat', exData.harga_perangkat)
+      // setFieldValue('depresiasi_perangkat', exData.depresiasi_perangkat)
+      setFieldValue('divisi_pengguna', exData.divisi_id)
+      setFieldValue('kondisi_aset', exData.kondisi_aset)
+    }
+  } catch (error) {
+    console.error("Error occurred:", error);
+    toast({
+      title: "Error",
+      description: "Failed to load existing data"
+    });
+  }
+
+  hideLoading()
+}
+
+if (props.type == 'edit') {
+  // Ensure vendors are loaded first
+  onMounted(async () => {
+    getExistingData();
+  });
+}
+
 
 onMounted(() => {
   fetchDropdownData();
@@ -284,7 +376,7 @@ const assetOutDate = computed({
 
 <template>
   <div class="p-8 bg-white shadow-lg rounded-lg">
-    <h1 class="text-2xl font-bold mb-6">Registrasi Aset Hardware</h1>
+    <h1 class="text-2xl font-bold mb-6">{{ props.type === 'new' ? 'Registrasi' : 'Edit' }} Data Perangkat</h1>
     <form class="grid grid-cols-2 gap-x-4 gap-y-3">
       <FormField v-slot="{ componentField }" name="vendor_id">
         <FormItem>
@@ -621,7 +713,7 @@ const assetOutDate = computed({
         </FormItem>
       </FormField>
 
-      <FormField v-slot="{ componentField }" name="harga_perangkat">
+      <!-- <FormField v-slot="{ componentField }" name="harga_perangkat">
         <FormItem>
           <FormLabel>Harga Perangkat</FormLabel>
           <FormControl>
@@ -639,7 +731,7 @@ const assetOutDate = computed({
           </FormControl>
           <FormMessage />
         </FormItem>
-      </FormField>
+      </FormField> -->
 
       <FormField v-slot="{ componentField }" name="divisi_pengguna">
         <FormItem>
