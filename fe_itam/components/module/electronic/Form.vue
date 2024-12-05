@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { CalendarIcon } from "@radix-icons/vue";
-import { cn } from "@/lib/utils";
 import {
-  DateFormatter,
-  parseDate
-} from "@internationalized/date";
-import { toDate } from "radix-vue/date";
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -16,25 +15,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  DateFormatter,
+  parseDate
+} from "@internationalized/date";
+import { CalendarIcon } from "@radix-icons/vue";
+import { toTypedSchema } from "@vee-validate/zod";
+import { toDate } from "radix-vue/date";
 import { useForm } from "vee-validate";
 import * as z from "zod";
-import { toTypedSchema } from "@vee-validate/zod";
 import { useToast } from "~/components/ui/toast";
 
 // Props definition
 const props = defineProps<{
   type: string;
-  data: any[];
+  data?: any;
 }>();
-const route = useRoute();
+
+const router = useRouter();
 const config = useRuntimeConfig();
 const { showLoading, hideLoading } = useLoading();
 const { toast } = useToast();
@@ -66,14 +65,14 @@ const df = new DateFormatter("id-ID", {
 // Form validation schema with improved field names
 const formSchema = toTypedSchema(
   z.object({
-    nama_supplier: z.string().min(1, "Supplier harus dipilih"),
+    nama_supplier: z.number().min(1, "Supplier harus dipilih"),
     nomor_seri: z.string().min(1, "Nomor seri harus diisi"),
     merek: z.string().min(1, "Merek harus diisi"),
     model: z.string().min(1, "Model harus diisi"),
     nomor_nota: z.string().min(1, "Nomor nota harus diisi"),
     lokasi_penerima: z.string().min(1, "Lokasi penerima harus diisi"),
     waktu_penerimaan: z.string().min(1, "Tanggal penerimaan harus diisi"),
-    dokumen_terima: z.any().nullable(),
+    dokumen_terima: z.any(),
     tipe_aset: z.string().min(1, "Tipe aset harus dipilih"),
     tanggal_aktivasi_aset: z.string().min(1, "Tanggal aktivasi harus diisi"),
     hasil_pemeriksaan_aset: z.string().min(1, "Hasil pemeriksaan harus diisi"),
@@ -90,14 +89,43 @@ const formSchema = toTypedSchema(
     jangka_masa_pakai: z.number().min(1, "Jangka masa pakai harus dipilih"),
     waktu_aset_keluar: z.string().min(1, "Waktu aset keluar harus diisi"),
     kondisi_aset_keluar: z.string().min(1, "Kondisi aset keluar harus dipilih"),
-    nota_pembelian: z.any().nullable(),
-    divisi_pengguna: z.string().min(1, "Divisi harus dipilih"),
-    penanggung_jawab_aset: z.string().min(1, "Penanggung jawab harus dipilih"),
+    nota_pembelian: z.any(),
+    divisi_pengguna: z.number().min(1, "Divisi harus dipilih"),
+    penanggung_jawab_aset: z.number().min(1, "Penanggung jawab harus dipilih"),
   })
 );
 
 const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    nama_supplier: undefined,
+    nomor_seri: "",
+    merek: "",
+    model: "",
+    nomor_nota: "",
+    lokasi_penerima: "",
+    waktu_penerimaan: "",
+    dokumen_terima: null,
+    tipe_aset: "",
+    tanggal_aktivasi_aset: "",
+    hasil_pemeriksaan_aset: "",
+    masa_garansi_mulai: "",
+    nomor_kartu_garansi: "",
+    prosesor: "",
+    kapasitas_ram: undefined,
+    kapasitas_rom: undefined,
+    tipe_ram: "",
+    tipe_penyimpanan: "",
+    status_aset: "",
+    nilai_aset: 0,
+    nilai_sisa: 0,
+    jangka_masa_pakai: undefined,
+    waktu_aset_keluar: "",
+    kondisi_aset_keluar: "",
+    nota_pembelian: null,
+    divisi_pengguna: undefined,
+    penanggung_jawab_aset: undefined
+  },
 });
 
 const assetType = [
@@ -117,87 +145,202 @@ const assetType = [
 
 const assetUsagePeriod = [
   {
-    id: "1",
+    id: 1,
     nama: "1 Tahun",
   },
   {
-    id: "2",
+    id: 2,
     nama: "2 Tahun",
   },
   {
-    id: "3",
+    id: 3,
     nama: "3 Tahun",
   },
   {
-    id: "4",
+    id: 4,
     nama: "4 Tahun",
   },
   {
-    id: "5",
+    id: 5,
     nama: "5 Tahun",
   },
   {
-    id: "6",
+    id: 6,
     nama: "6 Tahun",
   },
   {
-    id: "7",
+    id: 7,
     nama: "7 Tahun",
   },
   {
-    id: "8",
+    id: 8,
     nama: "8 Tahun",
   },
   {
-    id: "9",
+    id: 9,
     nama: "9 Tahun",
   },
   {
-    id: "10",
+    id: 10,
     nama: "10 Tahun",
   }
 ];
 
 const assetCondition = ["Baik", "Rusak", "Perlu Perbaikan"];
 const assetStatus = ["Aktif", "Tidak Aktif", "Sedang Digunakan"];
-const ramCapacity = ["2 GB", "4 GB", "8 GB", "16 GB", "32 GB", "64 GB", "128 GB", "256 GB"];
-const romCapacity = ["16 GB", "32 GB", "64 GB", "128 GB", "256 GB", "512 GB", "1 TB", "2 TB", "4 TB", "8 TB"];
+const ramCapacity = [
+  {
+    capacity: 256,
+    nama: "256 MB",
+  },
+  {
+    capacity: 512,
+    nama: "512 MB",
+  },
+  {
+    capacity: 1024,
+    nama: "1 GB",
+  },
+  {
+    capacity: 2048,
+    nama: "2 GB",
+  },
+  {
+    capacity: 4096,
+    nama: "4 GB",
+  },
+  {
+    capacity: 6144,
+    nama: "6 GB",
+  },
+  {
+    capacity: 8192,
+    nama: "8 GB",
+  },
+  {
+    capacity: 12288,
+    nama: "12 GB",
+  },
+  {
+    capacity: 16384,
+    nama: "16 GB",
+  },
+  {
+    capacity: 32768,
+    nama: "32 GB",
+  },
+  {
+    capacity: 65536,
+    nama: "64 GB",
+  },
+  {
+    capacity: 131072,
+    nama: "128 GB",
+  },
+  {
+    capacity: 262144,
+    nama: "256 GB",
+  },
+];
+
+const romCapacity = [
+  {
+    capacity: 1024,
+    nama: "1 GB",
+  },
+  {
+    capacity: 2048,
+    nama: "2 GB",
+  },
+  {
+    capacity: 4096,
+    nama: "4 GB",
+  },
+  {
+    capacity: 6144,
+    nama: "6 GB",
+  },
+  {
+    capacity: 8192,
+    nama: "8 GB",
+  },
+  {
+    capacity: 12288,
+    nama: "12 GB",
+  },
+  {
+    capacity: 16384,
+    nama: "16 GB",
+  },
+  {
+    capacity: 32768,
+    nama: "32 GB",
+  },
+  {
+    capacity: 65536,
+    nama: "64 GB",
+  },
+  {
+    capacity: 131072,
+    nama: "128 GB",
+  },
+  {
+    capacity: 262144,
+    nama: "256 GB",
+  },
+  {
+    capacity: 524288,
+    nama: "512 GB",
+  },
+  {
+    capacity: 1048576,
+    nama: "1 TB",
+  },
+  {
+    capacity: 2097152,
+    nama: "2 TB",
+  },
+  {
+    capacity: 4194304,
+    nama: "4 TB",
+  },
+  {
+    capacity: 8388608,
+    nama: "8 TB",
+  },
+  {
+    capacity: 16777216,
+    nama: "16 TB",
+  },
+  {
+    capacity: 33554432,
+    nama: "32 TB",
+  },
+  {
+    capacity: 67108864,
+    nama: "64 TB",
+  },
+  {
+    capacity: 134217728,
+    nama: "128 TB",
+  },
+  {
+    capacity: 268435456,
+    nama: "256 TB",
+  },
+  {
+    capacity: 536870912,
+    nama: "512 TB",
+  },
+  {
+    capacity: 1073741824,
+    nama: "1 PB",
+  },
+];
+
 const ramType = ["DDR3", "DDR4", "DDR5"];
 const storageType = ["HDD", "SSD"];
 
-// Initialize form
-const form = useForm({
-  validationSchema: formSchema,
-  initialValues: {
-    nama_supplier: "",
-    nomor_seri: "",
-    merek: "",
-    model: "",
-    nomor_nota: "",
-    lokasi_penerima: "",
-    waktu_penerimaan: "",
-    dokumen_terima: null,
-    tipe_aset: "",
-    tanggal_aktivasi_aset: "",
-    hasil_pemeriksaan_aset: "",
-    masa_garansi_mulai: "",
-    nomor_kartu_garansi: "",
-    prosesor: "",
-    kapasitas_ram: 0,
-    kapasitas_rom: 0,
-    tipe_ram: "",
-    tipe_penyimpanan: "",
-    status_aset: "",
-    nilai_aset: 0,
-    nilai_sisa: 0,
-    jangka_masa_pakai: 0,
-    waktu_aset_keluar: "",
-    kondisi_aset_keluar: "",
-    nota_pembelian: null,
-    divisi_pengguna: "",
-    penanggung_jawab_aset: ""
-  },
-});
 
 
 const fetchSupplierData = async () => {
@@ -250,54 +393,99 @@ onMounted(async () => {
   await fetchDivisionData();
   hideLoading();
 });
-// Form submission handler
-const onSubmit = handleSubmit(async (values: any) => {
-  console.log("Form submission triggered"); // Debug log
 
+const mapAssetData = (values: any) => {
+  return {
+    vendor_id: values.nama_supplier ? Number(values.nama_supplier) : null,
+    serial_number: values.nomor_seri || null,
+    merk: values.merek || null,
+    model: values.model || null,
+    nomor_nota: values.nomor_nota || null,
+    lokasi_penerima: values.lokasi_penerima || null,
+    waktu_penerimaan: values.waktu_penerimaan 
+      ? new Date(values.waktu_penerimaan).toISOString() 
+      : null,
+    tipe_aset: values.tipe_aset || null,
+    waktu_aktivasi_aset: values.tanggal_aktivasi_aset
+      ? new Date(values.tanggal_aktivasi_aset).toISOString()
+      : null,
+    hasil_pemeriksaan_aset: values.hasil_pemeriksaan_aset || null,
+    masa_garansi_mulai: values.masa_garansi_mulai
+      ? new Date(values.masa_garansi_mulai).toISOString()
+      : null,
+    nomor_kartu_garansi: values.nomor_kartu_garansi || null,
+    prosesor: values.prosesor || null,
+    kapasitas_ram: values.kapasitas_ram ? Number(values.kapasitas_ram) : null,
+    kapasitas_rom: values.kapasitas_rom ? Number(values.kapasitas_rom) : null,
+    tipe_ram: values.tipe_ram || null,
+    tipe_penyimpnanan: values.tipe_penyimpanan || null, // Note: typo in original JSON
+    status_aset: values.status_aset || null,
+    nilai_aset: values.nilai_aset ? Number(values.nilai_aset) : null,
+    nilai_sisa: values.nilai_sisa ? Number(values.nilai_sisa) : null,
+    jangka_masa_pakai: values.jangka_masa_pakai 
+      ? Number(values.jangka_masa_pakai) 
+      : null,
+    waktu_aset_keluar: values.waktu_aset_keluar
+      ? new Date(values.waktu_aset_keluar).toISOString()
+      : null,
+    kondisi_aset_keluar: values.kondisi_aset_keluar || null,
+    divisi_id: values.divisi_pengguna ? Number(values.divisi_pengguna) : null,
+    user_id: values.penanggung_jawab_aset ? Number(values.penanggung_jawab_aset) : null
+  };
+};
+
+const endpoint = props.type === "new" ? "/asset-perangkat" : "/asset/hardware" + props.data.id;
+
+const onSubmit = handleSubmit(async (values) => {
+  console.log("Form values:", values);
   try {
-    // Log the entire values object to see what's being captured
-    console.log("Raw submitted values:", values);
+    showLoading();
 
-    // Your existing detailed logging
-    console.log("Submitted Asset Registration Data:", {
-      supplierInfo: {
-        supplierName: values.nama_supplier,
-        serialNumber: values.nomor_seri,
-        brand: values.merek,
-        model: values.model,
-        invoiceNumber: values.nomor_nota,
-        receiverLocation: values.lokasi_penerima,
-        receivedDate: values.waktu_penerimaan,
-      },
-      // ... rest of the existing logging
-    });
-
-    // Prepare form data for API submission
+    const mappedData = mapAssetData(values);
     const formData = new FormData();
 
-    Object.keys(values).forEach(key => {
-      if (values[key] instanceof File) {
-        formData.append(key, values[key]);
-      } else {
-        // Convert to string, handling potential undefined/null
-        formData.append(key, values[key]?.toString() || '');
+    (Object.keys(mappedData) as Array<keyof typeof mappedData>).forEach(key => {
+      const value = mappedData[key];
+      if (value !== undefined && value !== null) {
+        formData.append(key, String(value));
       }
     });
 
-    console.log("FormData entries:", Object.fromEntries(formData.entries()));
+    if (values.dokumen_terima instanceof File) {
+      formData.append('tanda_terima', values.dokumen_terima);
+    }
+    if (values.nota_pembelian instanceof File) {
+      formData.append('nota_pembelian', values.nota_pembelian);
+    }
 
-    // Optional: Uncomment if you want to actually submit
-    // const response = await axios.post('/api/assets', formData, {
-    //   headers: { 'Content-Type': 'multipart/form-data' }
-    // });
+    const { data, status, error } = await useFetch(
+      config.public.API_URL + endpoint,
+      {
+        method: props.type == "new" ? "POST" : "PATCH",
+        body: formData,
+      }
+    )
 
-    console.log("Form submitted successfully");
+    if (status.value === 'success') {
+      toast({
+        title: 'Success',
+        description: `Data submitted successfully`,
+      })
+      router.push('/electronic');
+    }
 
   } catch (error) {
-    console.error("Detailed error in form submission:", error);
+    hideLoading();
+    toast({
+      title: 'Gagal Menyimpan Data',
+      description: `Gagal menyimpan data, silahkan coba lagi`,
+      variant: 'destructive'
+    })
+    console.log("Terjadi kesalahan:", error);
+  } finally {
+    hideLoading();
   }
 });
-
 
 const receivedDate = computed({
   get: () =>
@@ -338,7 +526,7 @@ const assetExitDate = computed({
       Registrasi Aset Elektronik
     </h1>
 
-    <Form @submit="onSubmit()" :form="form" class="space-y-6">
+    <form>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
         <FormField v-slot="{ componentField }" name="nama_supplier">
           <FormItem>
@@ -350,7 +538,7 @@ const assetExitDate = computed({
               <SelectContent>
                 <SelectGroup>
                   <template v-for="item in assetSupplier" :key="item.id">
-                    <SelectItem :value="item.id.toString()">
+                    <SelectItem :value="item.id">
                       {{ item.nama_pic }}
                     </SelectItem>
                   </template>
@@ -558,8 +746,8 @@ const assetExitDate = computed({
               <SelectContent>
                 <SelectGroup>
                   <template v-for="item in ramCapacity" :key="item">
-                    <SelectItem :value="item">
-                      {{ item }}
+                    <SelectItem :value="item.capacity">
+                      {{ item.nama }}
                     </SelectItem>
                   </template>
                 </SelectGroup>
@@ -578,8 +766,8 @@ const assetExitDate = computed({
               <SelectContent>
                 <SelectGroup>
                   <template v-for="item in romCapacity" :key="item">
-                    <SelectItem :value="item">
-                      {{ item }}
+                    <SelectItem :value="item.capacity">
+                      {{ item.nama }}
                     </SelectItem>
                   </template>
                 </SelectGroup>
@@ -678,7 +866,7 @@ const assetExitDate = computed({
               <SelectContent>
                 <SelectGroup>
                   <template v-for="item in assetUsagePeriod" :key="item">
-                    <SelectItem :value="item.nama">
+                    <SelectItem :value="item.id">
                       {{ item.nama }}
                     </SelectItem>
                   </template>
@@ -747,7 +935,7 @@ const assetExitDate = computed({
               <SelectContent>
                 <SelectGroup>
                   <template v-for="item in assetDivision" :key="item">
-                    <SelectItem :value="item.id.toString()">
+                    <SelectItem :value="item.id">
                       {{ item.nama }}
                     </SelectItem>
                   </template>
@@ -767,7 +955,7 @@ const assetExitDate = computed({
               <SelectContent>
                 <SelectGroup>
                   <template v-for="item in assetUser" :key="item">
-                    <SelectItem :value="item.id.toString()">
+                    <SelectItem :value="item.id">
                       {{ item.nama }}
                     </SelectItem>
                   </template>
@@ -802,18 +990,12 @@ const assetExitDate = computed({
             <FormMessage />
           </FormItem>
         </FormField>
-
       </div>
-
-      <div class="flex justify-end space-x-4 mt-6">
-        <Button variant="outline" type="button" class="bg-gray-100 hover:bg-gray-200">
-          Cancel
-        </Button>
-        <Button type="submit" class="text-white hover:bg-blue-700 transition-colors duration-300">
-          Submit
-        </Button>
-      </div>
-    </Form>
+    </form>
+    <div class="flex justify-end space-x-4 mt-6">
+      <Button type="button" variant="outline" @click="">Clear</Button>
+      <Button @click="onSubmit">Submit</Button>
+    </div>
   </div>
 </template>
 
