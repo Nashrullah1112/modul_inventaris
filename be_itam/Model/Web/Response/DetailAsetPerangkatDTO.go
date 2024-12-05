@@ -17,6 +17,7 @@ type (
 		WaktuAktivasiAset time.Time `form:"waktu_aktivasi_aset"`
 		MasaGaransiMulai  time.Time `form:"masa_garansi_mulai"`
 		NomorKartuGaransi string    `form:"nomor_kartu_garansi"`
+		HasilPemeriksaan  string    `form:"hasil_pemeriksaan"`
 		Prosesor          string    `form:"prosesor"`
 		KapasitasRAM      int32     `form:"kapasitas_ram"`
 		KapasitasRom      int32     `form:"kapasitas_rom"`

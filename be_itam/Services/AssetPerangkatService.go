@@ -10,7 +10,7 @@ import (
 
 type (
 	AssetPerangkatServiceHandler interface {
-		Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, hasilPemeriksaan string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto)
+		Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto)
 		Update(perangkatID int64, request Response.DetailAsetPerangkatUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
 		Delete(detailAsetPerangkatId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(detailAsetPerangkatId int64) (detailAsetPerangkat Response.DetailAsetPerangkatResponse, serviceErr *Web.ServiceErrorDto)
@@ -31,7 +31,7 @@ func AssetPerangkatServiceProvider(perangkatRepo Repository.AssetPerangkatReposi
 	}
 }
 
-func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, hasilPemeriksaan string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto) {
+func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto) {
 	assetId, err := h.assetRepo.Save(&Database.Asset{
 		SerialNumber: request.SerialNumber,
 		Model:        request.Model,
@@ -49,7 +49,7 @@ func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatC
 		TandaTerima:          tandaTerima,
 		TipeAset:             request.TipeAset,
 		WaktuAktivasiAset:    request.WaktuAktivasiAset,
-		HasilPemeriksaanAset: hasilPemeriksaan,
+		HasilPemeriksaanAset: request.HasilPemeriksaan,
 		SerialNumber:         request.SerialNumber,
 		Model:                request.Model,
 		MasaGaransiMulai:     request.MasaGaransiMulai,
