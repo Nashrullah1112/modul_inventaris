@@ -13,6 +13,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 const props = defineProps<{
   type: string;
@@ -22,6 +33,7 @@ const props = defineProps<{
 const config = useRuntimeConfig()
 const route = useRoute()
 const { showLoading, hideLoading } = useLoading()
+const isEditDialogOpen = ref(false);
 const { toast } = useToast()
 
 /* handle form */
@@ -113,6 +125,16 @@ const getExistingData = async () => {
 if (props.type == 'edit') {
   getExistingData()
 }
+
+const openEditConfirmation = () => {
+  isEditDialogOpen.value = true;
+}
+
+const confirmEdit = () => {
+  onSubmit()
+  isEditDialogOpen.value = false;
+}
+
 </script>
 
 <template>
@@ -197,7 +219,30 @@ if (props.type == 'edit') {
 
     <div class="flex justify-end mt-4 space-x-2">
       <Button variant="outline" @click="navigateTo('/vendor')">Cancel</Button>
-      <Button @click="onSubmit">Submit</Button>
+      <Button v-if="props.type === 'new'" @click="onSubmit">
+        Submit
+      </Button>
+      <Button v-else @click="openEditConfirmation">
+        Edit
+      </Button>
     </div>
+
+
+    <AlertDialog v-model:open="isEditDialogOpen">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Apakah Anda yakin ingin mengubah data?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Data yang sudah diubah tidak dapat dikembalikan.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Batal</AlertDialogCancel>
+          <AlertDialogAction @click="confirmEdit" class="bg-blue-600 hover:bg-blue-400 text-white">
+            Ubah
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
