@@ -104,6 +104,7 @@ func (h *AssetRepositoryImpl) DetailAsset(id int64) (data Response.DetailAssetRe
 		aplikasi  Database.DetaiAsetAplikasi
 		lisensi   Database.DetailAsetLisensi
 		hardware  Database.DetailAsetHardware
+		vendor    Database.Vendor
 	)
 	err = h.DB.Model(&Database.Asset{}).
 		Where("id = ?", id).
@@ -122,10 +123,20 @@ func (h *AssetRepositoryImpl) DetailAsset(id int64) (data Response.DetailAssetRe
 
 	err = h.DB.Model(&Database.Vendor{}).
 		Where("id = ?", asset.VendorID).
-		Find(&data.Vendor).
+		Find(&vendor).
 		Error
 	if err != nil {
 		return data, err
+	}
+	data.Vendor = Response.VendorResponse{
+		ID:               vendor.ID,
+		PIC:              vendor.PIC,
+		Email:            vendor.Email,
+		NomorKontak:      vendor.NomorKontak,
+		LokasiPerusahaan: vendor.Lokasi,
+		NomorSIUP:        vendor.NomorSIUP,
+		NomorNIB:         vendor.NomorNIB,
+		NomorNPWP:        vendor.NomorNPWP,
 	}
 
 	err = h.DB.Model(&Database.DetailAsetPerangkat{}).
