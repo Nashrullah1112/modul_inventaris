@@ -77,7 +77,7 @@ const sidebarItem = reactive({
         },
         {
           title: "Tambah Vendor",
-          url: "/vendormgm/add",
+          url: "/vendor/add",
         },
       ],
     },
@@ -105,7 +105,7 @@ const sidebarItem = reactive({
         },
         {
           title: "Data Vendor",
-          url: "/vendormgm",
+          url: "/vendor",
         },
       ],
     },

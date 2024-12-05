@@ -27,3 +27,7 @@ type AssetUpdateRequest struct {
 	Model        string `json:"model"`
 	NomorNota    string `json:"nomor_nota"`
 }
+
+type IDAsset struct {
+	Id int64 `json:"id"`
+}

@@ -56,8 +56,8 @@ const assetConditions = [
 ];
 
 const deviceStatuses = [
-  { label: "Aktif", value: "Aktif" },
-  { label: "Tidak Aktif", value: "Tidak Aktif" },
+  { label: "Digunakan", value: "Digunakan" },
+  { label: "Disimpan", value: "Disimpan" },
 ];
 
 interface User {
@@ -116,6 +116,32 @@ const formSchema = toTypedSchema(
 
 const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    vendor_id: undefined,
+    merek_perangkat: "",
+    nomor_nota: "",
+    lokasi_penerima: "",
+    tanggal_penerimaan: "",
+    masa_garansi_mulai: "",
+    penanggung_jawab_perangkat: "",
+    model: "",
+    serial_number: "",
+    harga_perangkat: undefined,
+    depresiasi_perangkat: undefined,
+    tanda_terima: null,
+    kondisi_aset: "",
+    tipe_perangkat: "",
+    tanggal_aset_keluar: "",
+    tanggal_aktivasi_perangkat: "",
+    masa_berakhir_garansi: "",
+    hasil_pemeriksaan_perangkat: "",
+    jangka_masa_pakai: undefined,
+    status_perangkat: "",
+    nota_pembelian: null,
+    detail_spesifikasi: "",
+    nomor_kartu_garansi: "",
+    divisi_pengguna: undefined,
+  },
 });
 
 
@@ -284,9 +310,9 @@ const assetOutDate = computed({
 
       <FormField v-slot="{ componentField }" name="serial_number">
         <FormItem>
-          <FormLabel>Serial Number</FormLabel>
+          <FormLabel>Nomor Seri</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="" v-bind="componentField" />
+            <Input type="text" placeholder="Masukkan Nomor Seri" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -323,7 +349,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Nomor Nota</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="" v-bind="componentField" />
+            <Input type="text" placeholder="Masukkan Nomor Nota" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -362,7 +388,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Lokasi Penerima</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="" v-bind="componentField" />
+            <Input type="text" placeholder="Masukkan Lokasi Penerima" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -372,7 +398,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Merek Perangkat</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="" v-bind="componentField" />
+            <Input type="text" placeholder="Masukkan Merek Perangkat" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -382,7 +408,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Model</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="" v-bind="componentField" />
+            <Input type="text" placeholder="Masukkan Model" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -392,7 +418,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Nomor Kartu Garansi</FormLabel>
           <FormControl>
-            <Input type="text" placeholder="" v-bind="componentField" />
+            <Input type="text" placeholder="Masukkan Nomor Kartu Garansi" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -522,7 +548,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Jangka Masa Pakai (Tahun)</FormLabel>
           <FormControl>
-            <Input type="number" placeholder="" v-bind="componentField" />
+            <Input type="number" placeholder="Masukkan Jangka Masa Pakai" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -578,7 +604,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Hasil Pemeriksaan</FormLabel>
           <FormControl>
-            <Textarea placeholder="" class="resize-none" v-bind="componentField" />
+            <Textarea placeholder="Masukkan Rincian Hasil Pemeriksaan" class="resize-none" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -588,7 +614,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Detail Spesifikasi</FormLabel>
           <FormControl>
-            <Textarea placeholder="" class="resize-none" v-bind="componentField" />
+            <Textarea placeholder="Masukkan Detail Spesifikasi Perangkat" class="resize-none" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -598,7 +624,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Harga Perangkat</FormLabel>
           <FormControl>
-            <Input type="number" placeholder="" v-bind="componentField" />
+            <Input type="number" placeholder="Masukkan Harga Perangkat" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -608,7 +634,7 @@ const assetOutDate = computed({
         <FormItem>
           <FormLabel>Depresiasi Perangkat</FormLabel>
           <FormControl>
-            <Input type="number" placeholder="" v-bind="componentField" />
+            <Input type="number" placeholder="Masukkan Nilai Depresiasi Perangkat" v-bind="componentField" />
           </FormControl>
           <FormMessage />
         </FormItem>

@@ -1,11 +1,17 @@
 <script setup lang="ts">
-import { h, ref, onMounted } from "vue";
 import DataTable from "@/components/DataTable.vue";
-import { ArrowUpDown } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import type { ColumnDef } from "@tanstack/vue-table";
+import { ArrowUpDown } from "lucide-vue-next";
+import { h, onMounted, ref, computed } from "vue";
 
 const config = useRuntimeConfig();
+const employees = ref<Employee[]>([]);
+const tableData = ref([]);
+const { showLoading, hideLoading } = useLoading();
+const errorMessage = ref<string | null>(null);
+const isLoading = ref(false);
 
 interface TableRow {
   getIsSelected: () => boolean;
@@ -34,7 +40,6 @@ interface Division {
   nama: string;
 }
 
-
 // Ini seperti model
 interface Employee {
   id: number;
@@ -50,7 +55,7 @@ interface Employee {
 
 const isOpen = useState("is-sidebar-open", () => false);
 
-const columns = [
+const columns: ColumnDef<Employee>[] = [
   {
     id: "select",
     header: ({ table }: { table: TableHeader }) =>
@@ -70,7 +75,7 @@ const columns = [
   },
   {
     accessorKey: "employeeId",
-    header: ({ column }: { column: Column }) => {
+    header: ({ column }) => {
       return h(
         Button,
         {
@@ -83,7 +88,7 @@ const columns = [
   },
   {
     accessorKey: "name",
-    header: ({ column }: { column: Column }) => {
+    header: ({ column }) => {
       return h(
         Button,
         {
@@ -96,7 +101,7 @@ const columns = [
   },
   {
     accessorKey: "position",
-    header: ({ column }: { column: Column }) => {
+    header: ({ column }) => {
       return h(
         Button,
         {
@@ -109,7 +114,7 @@ const columns = [
   },
   {
     accessorKey: "division",
-    header: ({ column }: { column: Column }) => {
+    header: ({ column }) => {
       return h(
         Button,
         {
@@ -122,7 +127,7 @@ const columns = [
   },
   {
     accessorKey: "joinDate", // The key for the date field in your data
-    header: ({ column }: { column: Column }) => {
+    header: ({ column }) => {
       return h(
         Button,
         {
@@ -143,14 +148,17 @@ const columns = [
   },
 ];
 
-const employees = ref<Employee[]>([]);
-const tableData = ref([]);
-const isLoading = ref(false);
-const errorMessage = ref<string | null>(null);
+// Compute the data status based on loading state and error
+const dataStatus = computed(() => {
+  if (isLoading.value) return 'loading';
+  if (errorMessage.value) return 'error';
+  return 'success';
+});
 
 async function fetchEmployees() {
   try {
     isLoading.value = true;
+    showLoading();
     errorMessage.value = null;
 
     const response = await $fetch<{
@@ -162,11 +170,13 @@ async function fetchEmployees() {
     });
 
     if (response.error) {
+      isLoading.value = false;
+      hideLoading();
       throw new Error(response.error);
     }
 
     employees.value = response.data;
-    
+
     // Transform the data for the table
     tableData.value = employees.value.map(employee => ({
       employeeId: employee.nip.toString(),
@@ -176,11 +186,13 @@ async function fetchEmployees() {
       joinDate: new Date(employee.tanggal_bergabung).toISOString().split('T')[0]
     }));
 
+    isLoading.value = false;
+    hideLoading();
   } catch (error) {
+    isLoading.value = false;
+    hideLoading();
     console.error("Error fetching employees:", error);
     errorMessage.value = "Failed to load employee data. Please try again.";
-  } finally {
-    isLoading.value = false;
   }
 }
 
@@ -199,19 +211,12 @@ onMounted(() => {
         </p>
       </div>
 
-      <div v-if="isLoading" class="text-center">
-        Loading employees...
-      </div>
+      <DataTable :columns="columns" :data="tableData" :dataStatus="dataStatus" />
 
-      <div v-else-if="errorMessage" class="text-red-500">
+      <!-- Optional: Add error handling -->
+      <div v-if="errorMessage" class="text-red-500">
         {{ errorMessage }}
       </div>
-
-      <DataTable 
-        v-else 
-        :columns="columns" 
-        :data="tableData" 
-      />
     </div>
   </div>
 </template>

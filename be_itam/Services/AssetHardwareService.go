@@ -169,7 +169,7 @@ func (h *AssetHardwareServiceImpl) FindAll() (detailAsetHardwares []Response.Det
 		if err != nil {
 			return []Response.DetailAsetHardwareResponse{}, Web.NewInternalServiceError(err)
 		}
-		if asset.Status != "Disposal" {
+		if asset.Status == "Approved" {
 			detailAsetHardwares = append(detailAsetHardwares, Response.DetailAsetHardwareResponse{
 				Id:                       d.ID,
 				WaktuPenerimaan:          d.WaktuPenerimaan,
@@ -214,6 +214,7 @@ func (h *AssetHardwareServiceImpl) FormAssetHardware(request Response.AssetHardw
 		Merk:         request.MerekPerangkat,
 		NomorNota:    request.NomorNota,
 		VendorID:     request.VendorID,
+		Status:       "Approval",
 	})
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Aset Hardware not created", err, http.StatusInternalServerError)

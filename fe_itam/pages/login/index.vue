@@ -9,7 +9,7 @@ const config = useRuntimeConfig();
 const router = useRouter();
 const { toast } = useToast();
 
-const username = ref("");
+const email = ref("");
 const password = ref("");
 
 const handleLogin = async () => {
@@ -19,7 +19,7 @@ const handleLogin = async () => {
       {
         method: "POST",
         body: {
-          email: username.value,
+          email: email.value,
           password: password.value,
         },
       }
@@ -80,17 +80,17 @@ const handleLogin = async () => {
         <form @submit.prevent="handleLogin" class="space-y-6">
           <div class="space-y-2">
             <label
-              for="username"
+              for="email"
               class="text-sm font-medium leading-none text-gray-700"
             >
-              Username
+              email
             </label>
             <input
-              id="username"
-              v-model="username"
+              id="email"
+              v-model="email"
               type="text"
               class="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-[#1a237e] focus:border-transparent"
-              placeholder="Masukkan username"
+              placeholder="Masukkan email"
               required
             />
           </div>

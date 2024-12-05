@@ -127,6 +127,23 @@ const formSchema = toTypedSchema(
 
 const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    vendor_id: undefined,
+    serial_number: "",
+    merk: "",
+    model: "",
+    nomor_nota: "",
+    waktu_pembelian: undefined,
+    SN_perangkat_terpasang: "",
+    waktu_aktivasi: undefined,
+    tanggal_expired: undefined,
+    tipe_kepemilikan_aset: "",
+    kategori_lisensi: "",
+    versi_lisensi: "",
+    maksimal_user_aplikasi: undefined,
+    maksimal_perangkat_lisensi: undefined,
+    tipe_lisensi: "",
+  }
 });
 
 const dataId = route.params.id;
@@ -194,13 +211,14 @@ const onSubmit = handleSubmit(async (values) => {
 
         <FormField v-slot="{ componentField }" name="serial_number">
           <FormItem>
-            <FormLabel>Serial Number</FormLabel>
+            <FormLabel>Nomor Seri</FormLabel>
             <FormControl>
               <Input
                 type="text"
                 id="serial_number"
                 v-bind="componentField"
                 required
+                placeholder="Masukkan Nomor Seri"
               />
             </FormControl>
             <FormMessage />
@@ -211,7 +229,7 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Merk</FormLabel>
             <FormControl>
-              <Input type="text" id="merk" v-bind="componentField" required />
+              <Input type="text" id="merk" v-bind="componentField" required placeholder="Masukkan Merek" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -221,7 +239,7 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Model</FormLabel>
             <FormControl>
-              <Input type="text" id="model" v-bind="componentField" required />
+              <Input type="text" id="model" v-bind="componentField" required placeholder="Masukkan Model"/>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -236,6 +254,7 @@ const onSubmit = handleSubmit(async (values) => {
                 id="nomor_nota"
                 v-bind="componentField"
                 required
+                placeholder="Masukkan Nomor Nota"
               />
             </FormControl>
             <FormMessage />
@@ -292,6 +311,7 @@ const onSubmit = handleSubmit(async (values) => {
                 id="SN_perangkat_terpasang"
                 v-bind="componentField"
                 required
+                placeholder="Masukkan Nomor Seri Terpasang"
               />
             </FormControl>
             <FormMessage />
@@ -389,6 +409,7 @@ const onSubmit = handleSubmit(async (values) => {
                 id="tipe_kepemilikan_aset"
                 v-bind="componentField"
                 required
+                placeholder="Masukkan Tipe Kepemilikan Aset"
               />
             </FormControl>
             <FormMessage />
@@ -404,6 +425,7 @@ const onSubmit = handleSubmit(async (values) => {
                 id="kategori_lisensi"
                 v-bind="componentField"
                 required
+                placeholder="Masukkan Kategori Lisensi"
               />
             </FormControl>
             <FormMessage />
@@ -419,6 +441,7 @@ const onSubmit = handleSubmit(async (values) => {
                 id="versi_lisensi"
                 v-bind="componentField"
                 required
+                placeholder="Masukkan Versi Lisensi"
               />
             </FormControl>
             <FormMessage />
@@ -434,6 +457,7 @@ const onSubmit = handleSubmit(async (values) => {
                 id="maksimal_user_aplikasi"
                 v-bind="componentField"
                 required
+                placeholder="Masukkan Maksimal User Aplikasi"
               />
             </FormControl>
             <FormMessage />
@@ -452,6 +476,7 @@ const onSubmit = handleSubmit(async (values) => {
                 id="maksimal_perangkat_lisensi"
                 v-bind="componentField"
                 required
+                placeholder="Masukkan Maksimal Perangkat Lisensi"
               />
             </FormControl>
             <FormMessage />
@@ -467,6 +492,7 @@ const onSubmit = handleSubmit(async (values) => {
                 id="tipe_lisensi"
                 v-bind="componentField"
                 required
+                placeholder="Masukkan Tipe Lisensi"
               />
             </FormControl>
             <FormMessage />

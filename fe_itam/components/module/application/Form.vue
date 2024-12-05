@@ -5,6 +5,7 @@ import {
   DateFormatter,
   parseDate
 } from "@internationalized/date";
+import { toDate } from "radix-vue/date";
 import { CalendarIcon } from "@radix-icons/vue";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
@@ -44,7 +45,7 @@ const route = useRoute();
 const { showLoading, hideLoading } = useLoading();
 const { toast } = useToast();
 
-const df = new DateFormatter("en-US", {
+const df = new DateFormatter("id-ID", {
   dateStyle: "long",
 });
 
@@ -138,6 +139,19 @@ const formSchema = toTypedSchema(
 
 const { handleSubmit, setFieldValue, values } = useForm({
   validationSchema: formSchema,
+  initialValues: {
+    vendor_id: undefined,
+    tanggal_pembuatan: "",
+    nama_aplikasi: "",
+    tanggal_terima: "",
+    tipe_aplikasi: "",
+    lokasi_server_penyimpanan: "",
+    link_aplikasi: "",
+    tanggal_aktif: "",
+    tanggal_kadaluarsa: "",
+    sertifikasi_aplikasi: "",
+    dokumentasi: null,
+  },
 });
 
 const dataId = route.params.id;
@@ -259,35 +273,28 @@ const transformDate = (serverDate: string) => {
             <Popover>
               <PopoverTrigger as-child>
                 <FormControl>
-                  <Button
-                    variant="outline"
-                    :class="
-                      cn(
-                        'ps-3 text-start font-normal',
-                        !tanggalPembuatan && 'text-muted-foreground'
-                      )
-                    "
-                  >
-                    <span>{{ tanggalPembuatan || "Pick a date" }}</span>
+                  <Button variant="outline" :class="cn(
+                    'ps-3 text-start font-normal',
+                    !tanggalPembuatan && 'text-muted-foreground'
+                  )
+                    ">
+                    <span>{{ tanggalPembuatan
+                      ? df.format(toDate(tanggalPembuatan))
+                      : "Pilih Tanggal Pembuatan" }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden />
                 </FormControl>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
-                <Calendar
-                  v-model="tanggalPembuatan"
-                  calendar-label="Date of birth"
-                  @update:model-value="
-                    (v) => {
-                      if (v) {
-                        setFieldValue('tanggal_pembuatan', v.toString());
-                      } else {
-                        setFieldValue('tanggal_pembuatan', undefined);
-                      }
+                <Calendar v-model="tanggalPembuatan" calendar-label="Date of birth" @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('tanggal_pembuatan', v.toString());
+                    } else {
+                      setFieldValue('tanggal_pembuatan', undefined);
                     }
-                  "
-                />
+                  }
+                  " />
               </PopoverContent>
             </Popover>
             <FormMessage />
@@ -298,7 +305,7 @@ const transformDate = (serverDate: string) => {
           <FormItem>
             <FormLabel>Nama Aplikasi</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Nama Aplikasi" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -310,35 +317,28 @@ const transformDate = (serverDate: string) => {
             <Popover>
               <PopoverTrigger as-child>
                 <FormControl>
-                  <Button
-                    variant="outline"
-                    :class="
-                      cn(
-                        'ps-3 text-start font-normal',
-                        !tanggalTerima && 'text-muted-foreground'
-                      )
-                    "
-                  >
-                    <span>{{ tanggalTerima || "Pick a date" }}</span>
+                  <Button variant="outline" :class="cn(
+                    'ps-3 text-start font-normal',
+                    !tanggalTerima && 'text-muted-foreground'
+                  )
+                    ">
+                    <span>{{ tanggalTerima
+                      ? df.format(toDate(tanggalTerima))
+                      : "Pilih Tanggal Penerimaan" }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden />
                 </FormControl>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
-                <Calendar
-                  v-model="tanggalTerima"
-                  calendar-label="Date of birth"
-                  @update:model-value="
-                    (v) => {
-                      if (v) {
-                        setFieldValue('tanggal_terima', v.toString());
-                      } else {
-                        setFieldValue('tanggal_terima', undefined);
-                      }
+                <Calendar v-model="tanggalTerima" calendar-label="Date of birth" @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('tanggal_terima', v.toString());
+                    } else {
+                      setFieldValue('tanggal_terima', undefined);
                     }
-                  "
-                />
+                  }
+                  " />
               </PopoverContent>
             </Popover>
             <FormMessage />
@@ -354,10 +354,10 @@ const transformDate = (serverDate: string) => {
                   <SelectValue placeholder="Pilih Platform" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="web">Web</SelectItem>
-                  <SelectItem value="mobile">Aplikasi Mobile</SelectItem>
-                  <SelectItem value="desktop">Aplikasi Desktop</SelectItem>
-                  <SelectItem value="server">Aplikasi Server</SelectItem>
+                  <SelectItem value="Web">Web</SelectItem>
+                  <SelectItem value="Mobile">Aplikasi Mobile</SelectItem>
+                  <SelectItem value="Desktop">Aplikasi Desktop</SelectItem>
+                  <SelectItem value="Server">Aplikasi Server</SelectItem>
                 </SelectContent>
               </Select>
             </FormControl>
@@ -369,7 +369,7 @@ const transformDate = (serverDate: string) => {
           <FormItem>
             <FormLabel>Server Penyimpanan</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Lokasi Penyimpanan (Server)" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -379,7 +379,7 @@ const transformDate = (serverDate: string) => {
           <FormItem>
             <FormLabel>URL Aplikasi</FormLabel>
             <FormControl>
-              <Input type="text" v-bind="componentField" />
+              <Input type="text" v-bind="componentField" placeholder="Masukkan Link URL Aplikasi" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -391,35 +391,28 @@ const transformDate = (serverDate: string) => {
             <Popover>
               <PopoverTrigger as-child>
                 <FormControl>
-                  <Button
-                    variant="outline"
-                    :class="
-                      cn(
-                        'ps-3 text-start font-normal',
-                        !tanggalAktif && 'text-muted-foreground'
-                      )
-                    "
-                  >
-                    <span>{{ tanggalAktif || "Pick a date" }}</span>
+                  <Button variant="outline" :class="cn(
+                    'ps-3 text-start font-normal',
+                    !tanggalAktif && 'text-muted-foreground'
+                  )
+                    ">
+                    <span>{{ tanggalAktif
+                      ? df.format(toDate(tanggalAktif))
+                      : "Pilih Tanggal Aktif" }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden />
                 </FormControl>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
-                <Calendar
-                  v-model="tanggalAktif"
-                  calendar-label="Date of birth"
-                  @update:model-value="
-                    (v) => {
-                      if (v) {
-                        setFieldValue('tanggal_aktif', v.toString());
-                      } else {
-                        setFieldValue('tanggal_aktif', undefined);
-                      }
+                <Calendar v-model="tanggalAktif" calendar-label="Date of birth" @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('tanggal_aktif', v.toString());
+                    } else {
+                      setFieldValue('tanggal_aktif', undefined);
                     }
-                  "
-                />
+                  }
+                  " />
               </PopoverContent>
             </Popover>
             <FormMessage />
@@ -432,35 +425,28 @@ const transformDate = (serverDate: string) => {
             <Popover>
               <PopoverTrigger as-child>
                 <FormControl>
-                  <Button
-                    variant="outline"
-                    :class="
-                      cn(
-                        'ps-3 text-start font-normal',
-                        !tanggalKadaluarsa && 'text-muted-foreground'
-                      )
-                    "
-                  >
-                    <span>{{ tanggalKadaluarsa || "Pick a date" }}</span>
+                  <Button variant="outline" :class="cn(
+                    'ps-3 text-start font-normal',
+                    !tanggalKadaluarsa && 'text-muted-foreground'
+                  )
+                    ">
+                    <span>{{ tanggalKadaluarsa
+                      ? df.format(toDate(tanggalKadaluarsa))
+                      : "Pilih Tanggal Kadaluarsa" }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden />
                 </FormControl>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
-                <Calendar
-                  v-model="tanggalKadaluarsa"
-                  calendar-label="Date of birth"
-                  @update:model-value="
-                    (v) => {
-                      if (v) {
-                        setFieldValue('tanggal_kadaluarsa', v.toString());
-                      } else {
-                        setFieldValue('tanggal_kadaluarsa', undefined);
-                      }
+                <Calendar v-model="tanggalKadaluarsa" calendar-label="Date of birth" @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('tanggal_kadaluarsa', v.toString());
+                    } else {
+                      setFieldValue('tanggal_kadaluarsa', undefined);
                     }
-                  "
-                />
+                  }
+                  " />
               </PopoverContent>
             </Popover>
             <FormMessage />
@@ -471,7 +457,7 @@ const transformDate = (serverDate: string) => {
           <FormItem>
             <FormLabel>Sertifikat Aplikasi</FormLabel>
             <FormControl>
-              <Input v-bind="componentField" />
+              <Input v-bind="componentField" placeholder="Masukkan Sertifikat Aplikasi" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -494,9 +480,7 @@ const transformDate = (serverDate: string) => {
     </form>
 
     <div class="flex justify-end mt-4 space-x-2">
-      <Button variant="outline" @click="navigateTo('/application')"
-        >Cancel</Button
-      >
+      <Button variant="outline" @click="navigateTo('/application')">Cancel</Button>
       <Button @click="onSubmit">Submit</Button>
     </div>
   </div>

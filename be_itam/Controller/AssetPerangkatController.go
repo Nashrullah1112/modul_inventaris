@@ -63,26 +63,15 @@ func (h *AssetPerangkatControllerImpl) Create(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
 	}
 
-	filePemeriksaan, err := c.FormFile("hasil_pemeriksaan")
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, err))
-	}
-
-	// Tentukan lokasi tujuan penyimpanan file
-	destinationPemeriksaan := fmt.Sprintf("%s-%s", time.Now().Format("20060102"), strings.ReplaceAll(filePemeriksaan.Filename, " ", ""))
-
-	// Simpan file ke folder yang ditentukan
-	if err = c.SaveFile(fileNota, "./public/static/perangkat/hasil_pemeriksaan/"+destinationPemeriksaan); err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(Web.ErrorResponse(Constant.InternalHttpError, err))
-	}
-
 	// Parse request body
 	if err := c.BodyParser(&request); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, err))
 	}
+	fmt.Printf("Request:\n VendorID: %d\n SerialNumber: %s\n Merk: %s\n Brand: %s\n Model: %s\n NomorNota: %s\n LokasiPenerima: %s\n WaktuPenerimaan: %v\n TipeAset: %s\n WaktuAktivasiAset: %v\n MasaGaransiMulai: %v\n NomorKartuGaransi: %s\n Prosesor: %s\n KapasitasRAM: %d\n KapasitasRom: %d\n TipeRAM: %s\n TipePenyimpanan: %s\n StatusAset: %s\n NilaiAset: %d\n NilaiSisa: %d\n JangkaMasaPakai: %d\n WaktuAsetKeluar: %v\n KondisiAsetKeluar: %s\n DivisiID: %d\n UserID: %d\n",
+		request.VendorID, request.SerialNumber, request.Merk, request.LokasiPenerima, request.Model, request.NomorNota, request.LokasiPenerima, request.WaktuPenerimaan, request.TipeAset, request.WaktuAktivasiAset, request.MasaGaransiMulai, request.NomorKartuGaransi, request.Prosesor, request.KapasitasRAM, request.KapasitasRom, request.TipeRAM, request.TipePenyimpanan, request.StatusAset, request.NilaiAset, request.NilaiSisa, request.JangkaMasaPakai, request.WaktuAsetKeluar, request.KondisiAsetKeluar, request.DivisiID, request.UserID)
 
 	// Call service to create DetailAsetPerangkat
-	if _, serviceErr = h.service.Create(request, destinationTerima, destinationNota, destinationPemeriksaan); serviceErr != nil {
+	if _, serviceErr = h.service.Create(request, destinationTerima, destinationNota); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 

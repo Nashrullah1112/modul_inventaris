@@ -10,7 +10,7 @@ import (
 
 type (
 	AssetPerangkatServiceHandler interface {
-		Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, hasilPemeriksaan string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto)
+		Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto)
 		Update(perangkatID int64, request Response.DetailAsetPerangkatUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
 		Delete(detailAsetPerangkatId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(detailAsetPerangkatId int64) (detailAsetPerangkat Response.DetailAsetPerangkatResponse, serviceErr *Web.ServiceErrorDto)
@@ -31,13 +31,14 @@ func AssetPerangkatServiceProvider(perangkatRepo Repository.AssetPerangkatReposi
 	}
 }
 
-func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, hasilPemeriksaan string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto) {
+func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatCreateRequest, tandaTerima string, notaPembelian string) (id int64, serviceErr *Web.ServiceErrorDto) {
 	assetId, err := h.assetRepo.Save(&Database.Asset{
 		SerialNumber: request.SerialNumber,
 		Model:        request.Model,
 		Merk:         request.Merk,
 		NomorNota:    request.NomorNota,
 		VendorID:     request.VendorID,
+		Status:       "Approval",
 	})
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Aset Hardware not created", err, http.StatusInternalServerError)
@@ -49,7 +50,7 @@ func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatC
 		TandaTerima:          tandaTerima,
 		TipeAset:             request.TipeAset,
 		WaktuAktivasiAset:    request.WaktuAktivasiAset,
-		HasilPemeriksaanAset: hasilPemeriksaan,
+		HasilPemeriksaanAset: request.HasilPemeriksaan,
 		SerialNumber:         request.SerialNumber,
 		Model:                request.Model,
 		MasaGaransiMulai:     request.MasaGaransiMulai,
@@ -198,7 +199,7 @@ func (h *AssetPerangkatServiceImpl) FindAll() (detailAsetPerangkat []Response.De
 		if err != nil {
 			return []Response.DetailAsetPerangkatResponse{}, Web.NewInternalServiceError(err)
 		}
-		if asset.Status != "Disposal" {
+		if asset.Status == "Approved" {
 			detailAsetPerangkat = append(detailAsetPerangkat, Response.DetailAsetPerangkatResponse{
 				ID:                   d.ID,
 				LokasiPenerima:       d.LokasiPenerima,

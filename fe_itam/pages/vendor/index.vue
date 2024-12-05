@@ -151,7 +151,7 @@ const columns = [
         h(
           ActionBtnEdit,
           {
-            onClick: () => router.push(`/vendormgm/${row.original.id}/edit`),
+            onClick: () => router.push(`/vendor/${row.original.id}/edit`),
           },
           () => "Update"
         ),

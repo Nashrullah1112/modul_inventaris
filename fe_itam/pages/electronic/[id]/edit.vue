@@ -3,5 +3,5 @@ const router = useRouter()
 </script>
 
 <template>
-  <ModuleElectronicForm type="new" />
+    <ModuleElectronicForm type="edit" />
 </template>
