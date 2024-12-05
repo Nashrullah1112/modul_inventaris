@@ -429,7 +429,7 @@ const mapAssetData = (values: any) => {
       ? new Date(values.waktu_aset_keluar).toISOString()
       : null,
     kondisi_aset_keluar: values.kondisi_aset_keluar || null,
-    divisi_id: values.divisi_pengguna ? Number(values.divisi_pengguna) : null,
+    divisi_pengguna: values.divisi_pengguna ? Number(values.divisi_pengguna) : null,
     user_id: values.penanggung_jawab_aset ? Number(values.penanggung_jawab_aset) : null
   };
 };
@@ -468,10 +468,16 @@ const onSubmit = handleSubmit(async (values) => {
 
     if (status.value === 'success') {
       toast({
-        title: 'Success',
-        description: `Data submitted successfully`,
+        title: 'Sukses Menyimpan Data',
+        description: `Data elektronik berhasil disimpan`,
       })
       router.push('/electronic');
+    } else {
+      toast({
+        title: 'Gagal Menyimpan Data',
+        description: `Gagal menyimpan data elektronik, silahkan coba lagi`,
+        variant: 'destructive'
+      })
     }
 
   } catch (error) {
