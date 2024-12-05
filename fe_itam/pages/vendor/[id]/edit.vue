@@ -3,7 +3,7 @@
 
 <template>
   <div>
-    <ModuleVendormgmForm type="edit" />
+    <ModuleVendorForm type="edit" />
   </div>
 </template>
 

@@ -69,7 +69,7 @@ const onSubmit = handleSubmit(async (values) => {
         title: 'Success',
         description: `Data submitted successfully`,
       })
-      navigateTo('/vendormgm')
+      navigateTo('/vendor')
     } else {
       toast({
         title: 'Failed',
@@ -196,7 +196,7 @@ if (props.type == 'edit') {
     </form>
 
     <div class="flex justify-end mt-4 space-x-2">
-      <Button variant="outline" @click="navigateTo('/vendormgm')">Cancel</Button>
+      <Button variant="outline" @click="navigateTo('/vendor')">Cancel</Button>
       <Button @click="onSubmit">Submit</Button>
     </div>
   </div>
