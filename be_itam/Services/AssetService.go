@@ -19,6 +19,7 @@ type (
 		FindDisposal() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto)
 		FindApproval() (assets []Response.AssetResponse, serviceErr *Web.ServiceErrorDto)
 		Approval(request Response.IDAsset) (id int64, serviceErr *Web.ServiceErrorDto)
+		FindDetailAsset(assetId int64) (detailAsset Response.DetailAssetResponse, serviceErr *Web.ServiceErrorDto)
 	}
 
 	AssetServiceImpl struct {
@@ -198,4 +199,16 @@ func (h *AssetServiceImpl) Approval(request Response.IDAsset) (id int64, service
 		return existingAsset.ID, Web.NewInternalServiceError(err)
 	}
 	return id, nil
+}
+func (h *AssetServiceImpl) FindDetailAsset(assetId int64) (detailAsset Response.DetailAssetResponse, serviceErr *Web.ServiceErrorDto) {
+	data, err := h.repo.FindById(assetId)
+	if err != nil {
+		return Response.DetailAssetResponse{}, Web.NewCustomServiceError("Detail Asset not found", err, http.StatusNotFound)
+	}
+	detailAsset, err = h.repo.DetailAsset(data.ID)
+	if err != nil {
+		return Response.DetailAssetResponse{}, Web.NewInternalServiceError(err)
+	}
+
+	return detailAsset, nil
 }

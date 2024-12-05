@@ -1,7 +1,9 @@
 package Repository
 
 import (
+	"fmt"
 	"itam/Model/Database"
+	"itam/Model/Web/Response"
 	"log"
 	"time"
 
@@ -18,6 +20,7 @@ type (
 		FindDisposal() (data []Database.Asset, err error)
 		FindApproval() (data []Database.Asset, err error)
 		UpdateStatus(id int64, status string) error
+		DetailAsset(id int64) (data Response.DetailAssetResponse, err error)
 	}
 
 	AssetRepositoryImpl struct {
@@ -93,4 +96,145 @@ func (h *AssetRepositoryImpl) UpdateStatus(id int64, status string) error {
 			"status": status,
 		}).Error
 	return err
+}
+func (h *AssetRepositoryImpl) DetailAsset(id int64) (data Response.DetailAssetResponse, err error) {
+	var (
+		asset     Database.Asset
+		perangkat Database.DetailAsetPerangkat
+		aplikasi  Database.DetaiAsetAplikasi
+		lisensi   Database.DetailAsetLisensi
+		hardware  Database.DetailAsetHardware
+	)
+	err = h.DB.Model(&Database.Asset{}).
+		Where("id = ?", id).
+		Find(&asset).
+		Error
+	if err != nil {
+		return data, err
+	}
+	data.Id = asset.ID
+	data.VendorID = asset.VendorID
+	data.SerialNumber = asset.SerialNumber
+	data.Merk = asset.Merk
+	data.Model = asset.Model
+	data.NomorNota = asset.NomorNota
+	data.Status = asset.Status
+
+	err = h.DB.Model(&Database.Vendor{}).
+		Where("id = ?", asset.VendorID).
+		Find(&data.Vendor).
+		Error
+	if err != nil {
+		return data, err
+	}
+
+	err = h.DB.Model(&Database.DetailAsetPerangkat{}).
+		Where("asset_id = ?", id).
+		Find(&perangkat).
+		Error
+	fmt.Println(perangkat)
+	if perangkat.AssetID == id {
+		data.Perangkat = &Response.AsetPerangkatResponse{
+			ID:                   perangkat.ID,
+			LokasiPenerima:       perangkat.LokasiPenerima,
+			WaktuPenerimaan:      perangkat.WaktuPenerimaan,
+			TandaTerima:          perangkat.TandaTerima,
+			TipeAset:             perangkat.TipeAset,
+			WaktuAktivasiAset:    perangkat.WaktuAktivasiAset,
+			HasilPemeriksaanAset: perangkat.HasilPemeriksaanAset,
+			SerialNumber:         perangkat.SerialNumber,
+			Model:                perangkat.Model,
+			MasaGaransiMulai:     perangkat.MasaGaransiMulai,
+			NomorKartuGaransi:    perangkat.NomorKartuGaransi,
+			Prosesor:             perangkat.Prosesor,
+			KapasitasRAM:         perangkat.KapasitasRAM,
+			KapasitasRom:         perangkat.KapasitasRom,
+			TipeRAM:              perangkat.TipeRAM,
+			TipePenyimpanan:      perangkat.TipePenyimpanan,
+			StatusAset:           perangkat.StatusAset,
+			NilaiAset:            perangkat.NilaiAset,
+			NilaiDepresiasi:      perangkat.NilaiDepresiasi,
+			JangkaMasaPakai:      perangkat.JangkaMasaPakai,
+			WaktuAsetKeluar:      perangkat.WaktuAsetKeluar,
+			KondisiAsetKeluar:    perangkat.KondisiAsetKeluar,
+			NotaPembelian:        perangkat.NotaPembelian,
+			DivisiID:             perangkat.DivisiID,
+			UserID:               perangkat.UserID,
+		}
+
+		return data, err
+	}
+	err = h.DB.Model(&Database.DetaiAsetAplikasi{}).
+		Where("asset_id = ?", id).
+		Find(&aplikasi).
+		Error
+	if aplikasi.AssetID == id {
+		data.Aplikasi = &Response.AsetAplikasiResponse{
+			Id:                      aplikasi.ID,
+			NamaAplikasi:            aplikasi.NamaAplikasi,
+			TanggalPembuatan:        aplikasi.TanggalPembuatan,
+			TanggalTerima:           aplikasi.TanggalTerima,
+			LokasiServerPenyimpanan: aplikasi.LokasiServerPenyimpanan,
+			TipeAplikasi:            aplikasi.TipeAplikasi,
+			LinkAplikasi:            aplikasi.LinkAplikasi,
+			SertifikasiAplikasi:     aplikasi.SertifikasiAplikasi,
+			TanggalAktif:            aplikasi.TanggalAktif,
+			TanggalKadaluarsa:       aplikasi.TanggalKadaluarsa,
+			AssetID:                 aplikasi.AssetID,
+		}
+		return data, err
+	}
+	err = h.DB.Model(&Database.DetailAsetLisensi{}).
+		Where("asset_id = ?", id).
+		Find(&lisensi).
+		Error
+	if lisensi.AssetID == id {
+		data.Lisensi = &Response.AsetLisensiResponse{
+			ID:                       lisensi.ID,
+			WaktuPembelian:           lisensi.WaktuPembelian,
+			SNPerangkatTerpasang:     lisensi.SNPerangkatTerpasang,
+			WaktuAktivasi:            lisensi.WaktuAktivasi,
+			TanggalExpired:           lisensi.TanggalExpired,
+			TipeKepemilikanAset:      lisensi.TipeKepemilikanAset,
+			KategoriLisensi:          lisensi.KategoriLisensi,
+			VersiLisensi:             lisensi.VersiLisensi,
+			MaksimalUserAplikasi:     lisensi.MaksimalUserAplikasi,
+			MaksimalPerangkatLisensi: lisensi.MaksimalPerangkatLisensi,
+			TipeLisensi:              lisensi.TipeLisensi,
+			AssetID:                  lisensi.AssetID,
+		}
+
+		return data, err
+	}
+	err = h.DB.Model(&Database.DetailAsetHardware{}).
+		Where("id = ?", asset.VendorID).
+		Find(&hardware).
+		Error
+	if hardware.AssetID == id {
+		data.Hardware = &Response.AsetHardwareResponse{
+			Id:                       hardware.ID,
+			WaktuPenerimaan:          hardware.WaktuPenerimaan,
+			BuktiPenerimaan:          hardware.BuktiPenerimaan,
+			TipeAset:                 hardware.TipeAset,
+			TanggalAktivasiPerangkat: hardware.TanggalAktivasiPerangkat,
+			HasilPemeriksaan:         hardware.HasilPemeriksaan,
+			SerialNumber:             hardware.SerialNumber,
+			Model:                    hardware.Model,
+			WaktuGaransiMulai:        hardware.WaktuGaransiMulai,
+			WaktuGaransiBerakhir:     hardware.WaktuGaransiBerakhir,
+			NomorKartuGaransi:        hardware.NomorKartuGaransi,
+			SpesifikasiPerangkat:     hardware.SpesifikasiPerangkat,
+			StatusAset:               hardware.StatusAset,
+			PenanggungjawabAset:      hardware.PenanggungjawabAset,
+			LokasiPenyimpananID:      hardware.LokasiPenyimpananID,
+			JangkaMasaPakai:          hardware.JangkaMasaPakai,
+			WaktuAsetKeluar:          hardware.WaktuAsetKeluar,
+			KondisiAset:              hardware.KondisiAset,
+			NotaPembelian:            hardware.NotaPembelian,
+			DivisiID:                 hardware.DivisiID,
+			AssetID:                  hardware.AssetID,
+		}
+		return data, err
+	}
+	return data, err
 }

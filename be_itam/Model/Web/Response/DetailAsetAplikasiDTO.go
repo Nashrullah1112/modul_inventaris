@@ -52,3 +52,16 @@ type DetaiAsetAplikasiUpdateRequest struct {
 	Model                   string    `json:"model"`
 	NomorNota               string    `json:"nomor_nota"`
 }
+type AsetAplikasiResponse struct {
+	Id                      int64     `json:"id"`
+	NamaAplikasi            string    `json:"nama_aplikasi"`
+	TanggalPembuatan        time.Time `json:"tanggal_pembuatan"`
+	TanggalTerima           time.Time `json:"tanggal_terima"`
+	LokasiServerPenyimpanan string    `json:"lokasi_server_penyimpanan"`
+	TipeAplikasi            string    `json:"tipe_aplikasi"`
+	LinkAplikasi            string    `json:"link_aplikasi"`
+	SertifikasiAplikasi     string    `json:"sertifikasi_aplikasi,omitempty"`
+	TanggalAktif            time.Time `json:"tanggal_aktif"`
+	TanggalKadaluarsa       time.Time `json:"tanggal_kadaluarsa"`
+	AssetID                 int64     `json:"asset_id"`
+}

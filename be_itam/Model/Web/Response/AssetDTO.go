@@ -31,3 +31,17 @@ type AssetUpdateRequest struct {
 type IDAsset struct {
 	Id int64 `json:"id"`
 }
+type DetailAssetResponse struct {
+	Id           int64                  `json:"id"`
+	VendorID     int64                  `json:"vendor_id"`
+	SerialNumber string                 `json:"serial_number"`
+	Merk         string                 `json:"merk"`
+	Model        string                 `json:"model"`
+	NomorNota    string                 `json:"nomor_nota"`
+	Status       string                 `json:"status"`
+	Vendor       VendorResponse         `json:"vendor"`
+	Hardware     *AsetHardwareResponse  `json:"hardware"`
+	Lisensi      *AsetLisensiResponse   `json:"software"`
+	Perangkat    *AsetPerangkatResponse `json:"perangkat"`
+	Aplikasi     *AsetAplikasiResponse  `json:"aplikasi"`
+}

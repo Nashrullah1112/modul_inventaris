@@ -124,3 +124,26 @@ type AssetHardwareUpdateRequest struct {
 	DetailSpesifikasi         string  `form:"detail_spesifikasi"`
 	NomorKartuGaransi         string  `form:"nomor_kartu_garansi"`
 }
+type AsetHardwareResponse struct {
+	Id                       int64     `json:"id"`
+	WaktuPenerimaan          string    `json:"waktu_penerimaan"`
+	BuktiPenerimaan          string    `json:"bukti_penerimaan"`
+	TipeAset                 string    `json:"tipe_aset"`
+	TanggalAktivasiPerangkat string    `json:"tanggal_aktivasi_perangkat"`
+	HasilPemeriksaan         string    `json:"hasil_pemeriksaan"`
+	SerialNumber             string    `json:"serial_number"`
+	Model                    string    `json:"model"`
+	WaktuGaransiMulai        string    `json:"waktu_garansi_mulai"`
+	WaktuGaransiBerakhir     string    `json:"waktu_garansi_berakhir"`
+	NomorKartuGaransi        string    `json:"nomor_kartu_garansi"`
+	SpesifikasiPerangkat     string    `json:"spesifikasi_perangkat"`
+	StatusAset               string    `json:"status_aset"`
+	PenanggungjawabAset      string    `json:"penanggungjawab_aset"`
+	LokasiPenyimpananID      string    `json:"lokasi_penyimpanan_id"`
+	JangkaMasaPakai          int32     `json:"jangka_masa_pakai"`
+	WaktuAsetKeluar          time.Time `json:"waktu_aset_keluar"`
+	KondisiAset              string    `json:"kondisi_aset"`
+	NotaPembelian            string    `json:"nota_pembelian"`
+	DivisiID                 int64     `json:"divisi_id"`
+	AssetID                  int64     `json:"asset_id"`
+}

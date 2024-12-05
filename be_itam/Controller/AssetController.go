@@ -143,3 +143,19 @@ func (h *AssetControllerImpl) Approval(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Asset updated successfully", nil))
 }
+
+func (h *AssetControllerImpl) FindDetailAsset(c *fiber.Ctx) error {
+	// Get asset ID from URL query
+	assetID, err := c.ParamsInt("assetId")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid asset ID", err))
+	}
+
+	// Call service to find asset by ID
+	response, serviceErr := h.service.FindDetailAsset(int64(assetID))
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Asset found", response))
+}

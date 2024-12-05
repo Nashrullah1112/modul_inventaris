@@ -85,6 +85,7 @@ func NewRouter(c *fiber.App) {
 	c.Delete("/api/asset/:assetId", assetController.Delete)
 	c.Get("/api/disposal", assetController.FindDisposal)
 	c.Get("/api/approval", assetController.FindApproval)
+	c.Get("/api/approval/:assetId", assetController.FindDetailAsset)
 	c.Patch("/api/approval", assetController.Approval)
 
 	// Asset Aplikasi Routes
