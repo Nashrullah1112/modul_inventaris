@@ -240,9 +240,7 @@ const getExistingData = async () => {
   hideLoading()
 }
 
-// Modify the existing code to ensure getVendorData is called before getExistingData
 if (props.type == 'edit') {
-  // Ensure vendors are loaded first
   onMounted(async () => {
     await getVendorData();
     getExistingData();
