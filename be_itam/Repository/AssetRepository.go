@@ -218,7 +218,7 @@ func (h *AssetRepositoryImpl) DetailAsset(id int64) (data Response.DetailAssetRe
 		return data, err
 	}
 	err = h.DB.Model(&Database.DetailAsetHardware{}).
-		Where("id = ?", asset.VendorID).
+		Where("asset_id = ?", id).
 		Find(&hardware).
 		Error
 	if hardware.AssetID == id {
