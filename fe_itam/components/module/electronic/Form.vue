@@ -34,12 +34,14 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
+const route = useRoute();
 const config = useRuntimeConfig();
 const { showLoading, hideLoading } = useLoading();
 const { toast } = useToast();
 const assetSupplier = ref<Supplier[]>([]);
 const assetUser = ref<User[]>([]);
 const assetDivision = ref<Division[]>([]);
+let exData = <any>{}
 
 
 interface User {
@@ -402,8 +404,8 @@ const mapAssetData = (values: any) => {
     model: values.model || null,
     nomor_nota: values.nomor_nota || null,
     lokasi_penerima: values.lokasi_penerima || null,
-    waktu_penerimaan: values.waktu_penerimaan 
-      ? new Date(values.waktu_penerimaan).toISOString() 
+    waktu_penerimaan: values.waktu_penerimaan
+      ? new Date(values.waktu_penerimaan).toISOString()
       : null,
     tipe_aset: values.tipe_aset || null,
     waktu_aktivasi_aset: values.tanggal_aktivasi_aset
@@ -422,8 +424,8 @@ const mapAssetData = (values: any) => {
     status_aset: values.status_aset || null,
     nilai_aset: values.nilai_aset ? Number(values.nilai_aset) : null,
     nilai_sisa: values.nilai_sisa ? Number(values.nilai_sisa) : null,
-    jangka_masa_pakai: values.jangka_masa_pakai 
-      ? Number(values.jangka_masa_pakai) 
+    jangka_masa_pakai: values.jangka_masa_pakai
+      ? Number(values.jangka_masa_pakai)
       : null,
     waktu_aset_keluar: values.waktu_aset_keluar
       ? new Date(values.waktu_aset_keluar).toISOString()
@@ -434,10 +436,10 @@ const mapAssetData = (values: any) => {
   };
 };
 
-const endpoint = props.type === "new" ? "/asset-perangkat" : "/asset/hardware" + props.data.id;
+const dataId = route.params.id;
+const endpoint = props.type === "new" ? "/asset-perangkat" : "/asset-perangkat/" + dataId;
 
 const onSubmit = handleSubmit(async (values) => {
-  console.log("Form values:", values);
   try {
     showLoading();
 
@@ -493,6 +495,67 @@ const onSubmit = handleSubmit(async (values) => {
   }
 });
 
+const getExistingData = async () => {
+  showLoading()
+
+  try {
+
+    const { data, status } = await useFetch(config.public.API_URL + endpoint);
+
+    if (status.value == 'success' && data.value?.data) {
+      exData = data.value.data
+
+      // Ensure dates are formatted correctly
+      const formatDate = (dateString: string) => {
+        if (!dateString) return undefined;
+        // Parse the date and convert to ISO string in YYYY-MM-DD format
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+      };
+
+      setFieldValue('nama_supplier', exData.asset.vendor_id)
+      setFieldValue('nomor_seri', exData.serial_number)
+      setFieldValue('merek', exData.asset.merk)
+      setFieldValue('model', exData.asset.model)
+      setFieldValue('nomor_nota', exData.asset.nomor_nota)
+      setFieldValue('lokasi_penerima', exData.lokasi_penerima)
+      setFieldValue('waktu_penerimaan', formatDate(exData.waktu_penerimaan))
+      setFieldValue('tipe_aset', exData.tipe_aset)
+      setFieldValue('tanggal_aktivasi_aset', formatDate(exData.waktu_aktivasi_aset))
+      setFieldValue('hasil_pemeriksaan_aset', exData.hasil_pemeriksaan_aset)
+      setFieldValue('masa_garansi_mulai', formatDate(exData.masa_garansi_mulai))
+      setFieldValue('nomor_kartu_garansi', exData.nomor_kartu_garansi)
+      setFieldValue('prosesor', exData.prosesor)
+      setFieldValue('kapasitas_ram', exData.kapasitas_ram)
+      setFieldValue('kapasitas_rom', exData.kapasitas_rom)
+      setFieldValue('tipe_ram', exData.tipe_ram)
+      setFieldValue('tipe_penyimpanan', exData.tipe_penyimpnanan)
+      setFieldValue('status_aset', exData.status_aset)
+      setFieldValue('nilai_aset', exData.nilai_aset)
+      setFieldValue('nilai_sisa', exData.nilai_depresiasi)
+      setFieldValue('jangka_masa_pakai', exData.jangka_masa_pakai)
+      setFieldValue('waktu_aset_keluar', formatDate(exData.waktu_aset_keluar))
+      setFieldValue('kondisi_aset_keluar', exData.kondisi_aset_keluar)
+      setFieldValue('divisi_pengguna', exData.divisi_id)
+      setFieldValue('penanggung_jawab_aset', exData.user_id)
+    }
+  } catch (error) {
+    console.error("Error occurred:", error);
+    toast({
+      title: "Error",
+      description: "Failed to load existing data"
+    });
+  }
+
+  hideLoading()
+}
+
+if (props.type == 'edit') {
+  onMounted(async () => {
+    getExistingData();
+  });
+}
+
 const receivedDate = computed({
   get: () =>
     values.waktu_penerimaan
@@ -529,7 +592,7 @@ const assetExitDate = computed({
 <template>
   <div class="p-8 bg-white shadow-lg rounded-lg">
     <h1 class="text-2xl font-bold mb-6">
-      Registrasi Aset Elektronik
+      {{ props.type === 'new' ? 'Tambah' : 'Edit' }} Data Aset Elektronik
     </h1>
 
     <form>

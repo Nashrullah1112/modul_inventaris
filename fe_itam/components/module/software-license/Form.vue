@@ -2,6 +2,7 @@
 import { useToast } from "@/components/ui/toast/use-toast";
 import { cn } from "@/lib/utils";
 import {
+  DateFormatter,
   parseDate
 } from "@internationalized/date";
 import { CalendarIcon } from "@radix-icons/vue";
@@ -32,6 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toDate } from "radix-vue/date";
 
 const props = defineProps<{
   type: string;
@@ -43,6 +45,11 @@ const route = useRoute();
 const { showLoading, hideLoading } = useLoading();
 const { toast } = useToast();
 const vendors = ref([]);
+let exData = <any>{}
+
+const df = new DateFormatter("id-ID", {
+  dateStyle: "long",
+});
 
 /* hold datefield value */
 const waktuPembelian = computed({
@@ -176,6 +183,69 @@ const onSubmit = handleSubmit(async (values) => {
 
   hideLoading();
 });
+
+const getExistingData = async () => {
+  showLoading()
+
+  try {
+    await getVendorData()
+
+    const { data, status } = await useFetch(config.public.API_URL + endpoint);
+
+    if (status.value == 'success' && data.value?.data) {
+      exData = data.value.data
+
+      // Ensure dates are formatted correctly
+      const formatDate = (dateString: string) => {
+        if (!dateString) return undefined;
+        // Parse the date and convert to ISO string in YYYY-MM-DD format
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+      };
+
+      // Set vendor only if it exists in the vendors list
+      const vendorExists = vendors.value.some(v => v.value === exData.asset.vendor_id)
+      if (vendorExists) {
+        setFieldValue('vendor_id', exData.asset.vendor_id)
+      } else {
+        console.warn('Vendor not found in the list')
+      }
+
+      setFieldValue('serial_number', exData.asset.serial_number)
+      setFieldValue('merk', exData.asset.merk)
+      setFieldValue('model', exData.asset.model)
+      setFieldValue('nomor_nota', exData.asset.nomor_nota)
+
+      // Format dates consistently
+      setFieldValue('waktu_pembelian', formatDate(exData.waktu_pembelian))
+      setFieldValue('SN_perangkat_terpasang', exData.SN_perangkat_terpasang)
+      setFieldValue('waktu_aktivasi', formatDate(exData.waktu_aktivasi))
+      setFieldValue('tanggal_expired', formatDate(exData.tanggal_expired))
+
+      setFieldValue('tipe_kepemilikan_aset', exData.tipe_kepemilikan_aset)
+      setFieldValue('kategori_lisensi', exData.kategori_lisensi)
+      setFieldValue('versi_lisensi', exData.versi_lisensi)
+      setFieldValue('maksimal_user_aplikasi', exData.maksimal_user_aplikasi)
+      setFieldValue('maksimal_perangkat_lisensi', exData.maksimal_perangkat_lisensi)
+      setFieldValue('tipe_lisensi', exData.tipe_lisensi)
+    }
+  } catch (error) {
+    console.error("Error occurred:", error);
+    toast({
+      title: "Error",
+      description: "Failed to load existing data"
+    });
+  }
+
+  hideLoading()
+}
+
+if (props.type == 'edit') {
+  onMounted(async () => {
+    await getVendorData();
+    getExistingData();
+  });
+}
 </script>
 
 <template>
@@ -213,13 +283,8 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Nomor Seri</FormLabel>
             <FormControl>
-              <Input
-                type="text"
-                id="serial_number"
-                v-bind="componentField"
-                required
-                placeholder="Masukkan Nomor Seri"
-              />
+              <Input type="text" id="serial_number" v-bind="componentField" required
+                placeholder="Masukkan Nomor Seri" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -239,7 +304,7 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Model</FormLabel>
             <FormControl>
-              <Input type="text" id="model" v-bind="componentField" required placeholder="Masukkan Model"/>
+              <Input type="text" id="model" v-bind="componentField" required placeholder="Masukkan Model" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -249,13 +314,7 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Nomor Nota</FormLabel>
             <FormControl>
-              <Input
-                type="text"
-                id="nomor_nota"
-                v-bind="componentField"
-                required
-                placeholder="Masukkan Nomor Nota"
-              />
+              <Input type="text" id="nomor_nota" v-bind="componentField" required placeholder="Masukkan Nomor Nota" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -267,35 +326,30 @@ const onSubmit = handleSubmit(async (values) => {
             <Popover>
               <PopoverTrigger as-child>
                 <FormControl>
-                  <Button
-                    variant="outline"
-                    :class="
-                      cn(
-                        'ps-3 text-start font-normal',
-                        !waktuPembelian && 'text-muted-foreground'
-                      )
-                    "
-                  >
-                    <span>{{ waktuPembelian || "Pick a date" }}</span>
+                  <Button variant="outline" :class="cn(
+                    'ps-3 text-start font-normal',
+                    !waktuPembelian && 'text-muted-foreground'
+                  )
+                    ">
+                    <span>{{
+                      waktuPembelian
+                        ? df.format(toDate(waktuPembelian))
+                        : "Pilih tanggal"
+                    }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden />
                 </FormControl>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
-                <Calendar
-                  v-model="waktuPembelian"
-                  calendar-label="Waktu Pembelian"
-                  @update:model-value="
-                    (v) => {
-                      if (v) {
-                        setFieldValue('waktu_pembelian', v.toString());
-                      } else {
-                        setFieldValue('waktu_pembelian', undefined);
-                      }
+                <Calendar v-model="waktuPembelian" calendar-label="Waktu Pembelian" @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('waktu_pembelian', v.toString());
+                    } else {
+                      setFieldValue('waktu_pembelian', undefined);
                     }
-                  "
-                />
+                  }
+                  " />
               </PopoverContent>
             </Popover>
             <FormMessage />
@@ -306,13 +360,8 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>SN Perangkat Terpasang</FormLabel>
             <FormControl>
-              <Input
-                type="text"
-                id="SN_perangkat_terpasang"
-                v-bind="componentField"
-                required
-                placeholder="Masukkan Nomor Seri Terpasang"
-              />
+              <Input type="text" id="SN_perangkat_terpasang" v-bind="componentField" required
+                placeholder="Masukkan Nomor Seri Terpasang" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -324,35 +373,30 @@ const onSubmit = handleSubmit(async (values) => {
             <Popover>
               <PopoverTrigger as-child>
                 <FormControl>
-                  <Button
-                    variant="outline"
-                    :class="
-                      cn(
-                        'ps-3 text-start font-normal',
-                        !waktuAktivasi && 'text-muted-foreground'
-                      )
-                    "
-                  >
-                    <span>{{ waktuAktivasi || "Pick a date" }}</span>
+                  <Button variant="outline" :class="cn(
+                    'ps-3 text-start font-normal',
+                    !waktuAktivasi && 'text-muted-foreground'
+                  )
+                    ">
+                    <span>{{
+                      waktuAktivasi
+                        ? df.format(toDate(waktuAktivasi))
+                        : "Pilih tanggal"
+                    }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden />
                 </FormControl>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
-                <Calendar
-                  v-model="waktuAktivasi"
-                  calendar-label="Waktu Aktivasi"
-                  @update:model-value="
-                    (v) => {
-                      if (v) {
-                        setFieldValue('waktu_aktivasi', v.toString());
-                      } else {
-                        setFieldValue('waktu_aktivasi', undefined);
-                      }
+                <Calendar v-model="waktuAktivasi" calendar-label="Waktu Aktivasi" @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('waktu_aktivasi', v.toString());
+                    } else {
+                      setFieldValue('waktu_aktivasi', undefined);
                     }
-                  "
-                />
+                  }
+                  " />
               </PopoverContent>
             </Popover>
             <FormMessage />
@@ -365,35 +409,30 @@ const onSubmit = handleSubmit(async (values) => {
             <Popover>
               <PopoverTrigger as-child>
                 <FormControl>
-                  <Button
-                    variant="outline"
-                    :class="
-                      cn(
-                        'ps-3 text-start font-normal',
-                        !tanggalExpired && 'text-muted-foreground'
-                      )
-                    "
-                  >
-                    <span>{{ tanggalExpired || "Pick a date" }}</span>
+                  <Button variant="outline" :class="cn(
+                    'ps-3 text-start font-normal',
+                    !tanggalExpired && 'text-muted-foreground'
+                  )
+                    ">
+                    <span>{{
+                      tanggalExpired
+                        ? df.format(toDate(tanggalExpired))
+                        : "Pilih tanggal"
+                    }}</span>
                     <CalendarIcon class="ms-auto h-4 w-4 opacity-50" />
                   </Button>
                   <input hidden />
                 </FormControl>
               </PopoverTrigger>
               <PopoverContent class="w-auto p-0">
-                <Calendar
-                  v-model="tanggalExpired"
-                  calendar-label="Tanggal Expired"
-                  @update:model-value="
-                    (v) => {
-                      if (v) {
-                        setFieldValue('tanggal_expired', v.toString());
-                      } else {
-                        setFieldValue('tanggal_expired', undefined);
-                      }
+                <Calendar v-model="tanggalExpired" calendar-label="Tanggal Expired" @update:model-value="(v) => {
+                    if (v) {
+                      setFieldValue('tanggal_expired', v.toString());
+                    } else {
+                      setFieldValue('tanggal_expired', undefined);
                     }
-                  "
-                />
+                  }
+                  " />
               </PopoverContent>
             </Popover>
             <FormMessage />
@@ -404,13 +443,8 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Tipe Kepemilikan Aset</FormLabel>
             <FormControl>
-              <Input
-                type="text"
-                id="tipe_kepemilikan_aset"
-                v-bind="componentField"
-                required
-                placeholder="Masukkan Tipe Kepemilikan Aset"
-              />
+              <Input type="text" id="tipe_kepemilikan_aset" v-bind="componentField" required
+                placeholder="Masukkan Tipe Kepemilikan Aset" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -420,13 +454,8 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Kategori Lisensi</FormLabel>
             <FormControl>
-              <Input
-                type="text"
-                id="kategori_lisensi"
-                v-bind="componentField"
-                required
-                placeholder="Masukkan Kategori Lisensi"
-              />
+              <Input type="text" id="kategori_lisensi" v-bind="componentField" required
+                placeholder="Masukkan Kategori Lisensi" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -436,13 +465,8 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Versi Lisensi</FormLabel>
             <FormControl>
-              <Input
-                type="text"
-                id="versi_lisensi"
-                v-bind="componentField"
-                required
-                placeholder="Masukkan Versi Lisensi"
-              />
+              <Input type="text" id="versi_lisensi" v-bind="componentField" required
+                placeholder="Masukkan Versi Lisensi" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -452,32 +476,19 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Maksimal User Aplikasi</FormLabel>
             <FormControl>
-              <Input
-                type="number"
-                id="maksimal_user_aplikasi"
-                v-bind="componentField"
-                required
-                placeholder="Masukkan Maksimal User Aplikasi"
-              />
+              <Input type="number" id="maksimal_user_aplikasi" v-bind="componentField" required
+                placeholder="Masukkan Maksimal User Aplikasi" />
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <FormField
-          v-slot="{ componentField }"
-          name="maksimal_perangkat_lisensi"
-        >
+        <FormField v-slot="{ componentField }" name="maksimal_perangkat_lisensi">
           <FormItem>
             <FormLabel>Maksimal Perangkat Lisensi</FormLabel>
             <FormControl>
-              <Input
-                type="number"
-                id="maksimal_perangkat_lisensi"
-                v-bind="componentField"
-                required
-                placeholder="Masukkan Maksimal Perangkat Lisensi"
-              />
+              <Input type="number" id="maksimal_perangkat_lisensi" v-bind="componentField" required
+                placeholder="Masukkan Maksimal Perangkat Lisensi" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -487,13 +498,8 @@ const onSubmit = handleSubmit(async (values) => {
           <FormItem>
             <FormLabel>Tipe Lisensi</FormLabel>
             <FormControl>
-              <Input
-                type="text"
-                id="tipe_lisensi"
-                v-bind="componentField"
-                required
-                placeholder="Masukkan Tipe Lisensi"
-              />
+              <Input type="text" id="tipe_lisensi" v-bind="componentField" required
+                placeholder="Masukkan Tipe Lisensi" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -502,9 +508,7 @@ const onSubmit = handleSubmit(async (values) => {
     </form>
 
     <div class="flex justify-end mt-4 space-x-2">
-      <Button variant="outline" @click="navigateTo('/software-license')"
-        >Cancel</Button
-      >
+      <Button variant="outline" @click="navigateTo('/software-license')">Cancel</Button>
       <Button @click="onSubmit">Submit</Button>
     </div>
   </div>

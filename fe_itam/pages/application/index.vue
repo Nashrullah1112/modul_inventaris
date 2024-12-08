@@ -151,17 +151,8 @@ const fetchApplicationData = async () => {
       method: 'GET'
     });
 
-    if (response && response.data) {
-      hideLoading();
-      applications.value = response.data;
-    } else {
-      hideLoading();
-      toast({
-        title: 'Gagal Mengambil Data Aplikasi',
-        description: 'Data aplikasi gagal diambil dari server.',
-        variant: 'destructive',
-      });
-    }
+    applications.value = response.data;
+    hideLoading();
   } catch (error) {
     hideLoading();
     console.error('Error occurred:', error);

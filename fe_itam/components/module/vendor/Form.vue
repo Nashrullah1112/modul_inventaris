@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import { useToast } from '@/components/ui/toast/use-toast'
-import { useForm } from "vee-validate";
+import { useToast } from '@/components/ui/toast/use-toast';
 import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
 import * as z from "zod";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from '@/components/ui/alert-dialog';
 import { Button } from "@/components/ui/button";
 import {
   FormControl,
@@ -13,17 +23,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 
 const props = defineProps<{
   type: string;
