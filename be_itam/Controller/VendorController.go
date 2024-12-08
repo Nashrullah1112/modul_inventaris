@@ -52,14 +52,17 @@ func (h *VendorControllerImpl) Update(c *fiber.Ctx) error {
 		request    Response.VendorUpdateRequest
 		serviceErr *Web.ServiceErrorDto
 	)
-
+	vendorId, err := c.ParamsInt("vendorId")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid vendor ID", err))
+	}
 	// Parse request body
 	if err := c.BodyParser(&request); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.FailedBindError, nil))
 	}
 
 	// Call service to update an existing vendor
-	if _, serviceErr = h.service.Update(request); serviceErr != nil {
+	if _, serviceErr = h.service.Update(int64(vendorId), request); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 

@@ -255,6 +255,9 @@ func (h *AssetHardwareServiceImpl) UpdateAssetHardware(hardwareID int64, request
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Detail Aset Hardware not found", err, http.StatusNotFound)
 	}
+	fmt.Println("assetId", hardwareID)
+	fmt.Println("request", request)
+	fmt.Println("hardware", hardware)
 	assetId, err := h.assetRepo.Update(&Database.Asset{
 		ID:           hardware.AssetID,
 		SerialNumber: request.SerialNumber,
@@ -270,6 +273,7 @@ func (h *AssetHardwareServiceImpl) UpdateAssetHardware(hardwareID int64, request
 	fmt.Println("request", request)
 
 	id, err = h.hardwareRepo.Update(&Database.DetailAsetHardware{
+		ID:                       hardware.ID,
 		WaktuPenerimaan:          request.TanggalPenerimaan,
 		BuktiPenerimaan:          hardware.BuktiPenerimaan,
 		TipeAset:                 request.TipePerangkat,
@@ -292,7 +296,7 @@ func (h *AssetHardwareServiceImpl) UpdateAssetHardware(hardwareID int64, request
 		AssetID:                  hardware.AssetID,
 	})
 	if err != nil {
-		return 0, Web.NewCustomServiceError("Detail Aset Hardware not created", err, http.StatusInternalServerError)
+		return 0, Web.NewCustomServiceError("Detail Aset Hardware not update", err, http.StatusInternalServerError)
 	}
 
 	return id, nil

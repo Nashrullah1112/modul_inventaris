@@ -130,7 +130,7 @@ func NewRouter(c *fiber.App) {
 	c.Get("/api/vendor", vendorController.FindAll)
 	c.Get("/api/vendor/:vendorId", vendorController.FindById)
 	c.Post("/api/vendor", vendorController.Create)
-	c.Patch("/api/vendor", vendorController.Update)
+	c.Patch("/api/vendor:vendorId", vendorController.Update)
 	c.Delete("/api/vendor/:vendorId", vendorController.Delete)
 
 	// User Routes

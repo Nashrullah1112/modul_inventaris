@@ -214,7 +214,6 @@ func (h *AssetRepositoryImpl) DetailAsset(id int64) (data Response.DetailAssetRe
 			TipeLisensi:              lisensi.TipeLisensi,
 			AssetID:                  lisensi.AssetID,
 		}
-
 		return data, err
 	}
 	err = h.DB.Model(&Database.DetailAsetHardware{}).

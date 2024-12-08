@@ -1,6 +1,7 @@
 package Services
 
 import (
+	"fmt"
 	"itam/Model/Database"
 	"itam/Model/Web"
 	"itam/Model/Web/Response"
@@ -11,7 +12,7 @@ import (
 type (
 	VendorServiceHandler interface {
 		Create(request Response.VendorCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
-		Update(request Response.VendorUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
+		Update(vendorId int64, request Response.VendorUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto)
 		Delete(vendorId int64) (serviceErr *Web.ServiceErrorDto)
 		FindById(vendorId int64) (vendor Response.VendorResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (vendors []Response.VendorResponse, serviceErr *Web.ServiceErrorDto)
@@ -45,12 +46,13 @@ func (h *VendorServiceImpl) Create(request Response.VendorCreateRequest) (id int
 	return id, nil
 }
 
-func (h *VendorServiceImpl) Update(request Response.VendorUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
-	existingVendor, err := h.repo.FindById(request.ID)
+func (h *VendorServiceImpl) Update(vendorId int64, request Response.VendorUpdateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
+	existingVendor, err := h.repo.FindById(vendorId)
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Vendor not found", err, http.StatusNotFound)
 	}
-
+	fmt.Println("existingVendor", existingVendor)
+	fmt.Println("request", request)
 	id, err = h.repo.Update(&Database.Vendor{
 		ID:          existingVendor.ID,
 		PIC:         request.PIC,

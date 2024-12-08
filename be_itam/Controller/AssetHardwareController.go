@@ -58,6 +58,7 @@ func (h *AssetHardwareControllerImpl) Update(c *fiber.Ctx) error {
 		request    Response.AssetHardwareUpdateRequest
 		serviceErr *Web.ServiceErrorDto
 		hardwareID int
+		id         int64
 	)
 
 	// Parse request body
@@ -70,11 +71,11 @@ func (h *AssetHardwareControllerImpl) Update(c *fiber.Ctx) error {
 	}
 	fmt.Println(hardwareID)
 
-	if _, serviceErr = h.service.UpdateAssetHardware(int64(hardwareID), request); serviceErr != nil {
+	if id, serviceErr = h.service.UpdateAssetHardware(int64(hardwareID), request); serviceErr != nil {
 		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
 	}
 
-	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Detail asset hardware updated successfully", nil))
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Detail asset hardware updated successfully", id))
 }
 
 func (h *AssetHardwareControllerImpl) Delete(c *fiber.Ctx) error {
