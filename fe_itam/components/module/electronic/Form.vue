@@ -63,73 +63,6 @@ const df = new DateFormatter("id-ID", {
   dateStyle: "long",
 });
 
-
-// Form validation schema with improved field names
-const formSchema = toTypedSchema(
-  z.object({
-    nama_supplier: z.number().min(1, "Supplier harus dipilih"),
-    nomor_seri: z.string().min(1, "Nomor seri harus diisi"),
-    merek: z.string().min(1, "Merek harus diisi"),
-    model: z.string().min(1, "Model harus diisi"),
-    nomor_nota: z.string().min(1, "Nomor nota harus diisi"),
-    lokasi_penerima: z.string().min(1, "Lokasi penerima harus diisi"),
-    waktu_penerimaan: z.string().min(1, "Tanggal penerimaan harus diisi"),
-    dokumen_terima: z.any(),
-    tipe_aset: z.string().min(1, "Tipe aset harus dipilih"),
-    tanggal_aktivasi_aset: z.string().min(1, "Tanggal aktivasi harus diisi"),
-    hasil_pemeriksaan_aset: z.string().min(1, "Hasil pemeriksaan harus diisi"),
-    masa_garansi_mulai: z.string().min(1, "Masa garansi mulai harus diisi"),
-    nomor_kartu_garansi: z.string().min(1, "Nomor kartu garansi harus diisi"),
-    prosesor: z.string().min(1, "Prosesor harus diisi"),
-    kapasitas_ram: z.number().min(0, "Kapasitas RAM harus diisi"),
-    kapasitas_rom: z.number().min(0, "Kapasitas ROM harus diisi"),
-    tipe_ram: z.string().min(1, "Tipe RAM harus dipilih"),
-    tipe_penyimpanan: z.string().min(1, "Tipe penyimpanan harus dipilih"),
-    status_aset: z.string().min(1, "Status aset harus dipilih"),
-    nilai_aset: z.number().min(0, "Nilai aset harus diisi"),
-    nilai_sisa: z.number().min(0, "Nilai sisa aset harus diisi"),
-    jangka_masa_pakai: z.number().min(1, "Jangka masa pakai harus dipilih"),
-    waktu_aset_keluar: z.string().min(1, "Waktu aset keluar harus diisi"),
-    kondisi_aset_keluar: z.string().min(1, "Kondisi aset keluar harus dipilih"),
-    nota_pembelian: z.any(),
-    divisi_pengguna: z.number().min(1, "Divisi harus dipilih"),
-    penanggung_jawab_aset: z.number().min(1, "Penanggung jawab harus dipilih"),
-  })
-);
-
-const { handleSubmit, setFieldValue, values } = useForm({
-  validationSchema: formSchema,
-  initialValues: {
-    nama_supplier: undefined,
-    nomor_seri: "",
-    merek: "",
-    model: "",
-    nomor_nota: "",
-    lokasi_penerima: "",
-    waktu_penerimaan: "",
-    dokumen_terima: null,
-    tipe_aset: "",
-    tanggal_aktivasi_aset: "",
-    hasil_pemeriksaan_aset: "",
-    masa_garansi_mulai: "",
-    nomor_kartu_garansi: "",
-    prosesor: "",
-    kapasitas_ram: undefined,
-    kapasitas_rom: undefined,
-    tipe_ram: "",
-    tipe_penyimpanan: "",
-    status_aset: "",
-    nilai_aset: undefined,
-    nilai_sisa: undefined,
-    jangka_masa_pakai: undefined,
-    waktu_aset_keluar: "",
-    kondisi_aset_keluar: "",
-    nota_pembelian: null,
-    divisi_pengguna: undefined,
-    penanggung_jawab_aset: undefined
-  },
-});
-
 const assetType = [
   {
     id: "1",
@@ -185,7 +118,7 @@ const assetUsagePeriod = [
   {
     id: 10,
     nama: "10 Tahun",
-  }
+  },
 ];
 
 const assetCondition = ["Baik", "Rusak", "Perlu Perbaikan"];
@@ -345,6 +278,140 @@ const storageType = ["HDD", "SSD"];
 
 
 
+// Form validation schema with improved field names
+const formSchema = toTypedSchema(
+  z.object({
+    nama_supplier: z.number().min(1, "Supplier harus dipilih"),
+    nomor_seri: z.string().min(1, "Nomor seri harus diisi"),
+    merek: z.string().min(1, "Merek harus diisi"),
+    model: z.string().min(1, "Model harus diisi"),
+    nomor_nota: z.string().min(1, "Nomor nota harus diisi"),
+    lokasi_penerima: z.string().min(1, "Lokasi penerima harus diisi"),
+    waktu_penerimaan: z.string().min(1, "Tanggal penerimaan harus diisi"),
+    dokumen_terima: z.any(),
+    tipe_aset: z.string().min(1, "Tipe aset harus dipilih"),
+    tanggal_aktivasi_aset: z.string().min(1, "Tanggal aktivasi harus diisi"),
+    hasil_pemeriksaan_aset: z.string().min(1, "Hasil pemeriksaan harus diisi"),
+    masa_garansi_mulai: z.string().min(1, "Masa garansi mulai harus diisi"),
+    nomor_kartu_garansi: z.string().min(1, "Nomor kartu garansi harus diisi"),
+    prosesor: z.string().min(1, "Prosesor harus diisi"),
+    kapasitas_ram: z.number().min(0, "Kapasitas RAM harus diisi"),
+    kapasitas_rom: z.number().min(0, "Kapasitas ROM harus diisi"),
+    tipe_ram: z.string().min(1, "Tipe RAM harus dipilih"),
+    tipe_penyimpanan: z.string().min(1, "Tipe penyimpanan harus dipilih"),
+    status_aset: z.string().min(1, "Status aset harus dipilih"),
+    nilai_aset: z.number().min(0, "Nilai aset harus diisi"),
+    nilai_sisa: z.number().min(0, "Nilai sisa aset harus diisi"),
+    jangka_masa_pakai: z.number().min(1, "Jangka masa pakai harus dipilih"),
+    waktu_aset_keluar: z.string().min(1, "Waktu aset keluar harus diisi"),
+    kondisi_aset_keluar: z.string().min(1, "Kondisi aset keluar harus dipilih"),
+    nota_pembelian: z.any(),
+    divisi_pengguna: z.number().min(1, "Divisi harus dipilih"),
+    penanggung_jawab_aset: z.number().min(1, "Penanggung jawab harus dipilih"),
+  })
+);
+
+const { handleSubmit, setFieldValue, values } = useForm({
+  validationSchema: formSchema,
+  initialValues: {
+    nama_supplier: undefined,
+    nomor_seri: "",
+    merek: "",
+    model: "",
+    nomor_nota: "",
+    lokasi_penerima: "",
+    waktu_penerimaan: "",
+    dokumen_terima: null,
+    tipe_aset: "",
+    tanggal_aktivasi_aset: "",
+    hasil_pemeriksaan_aset: "",
+    masa_garansi_mulai: "",
+    nomor_kartu_garansi: "",
+    prosesor: "",
+    kapasitas_ram: undefined,
+    kapasitas_rom: undefined,
+    tipe_ram: "",
+    tipe_penyimpanan: "",
+    status_aset: "",
+    nilai_aset: undefined,
+    nilai_sisa: undefined,
+    jangka_masa_pakai: undefined,
+    waktu_aset_keluar: "",
+    kondisi_aset_keluar: "",
+    nota_pembelian: null,
+    divisi_pengguna: undefined,
+    penanggung_jawab_aset: undefined
+  },
+});
+
+
+const calculateDepreciation = () => {
+  // Get the required values
+  const initialValue = values.nilai_aset;
+  const usagePeriodId = values.jangka_masa_pakai;
+  const startDate = values.tanggal_aktivasi_aset;
+
+  // Check if we have all required values
+  if (!initialValue || !usagePeriodId || !startDate) {
+    setFieldValue('nilai_sisa', 0);
+    return;
+  }
+
+  // Get the actual number of years from assetUsagePeriod array
+  const usagePeriodObj = assetUsagePeriod.find(period => period.id === usagePeriodId);
+  if (!usagePeriodObj) {
+    setFieldValue('nilai_sisa', 0);
+    return;
+  }
+
+  const usagePeriodYears = usagePeriodObj.id; // Since id represents the number of years
+
+  // Calculate annual depreciation rate (straight-line method)
+  const annualDepreciationRate = initialValue / usagePeriodYears;
+
+  // Calculate time elapsed since activation
+  const activationDate = new Date(startDate);
+  const currentDate = new Date();
+
+  // If activation date is in the future, return full value
+  if (activationDate > currentDate) {
+    setFieldValue('nilai_sisa', initialValue);
+    return;
+  }
+
+  // Calculate the time difference in milliseconds
+  const timeDiff = currentDate.getTime() - activationDate.getTime();
+
+  // Convert milliseconds to years and round down to get complete years
+  const yearsElapsed = Math.floor(timeDiff / (365.25 * 24 * 60 * 60 * 1000));
+
+  // Calculate depreciation based on complete years elapsed
+  let remainingValue = initialValue;
+  if (yearsElapsed > 0) {
+    remainingValue = initialValue - (annualDepreciationRate * yearsElapsed);
+  }
+
+  // If elapsed time exceeds usage period, value is 0
+  if (yearsElapsed >= usagePeriodYears) {
+    remainingValue = 0;
+  }
+
+  // Ensure remaining value doesn't go below 0 and round to whole number
+  remainingValue = Math.max(0, Math.round(remainingValue));
+
+  // Update the field value
+  setFieldValue('nilai_sisa', remainingValue);
+}
+
+watch(
+  () => [values.nilai_aset, values.jangka_masa_pakai, values.tanggal_aktivasi_aset],
+  () => {
+    calculateDepreciation();
+  },
+  { deep: true }
+);
+
+
 const fetchSupplierData = async () => {
   try {
     const response = await $fetch<{ data: Supplier[] }>(config.public.API_URL + '/vendor', {
@@ -420,8 +487,9 @@ const mapAssetData = (values: any) => {
     kapasitas_ram: values.kapasitas_ram ? Number(values.kapasitas_ram) : null,
     kapasitas_rom: values.kapasitas_rom ? Number(values.kapasitas_rom) : null,
     tipe_ram: values.tipe_ram || null,
-    tipe_penyimpnanan: values.tipe_penyimpanan || null, // Note: typo in original JSON
+    tipe_penyimpnanan: values.tipe_penyimpanan || null,
     status_aset: values.status_aset || null,
+    // Ensure we send clean numeric values for currency fields
     nilai_aset: values.nilai_aset ? Number(values.nilai_aset) : null,
     nilai_sisa: values.nilai_sisa ? Number(values.nilai_sisa) : null,
     jangka_masa_pakai: values.jangka_masa_pakai
@@ -587,7 +655,18 @@ const assetExitDate = computed({
       : undefined,
   set: (val) => val,
 });
+
+const formattedNilaiAset = computed({
+  get: () => formatCurrency(values.nilai_aset),
+  set: (val: string) => {
+    const numericValue = parseCurrency(val);
+    setFieldValue('nilai_aset', numericValue);
+  }
+});
+
+const formattedNilaiSisa = computed(() => formatCurrency(values.nilai_sisa));
 </script>
+
 
 <template>
   <div class="p-8 bg-white shadow-lg rounded-lg">
@@ -909,17 +988,8 @@ const assetExitDate = computed({
           <FormItem>
             <FormLabel>Nilai Aset</FormLabel>
             <FormControl>
-              <Input type="number" placeholder="Masukkan Nilai Aset" v-bind="componentField" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-
-        <FormField v-slot="{ componentField }" name="nilai_sisa">
-          <FormItem>
-            <FormLabel>Nilai Sisa Aset</FormLabel>
-            <FormControl>
-              <Input type="number" placeholder="Masukkan Nilai Sisa Aset" v-bind="componentField" />
+              <Input type="text" placeholder="Masukkan Nilai Aset" :value="formattedNilaiAset"
+                @input="(e) => formattedNilaiAset = (e.target as HTMLInputElement).value" />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -942,6 +1012,16 @@ const assetExitDate = computed({
                 </SelectGroup>
               </SelectContent>
             </Select>
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="nilai_sisa">
+          <FormItem>
+            <FormLabel>Nilai Sisa Aset</FormLabel>
+            <FormControl>
+              <Input type="text" placeholder="Masukkan Nilai Sisa Aset" :value="formattedNilaiSisa" readonly disabled />
+            </FormControl>
+            <FormMessage />
           </FormItem>
         </FormField>
 
