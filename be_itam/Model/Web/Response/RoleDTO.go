@@ -11,8 +11,14 @@ type RoleUpdateRequest struct {
 	Nama string `json:"nama" validate:"required"`
 }
 
-// RoleResponse represents the response payload for returning Role data
+type ModuleResponse struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	IsAllowed bool   `json:"isAllowed"`
+}
+
 type RoleResponse struct {
-	ID   int64  `json:"id"`
-	Nama string `json:"nama"`
+	ID      int64            `json:"id"`
+	Name    string           `json:"name"`
+	Modules []ModuleResponse `json:"modules"`
 }
