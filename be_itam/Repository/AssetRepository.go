@@ -21,6 +21,7 @@ type (
 		FindApproval() (data []Database.Asset, err error)
 		UpdateStatus(id int64, status string) error
 		DetailAsset(id int64) (data Response.DetailAssetResponse, err error)
+		RejectedAsset(id int64) error
 	}
 
 	AssetRepositoryImpl struct {
@@ -247,4 +248,14 @@ func (h *AssetRepositoryImpl) DetailAsset(id int64) (data Response.DetailAssetRe
 		return data, err
 	}
 	return data, err
+}
+
+func (h *AssetRepositoryImpl) RejectedAsset(id int64) error {
+	err := h.DB.Delete(&Database.DetailAsetPerangkat{}).Error
+	err = h.DB.Delete(&Database.DetailAsetLisensi{}).Error
+	err = h.DB.Delete(&Database.DetaiAsetAplikasi{}).Error
+	err = h.DB.Delete(&Database.DetailAsetHardware{}).Error
+	err = h.DB.Delete(&Database.Asset{}, id).Error
+
+	return err
 }

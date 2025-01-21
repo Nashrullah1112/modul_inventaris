@@ -29,7 +29,8 @@ type AssetUpdateRequest struct {
 }
 
 type IDAsset struct {
-	Id int64 `json:"id"`
+	Id     int64  `json:"id"`
+	Status string `json:"status"`
 }
 type DetailAssetResponse struct {
 	Id           int64                  `json:"id"`

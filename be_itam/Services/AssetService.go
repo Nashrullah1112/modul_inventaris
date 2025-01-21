@@ -194,7 +194,19 @@ func (h *AssetServiceImpl) Approval(request Response.IDAsset) (id int64, service
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Asset not found", err, http.StatusNotFound)
 	}
+	if request.Status == "Rejected" {
+		if existingAsset.Status == "Approved" {
+			return 0, Web.NewCustomServiceError("Asset already approved", err, http.StatusNotFound)
+		}
+		if err := h.repo.RejectedAsset(existingAsset.ID); err != nil {
+			return existingAsset.ID, Web.NewInternalServiceError(err)
+		}
+		return id, nil
 
+	}
+	if existingAsset.Status == "Approved" && request.Status == "Approved" {
+		return 0, Web.NewCustomServiceError("Asset already approved", err, http.StatusNotFound)
+	}
 	if err := h.repo.UpdateStatus(existingAsset.ID, "Approved"); err != nil {
 		return existingAsset.ID, Web.NewInternalServiceError(err)
 	}

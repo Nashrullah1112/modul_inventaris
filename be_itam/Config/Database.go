@@ -58,5 +58,6 @@ func Migrate(db *gorm.DB) error {
 		&Database.DetailAsetHardware{},
 		&Database.DetailAsetLisensi{},
 		&Database.DetailAsetPerangkat{},
+		&Database.Notification{},
 	)
 }
