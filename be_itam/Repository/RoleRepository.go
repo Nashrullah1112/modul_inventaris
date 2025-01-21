@@ -14,6 +14,7 @@ type (
 		UpdateRole(data *Database.Role) (id int64, err error)
 		DeleteRole(id int64) error
 		FindRoleById(id int64) (data Database.Role, err error)
+		FindRoleByNama(name string) (data Database.Role, err error)
 		FindAllRoles() (data []Database.Role, err error)
 		SaveModule(data *Database.Module) (id int64, err error)
 		UpdateModule(data *Database.Module) (id int64, err error)
@@ -68,6 +69,13 @@ func (h *RoleRepositoryImpl) FindAllRoles() (data []Database.Role, err error) {
 		Find(&data).
 		Error
 
+	return data, err
+}
+func (h *RoleRepositoryImpl) FindRoleByNama(name string) (data Database.Role, err error) {
+	err = h.DB.Model(&Database.Role{}).
+		Where("nama = ?", name).
+		Take(&data).
+		Error
 	return data, err
 }
 func (h *RoleRepositoryImpl) SaveModule(data *Database.Module) (id int64, err error) {

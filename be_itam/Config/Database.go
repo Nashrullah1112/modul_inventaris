@@ -50,6 +50,8 @@ func Migrate(db *gorm.DB) error {
 		&Database.Divisi{},
 		&Database.Jabatan{},
 		&Database.Role{},
+		&Database.Module{},
+		&Database.RoleModule{},
 		&Database.User{},
 		&Database.Asset{},
 		&Database.DetaiAsetAplikasi{},

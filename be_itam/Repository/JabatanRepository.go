@@ -14,6 +14,7 @@ type (
 		Delete(id int64) error
 		FindById(id int64) (data Database.Jabatan, err error)
 		FindAll() (data []Database.Jabatan, err error)
+		FindByNama(name string) (data Database.Jabatan, err error)
 	}
 
 	JabatanRepositoryImpl struct {
@@ -62,5 +63,12 @@ func (h *JabatanRepositoryImpl) FindAll() (data []Database.Jabatan, err error) {
 		Find(&data).
 		Error
 
+	return data, err
+}
+func (h *JabatanRepositoryImpl) FindByNama(name string) (data Database.Jabatan, err error) {
+	err = h.DB.Model(&Database.Jabatan{}).
+		Where("nama = ?", name).
+		Take(&data).
+		Error
 	return data, err
 }

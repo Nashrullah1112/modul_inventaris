@@ -20,6 +20,7 @@ type UserControllerHandler interface {
 	Login(c *fiber.Ctx) error
 	CheckRole(c *fiber.Ctx) error
 	TotalUser(c *fiber.Ctx) error
+	Seed(c *fiber.Ctx) error
 }
 
 type UserControllerImpl struct {
@@ -154,4 +155,12 @@ func (h *UserControllerImpl) TotalUser(c *fiber.Ctx) error {
 	}
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Total user found", total))
+}
+func (h *UserControllerImpl) Seed(c *fiber.Ctx) error {
+	_, serviceErr := h.service.Seed()
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("User seeded successfully", nil))
 }

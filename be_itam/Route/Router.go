@@ -115,6 +115,8 @@ func NewRouter(c *fiber.App) {
 	c.Patch("/api/asset-lisensi/:lisensiID", assetLisensiController.Update)
 	c.Delete("/api/asset-lisensi/:lisensiID", assetLisensiController.Delete)
 	c.Get("/api/total/asset-lisensi", assetLisensiController.TotalLisensi)
+	c.Get("/api/notify-expiring-licenses", assetLisensiController.GetNotifications)
+	c.Patch("/api/mark-notification-as-read/:notificationID", assetLisensiController.MarkNotificationAsRead)
 
 	// Asset Perangkat Routes
 	assetPerangkatController := AssetPerangkatDI(Config.DB)
@@ -143,6 +145,7 @@ func NewRouter(c *fiber.App) {
 	c.Post("/api/login", userController.Login)
 	c.Get("/api/check-role", Middleware.JwtMiddleware(), userController.CheckRole)
 	c.Get("/api/total/user", userController.TotalUser)
+	c.Get("/api/seed/user", userController.Seed)
 
 	// Role Routes
 	roleController := RoleDI(Config.DB)

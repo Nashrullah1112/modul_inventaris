@@ -11,18 +11,20 @@ const TableNameUser = "user"
 
 // User mapped from table <user>
 type User struct {
-	ID               int64     `gorm:"column:id;primaryKey" json:"id"`
+	ID               int64     `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	NIP              int64     `gorm:"column:nip;not null" json:"nip"`
 	Nama             string    `gorm:"column:nama;not null" json:"nama"`
-	Email            string    `gorm:"column:email;not null" json:"email"`
+	Email            string    `gorm:"column:email;not null;uniq" json:"email"`
 	Password         string    `gorm:"column:password;not null" json:"password"`
 	JabatanID        int64     `gorm:"column:jabatan_id;not null" json:"jabatan_id"`
 	DivisiID         int64     `gorm:"column:divisi_id;not null" json:"divisi_id"`
+	RoleID           int64     `gorm:"column:role_id;not null" json:"role_id"`
 	TanggalBergabung time.Time `gorm:"column:tanggal_bergabung;not null" json:"tanggal_bergabung"`
 	CreatedAt        time.Time `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt        time.Time `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 	Jabatan          Jabatan   `gorm:"foreignKey:JabatanID;references:ID" json:"jabatan"`
 	Divisi           Divisi    `gorm:"foreignKey:DivisiID;references:ID" json:"divisi"`
+	Role             Role      `gorm:"foreignKey:RoleID;references:ID" json:"role"`
 }
 
 // BeforeSave is a GORM hook that hashes the password before saving the user

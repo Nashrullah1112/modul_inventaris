@@ -6,6 +6,7 @@ import (
 	"itam/Model/Web"
 	"itam/Model/Web/Response"
 	"itam/Repository"
+	"log"
 	"net/http"
 )
 
@@ -17,6 +18,8 @@ type (
 		FindById(detailAsetLisensiId int64) (detailAsetLisensi Response.DetailAsetLisensiResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (detailAsetLisensi []Response.DetailAsetLisensiResponse, serviceErr *Web.ServiceErrorDto)
 		TotalLisensi() (total int64, serviceErr *Web.ServiceErrorDto)
+		NotifyExpiringLicenses() (notifications []Database.Notification, serviceErr *Web.ServiceErrorDto)
+		MarkNotificationAsRead(notificationID int64) (serviceErr *Web.ServiceErrorDto)
 	}
 
 	AssetLisensiServiceImpl struct {
@@ -33,6 +36,7 @@ func AssetLisensiServiceProvider(lisensiRepo Repository.AssetLisensiRepositoryHa
 }
 
 func (h *AssetLisensiServiceImpl) Create(request Response.AssetLicenseCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
+	log.Println("request", request)
 	assetId, err := h.assetRepo.Save(&Database.Asset{
 		SerialNumber: request.SerialNumber,
 		Model:        request.Model,
@@ -195,4 +199,27 @@ func (h *AssetLisensiServiceImpl) TotalLisensi() (total int64, serviceErr *Web.S
 
 	}
 	return total, nil
+}
+
+func (h *AssetLisensiServiceImpl) NotifyExpiringLicenses() (notifications []Database.Notification, serviceErr *Web.ServiceErrorDto) {
+	// Get all licenses that will expire in 30 days
+	err := h.lisensiRepo.SyncNotification()
+	if err != nil {
+		return nil, Web.NewInternalServiceError(err)
+	}
+
+	notifications, err = h.lisensiRepo.GetNotifications("")
+	if err != nil {
+		return nil, Web.NewInternalServiceError(err)
+	}
+
+	return notifications, nil
+}
+func (h *AssetLisensiServiceImpl) MarkNotificationAsRead(notificationID int64) (serviceErr *Web.ServiceErrorDto) {
+	err := h.lisensiRepo.MarkNotificationAsRead(notificationID)
+	if err != nil {
+		return Web.NewInternalServiceError(err)
+	}
+
+	return nil
 }

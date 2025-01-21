@@ -12,6 +12,7 @@ type UserCreateRequest struct {
 	Email     string `json:"email" validate:"required,email"`
 	JabatanID int64  `json:"jabatan_id" validate:"required"`
 	DivisiID  int64  `json:"divisi_id" validate:"required"`
+	RoleID    int64  `json:"role_id" validate:"required"`
 	Password  string `json:"password" validate:"required"`
 }
 
@@ -23,6 +24,7 @@ type UserUpdateRequest struct {
 	Email     string `json:"email" validate:"required,email"`
 	JabatanID int64  `json:"jabatan_id" validate:"required"`
 	DivisiID  int64  `json:"divisi_id" validate:"required"`
+	RoleID    int64  `json:"role_id" validate:"required"`
 }
 
 // UserResponse represents the response payload for returning User data
@@ -33,6 +35,7 @@ type UserResponse struct {
 	JabatanID        int64           `json:"jabatan_id"`
 	Jabatan          JabatanResponse `json:"jabatan"`
 	DivisiID         int64           `json:"divisi_id"`
+	RoleID           int64           `json:"role_id"`
 	Divisi           DivisiResponse  `json:"divisi"`
 	TanggalBergabung time.Time       `json:"tanggal_bergabung"`
 	Nama             string          `json:"nama"`

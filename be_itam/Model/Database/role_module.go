@@ -3,7 +3,7 @@ package Database
 import "time"
 
 type RoleModule struct {
-	ID        string    `gorm:"column:id;primaryKey;type:uuid;default:uuid_generate_v4()" json:"id"`
+	ID        int64     `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	RoleID    int64     `gorm:"column:role_id;not null" json:"role_id"`
 	ModuleID  int64     `gorm:"column:module_id;not null" json:"module_id"`
 	IsAllowed bool      `gorm:"column:is_allowed;not null" json:"is_allowed"`

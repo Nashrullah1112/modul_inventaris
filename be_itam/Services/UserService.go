@@ -8,6 +8,7 @@ import (
 	"itam/Model/Web"
 	"itam/Model/Web/Response"
 	"itam/Repository"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -23,12 +24,14 @@ type (
 		Login(request Domain.LoginRequest) (token Domain.JwtTokenDetail, serviceErr *Web.ServiceErrorDto)
 		CheckRole(userId int64) (jabatan Database.Jabatan, serviceErr *Web.ServiceErrorDto)
 		TotalUser() (total int64, serviceErr *Web.ServiceErrorDto)
+		Seed() (seededUsers []Response.UserResponse, serviceErr *Web.ServiceErrorDto)
 	}
 
 	UserServiceImpl struct {
 		userRepo    Repository.UserRepositoryHandler
 		jabatanRepo Repository.JabatanRepositoryHandler
 		divisiRepo  Repository.DivisiRepositoryHandler
+		roleRepo    Repository.RoleRepositoryHandler
 	}
 )
 
@@ -40,6 +43,151 @@ func UserServiceProvider(userRepo Repository.UserRepositoryHandler, jabatanRepo 
 	}
 }
 
+func (h *UserServiceImpl) Seed() (seededUsers []Response.UserResponse, serviceErr *Web.ServiceErrorDto) {
+	// Sample seed data
+	usersToSeed := []Response.UserCreateRequest{
+		{
+			NIP:       12345678,
+			Email:     "admin@gmail.com",
+			JabatanID: 1,
+			DivisiID:  1,
+			RoleID:    1, // Role ID for the user
+			Password:  "password",
+			Nama:      "Administrator",
+		},
+		{
+			NIP:       87654321,
+			Email:     "user@example.com",
+			JabatanID: 2,
+			DivisiID:  2,
+			RoleID:    2, // Role ID for the user
+			Password:  "password",
+			Nama:      "Regular User",
+		},
+	}
+
+	// Sample Jabatan, Divisi, and Role data
+	jabatanToSeed := []Response.JabatanCreateRequest{
+		{Nama: "Admin"},
+		{Nama: "User"},
+	}
+	divisiToSeed := []Response.DivisiCreateRequest{
+		{Nama: "IT"},
+		{Nama: "HR"},
+	}
+	roleToSeed := []Response.RoleCreateRequest{
+		{Nama: "Admin"},
+		{Nama: "User"},
+	}
+
+	// Seed Jabatan if they don't exist and update the ID map
+	jabatanIDMap := make(map[string]int64)
+	for _, jabatan := range jabatanToSeed {
+		existingJabatan, err := h.jabatanRepo.FindByNama(jabatan.Nama)
+		if err != nil {
+			// Create if not exists
+			createdJabatan, err := h.jabatanRepo.Save(&Database.Jabatan{Nama: jabatan.Nama})
+			if err != nil {
+				log.Printf("Failed to seed jabatan: %s, error: %v\n", jabatan.Nama, err)
+				return nil, Web.NewInternalServiceError(err)
+			}
+			jabatanIDMap[jabatan.Nama] = createdJabatan
+		} else {
+			jabatanIDMap[jabatan.Nama] = int64(existingJabatan.ID)
+		}
+	}
+
+	// Seed Divisi if they don't exist and update the ID map
+	divisiIDMap := make(map[string]int64)
+	for _, divisi := range divisiToSeed {
+		existingDivisi, err := h.divisiRepo.FindByNama(divisi.Nama)
+		if err != nil {
+			// Create if not exists
+			createdDivisi, err := h.divisiRepo.Save(&Database.Divisi{Nama: divisi.Nama})
+			if err != nil {
+				log.Printf("Failed to seed divisi: %s, error: %v\n", divisi.Nama, err)
+				return nil, Web.NewInternalServiceError(err)
+			}
+			divisiIDMap[divisi.Nama] = createdDivisi
+		} else {
+			divisiIDMap[divisi.Nama] = existingDivisi.ID
+		}
+	}
+
+	// Seed Role if they don't exist and update the ID map
+	roleIDMap := make(map[string]int64)
+	for _, role := range roleToSeed {
+		existingRole, err := h.roleRepo.FindRoleByNama(role.Nama)
+		if err != nil {
+			// Create if not exists
+			createdRole, err := h.roleRepo.SaveRole(&Database.Role{Nama: role.Nama})
+			if err != nil {
+				log.Printf("Failed to seed role: %s, error: %v\n", role.Nama, err)
+				return nil, Web.NewInternalServiceError(err)
+			}
+			roleIDMap[role.Nama] = createdRole
+		} else {
+			roleIDMap[role.Nama] = existingRole.ID
+		}
+	}
+
+	// Iterate over seed data for users
+	for _, user := range usersToSeed {
+		// Use the appropriate IDs from the maps (jabatanIDMap, divisiIDMap, roleIDMap)
+		user.JabatanID = jabatanIDMap["Admin"] // Example: using "Admin" for JabatanID
+		user.DivisiID = divisiIDMap["IT"]      // Example: using "IT" for DivisiID
+		user.RoleID = roleIDMap["Admin"]       // Example: using "Admin" for RoleID
+
+		existingUser, err := h.userRepo.FindByEmail(user.Email)
+		if err == nil && existingUser.ID != 0 {
+			continue // Skip if user already exists
+		}
+
+		id, err := h.userRepo.Save(&Database.User{
+			NIP:              user.NIP,
+			Email:            user.Email,
+			JabatanID:        user.JabatanID,
+			DivisiID:         user.DivisiID,
+			RoleID:           user.RoleID, // Include Role ID
+			Password:         user.Password,
+			Nama:             user.Nama,
+			TanggalBergabung: time.Now(),
+		})
+		if err != nil {
+			log.Printf("Failed to seed user: %s, error: %v\n", user.Email, err)
+			return nil, Web.NewInternalServiceError(err)
+		}
+
+		createdUser, err := h.userRepo.FindById(id)
+		if err == nil {
+			jabatan, _ := h.jabatanRepo.FindById(createdUser.JabatanID)
+			divisi, _ := h.divisiRepo.FindById(createdUser.DivisiID)
+
+			seededUsers = append(seededUsers, Response.UserResponse{
+				ID:        createdUser.ID,
+				NIP:       createdUser.NIP,
+				Nama:      createdUser.Nama,
+				Email:     createdUser.Email,
+				JabatanID: createdUser.JabatanID,
+				Jabatan: Response.JabatanResponse{
+					ID:   jabatan.ID,
+					Nama: jabatan.Nama,
+				},
+				DivisiID: createdUser.DivisiID,
+				Divisi: Response.DivisiResponse{
+					ID:   divisi.ID,
+					Nama: divisi.Nama,
+				},
+				RoleID: createdUser.RoleID,
+
+				TanggalBergabung: createdUser.TanggalBergabung,
+			})
+		}
+	}
+
+	log.Println("User seeding completed successfully.")
+	return seededUsers, nil
+}
 func (h *UserServiceImpl) Create(request Response.UserCreateRequest) (id int64, serviceErr *Web.ServiceErrorDto) {
 	user, _ := h.userRepo.FindByEmail(request.Email)
 	if user.ID != 0 {
@@ -168,7 +316,9 @@ func (h *UserServiceImpl) FindAll() (users []Response.UserResponse, serviceErr *
 }
 
 func (h *UserServiceImpl) Login(request Domain.LoginRequest) (token Domain.JwtTokenDetail, serviceErr *Web.ServiceErrorDto) {
+	log.Println(request)
 	data, err := h.userRepo.FindByEmail(request.Email)
+	log.Println(data)
 	if err != nil {
 		return Domain.JwtTokenDetail{}, Web.NewCustomServiceError("User dan Password salah", err, http.StatusUnauthorized)
 	}

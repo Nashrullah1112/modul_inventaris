@@ -66,7 +66,6 @@ func (h *AssetPerangkatRepositoryImpl) FindAll() (data []Database.DetailAsetPera
 		Order("id asc").
 		Find(&data).
 		Error
-
 	return data, err
 }
 

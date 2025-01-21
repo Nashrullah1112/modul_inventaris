@@ -13,6 +13,7 @@ type (
 		Delete(id int64) error
 		FindById(id int64) (data Database.Divisi, err error)
 		FindAll() (data []Database.Divisi, err error)
+		FindByNama(name string) (data Database.Divisi, err error)
 	}
 
 	DivisiRepositoryImpl struct {
@@ -60,5 +61,12 @@ func (h *DivisiRepositoryImpl) FindAll() (data []Database.Divisi, err error) {
 		Find(&data).
 		Error
 
+	return data, err
+}
+func (h *DivisiRepositoryImpl) FindByNama(name string) (data Database.Divisi, err error) {
+	err = h.DB.Model(&Database.Divisi{}).
+		Where("nama = ?", name).
+		Take(&data).
+		Error
 	return data, err
 }

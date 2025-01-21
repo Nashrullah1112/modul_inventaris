@@ -127,3 +127,28 @@ func (h *AssetLisensiControllerImpl) TotalLisensi(c *fiber.Ctx) error {
 
 	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Total DetailAsetLisensis retrieved successfully", total))
 }
+
+func (h *AssetLisensiControllerImpl) GetNotifications(c *fiber.Ctx) error {
+	// Call service to get all notifications
+	notifications, serviceErr := h.service.NotifyExpiringLicenses()
+	if serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("All notifications found", notifications))
+}
+
+func (h *AssetLisensiControllerImpl) MarkNotificationAsRead(c *fiber.Ctx) error {
+	// Get notification ID from URL query
+	notificationID, err := c.ParamsInt("notificationID")
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid notification ID", err))
+	}
+
+	// Call service to mark notification as read
+	if serviceErr := h.service.MarkNotificationAsRead(int64(notificationID)); serviceErr != nil {
+		return c.Status(serviceErr.StatusCode).JSON(Web.ErrorResponse(serviceErr.Message, serviceErr.Err))
+	}
+
+	return c.Status(http.StatusOK).JSON(Web.SuccessResponse("Notification marked as read successfully", nil))
+}

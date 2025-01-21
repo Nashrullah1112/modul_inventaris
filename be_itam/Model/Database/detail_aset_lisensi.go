@@ -10,7 +10,7 @@ const TableNameDetailAsetLisensi = "detail_aset_lisensi"
 type DetailAsetLisensi struct {
 	ID                       int64     `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
 	WaktuPembelian           string    `gorm:"column:waktu_pembelian;not null" json:"waktu_pembelian"`
-	SNPerangkatTerpasang     string    `gorm:"column:sn_perangkat_terpasang;not null" json:"sn_perangkat_terpasang"`
+	SNPerangkatTerpasang     string    `gorm:"column:sn_perangkat_terpasang;not null;unique" json:"sn_perangkat_terpasang"`
 	WaktuAktivasi            string    `gorm:"column:waktu_aktivasi;not null" json:"waktu_aktivasi"`
 	TanggalExpired           time.Time `gorm:"column:tanggal_expired;not null" json:"tanggal_expired"`
 	TipeKepemilikanAset      string    `gorm:"column:tipe_kepemilikan_aset;not null" json:"tipe_kepemilikan_aset"`

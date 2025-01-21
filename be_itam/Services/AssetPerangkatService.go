@@ -43,6 +43,7 @@ func (h *AssetPerangkatServiceImpl) Create(request Response.DetailAsetPerangkatC
 	if err != nil {
 		return 0, Web.NewCustomServiceError("Aset Hardware not created", err, http.StatusInternalServerError)
 	}
+
 	depresiasi := (request.NilaiAset - request.NilaiSisa) / int64(request.JangkaMasaPakai)
 	id, err = h.perangkatRepo.Save(&Database.DetailAsetPerangkat{
 		LokasiPenerima:       request.LokasiPenerima,

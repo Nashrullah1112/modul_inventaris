@@ -110,10 +110,12 @@ func UserDI(db *gorm.DB) *Controller.UserControllerImpl {
 	panic(wire.Build(wire.NewSet(
 		Repository.JabatanRepositoryProvider,
 		Repository.DivisiRepositoryProvider,
+		Repository.RoleRepositoryProvider,
 		Repository.UserRepositoryProvider,
 		Services.UserServiceProvider,
 		Controller.UserControllerProvider,
 
+		wire.Bind(new(Repository.RoleRepositoryHandler), new(*Repository.RoleRepositoryImpl)),
 		wire.Bind(new(Repository.DivisiRepositoryHandler), new(*Repository.DivisiRepositoryImpl)),
 		wire.Bind(new(Repository.JabatanRepositoryHandler), new(*Repository.JabatanRepositoryImpl)),
 		wire.Bind(new(Repository.UserRepositoryHandler), new(*Repository.UserRepositoryImpl)),

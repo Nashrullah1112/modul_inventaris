@@ -6,7 +6,7 @@ const TableNameVendor = "vendor"
 
 // Vendor mapped from table <vendor>
 type Vendor struct {
-	ID          int64     `gorm:"column:id;primaryKey" json:"id"`
+	ID          int64     `gorm:"column:id;primaryKey;autoIncrement" json:"id"`
 	PIC         string    `gorm:"column:pic;not null" json:"pic"`
 	Email       string    `gorm:"column:email;not null" json:"email"`
 	NomorKontak string    `gorm:"column:nomor_kontak;not null" json:"nomor_kontak"`
