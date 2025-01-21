@@ -71,7 +71,8 @@ func UserDI(db *gorm.DB) *Controller.UserControllerImpl {
 	userRepositoryImpl := Repository.UserRepositoryProvider(db)
 	jabatanRepositoryImpl := Repository.JabatanRepositoryProvider(db)
 	divisiRepositoryImpl := Repository.DivisiRepositoryProvider(db)
-	userServiceImpl := Services.UserServiceProvider(userRepositoryImpl, jabatanRepositoryImpl, divisiRepositoryImpl)
+	roleRepositoryImpl := Repository.RoleRepositoryProvider(db)
+	userServiceImpl := Services.UserServiceProvider(userRepositoryImpl, jabatanRepositoryImpl, divisiRepositoryImpl, roleRepositoryImpl)
 	userControllerImpl := Controller.UserControllerProvider(userServiceImpl)
 	return userControllerImpl
 }
