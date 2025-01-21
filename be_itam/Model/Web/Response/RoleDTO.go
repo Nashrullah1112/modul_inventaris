@@ -17,6 +17,10 @@ type ModuleResponse struct {
 	IsAllowed bool   `json:"isAllowed"`
 }
 
+type ModuleCreateRequest struct {
+	Name string `json:"name" validate:"required"`
+}
+
 type RoleResponse struct {
 	ID      int64            `json:"id"`
 	Name    string           `json:"name"`

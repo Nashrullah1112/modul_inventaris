@@ -1,7 +1,6 @@
 package Repository
 
 import (
-	"itam/Constant"
 	"itam/Model/Database"
 	"itam/Model/Web/Response"
 
@@ -20,8 +19,11 @@ type (
 		UpdateModule(data *Database.Module) (id int64, err error)
 		DeleteModule(id int64) error
 		FindModuleById(id int64) (data Database.Module, err error)
+		FindModuleByNama(name string) (data Database.Module, err error)
 		FindAllModules() (data []Database.Module, err error)
 		FindAllModulesByRole(id int64) (data []Response.ModuleResponse, err error)
+		SaveRoleModule(data *Database.RoleModule) (id int64, err error)
+		CheckRoleModuleExist(roleId, moduleId int64) (bool, error)
 	}
 
 	RoleRepositoryImpl struct {
@@ -111,43 +113,60 @@ func (h *RoleRepositoryImpl) FindAllModules() (data []Database.Module, err error
 }
 func (h *RoleRepositoryImpl) FindAllModulesByRole(id int64) (data []Response.ModuleResponse, err error) {
 	var roleModules []Database.RoleModule
-	err = h.DB.Model(&Database.RoleModule{}).
-		Where("role_id = ?", id).
-		Find(&roleModules).
-		Error
+	err = h.DB.Where("role_id = ?", id).Find(&roleModules).Error
 	if err != nil {
 		return nil, err
 	}
 
-	var moduleIDs []int64
+	// Ambil semua module IDs dari roleModules
+	moduleIDMap := make(map[int64]bool)
 	for _, roleModule := range roleModules {
-		moduleIDs = append(moduleIDs, roleModule.ModuleID)
+		moduleIDMap[roleModule.ModuleID] = roleModule.IsAllowed
 	}
 
-	err = h.DB.Model(&Database.Module{}).
-		Order("id asc").
-		Find(&data).
-		Error
+	var modules []Database.Module
+	err = h.DB.Order("id asc").Find(&modules).Error
 	if err != nil {
 		return nil, err
 	}
 
+	// Mapping modul ke dalam response dengan status IsAllowed
 	var modulesResponse []Response.ModuleResponse
-	for _, module := range data {
-		if Constant.Contains(moduleIDs, module.ID) {
-			modulesResponse = append(modulesResponse, Response.ModuleResponse{
-				ID:        module.ID,
-				Name:      module.Name,
-				IsAllowed: true,
-			})
-		} else {
-			modulesResponse = append(modulesResponse, Response.ModuleResponse{
-				ID:        module.ID,
-				Name:      module.Name,
-				IsAllowed: false,
-			})
+	for _, module := range modules {
+		isAllowed := false
+		if allowed, exists := moduleIDMap[module.ID]; exists {
+			isAllowed = allowed
 		}
+		modulesResponse = append(modulesResponse, Response.ModuleResponse{
+			ID:        module.ID,
+			Name:      module.Nama,
+			IsAllowed: isAllowed,
+		})
 	}
 
 	return modulesResponse, nil
+}
+func (h *RoleRepositoryImpl) FindModuleByNama(name string) (data Database.Module, err error) {
+	err = h.DB.Model(&Database.Module{}).
+		Where("nama = ?", name).
+		Take(&data).
+		Error
+	return data, err
+}
+
+func (h *RoleRepositoryImpl) SaveRoleModule(data *Database.RoleModule) (id int64, err error) {
+	err = h.DB.Model(&Database.RoleModule{}).Save(&data).Error
+	return data.ID, err
+}
+
+func (h *RoleRepositoryImpl) CheckRoleModuleExist(roleId, moduleId int64) (bool, error) {
+	var count int64
+	err := h.DB.Model(&Database.RoleModule{}).
+		Where("role_id = ? AND module_id = ?", roleId, moduleId).
+		Count(&count).
+		Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }

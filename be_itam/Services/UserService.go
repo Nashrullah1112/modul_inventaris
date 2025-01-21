@@ -22,7 +22,7 @@ type (
 		FindById(userId int64) (user Response.UserResponse, serviceErr *Web.ServiceErrorDto)
 		FindAll() (users []Response.UserResponse, serviceErr *Web.ServiceErrorDto)
 		Login(request Domain.LoginRequest) (token Domain.JwtTokenDetail, serviceErr *Web.ServiceErrorDto)
-		CheckRole(userId int64) (jabatan Database.Jabatan, serviceErr *Web.ServiceErrorDto)
+		CheckRole(userId int64) (roleResponse Response.RoleResponse, serviceErr *Web.ServiceErrorDto)
 		TotalUser() (total int64, serviceErr *Web.ServiceErrorDto)
 		Seed() (seededUsers []Response.UserResponse, serviceErr *Web.ServiceErrorDto)
 	}
@@ -80,6 +80,20 @@ func (h *UserServiceImpl) Seed() (seededUsers []Response.UserResponse, serviceEr
 		{Nama: "Admin"},
 		{Nama: "User"},
 	}
+	moduleToSeed := []Response.ModuleCreateRequest{
+		{Name: "User"},
+		{Name: "Aplikasi"},
+		{Name: "Perangkat"},
+		{Name: "Lisensi"},
+		{Name: "Hardware"},
+		{Name: "Asset"},
+		{Name: "Divisi"},
+		{Name: "Jabatan"},
+		{Name: "Role"},
+		{Name: "Dashboard"},
+		{Name: "Approval"},
+		{Name: "Disposal"},
+	}
 
 	// Seed Jabatan if they don't exist and update the ID map
 	jabatanIDMap := make(map[string]int64)
@@ -120,9 +134,24 @@ func (h *UserServiceImpl) Seed() (seededUsers []Response.UserResponse, serviceEr
 	log.Printf("done")
 	log.Println(divisiIDMap)
 	// Seed Role if they don't exist and update the ID map
+	moduleIDMap := make(map[string]int64)
+	for _, module := range moduleToSeed {
+		existingModule, err := h.roleRepo.FindModuleByNama(module.Name)
+		if err != nil {
+			createdModule, err := h.roleRepo.SaveModule(&Database.Module{Nama: module.Name})
+			if err != nil {
+				log.Printf("Failed to seed module: %s, error: %v\n", module.Name, err)
+				return nil, Web.NewInternalServiceError(err)
+			}
+			moduleIDMap[module.Name] = createdModule
+		} else {
+			moduleIDMap[module.Name] = existingModule.ID
+		}
+	}
 	roleIDMap := make(map[string]int64)
 	for _, role := range roleToSeed {
 		log.Printf("here")
+
 		existingRole, err := h.roleRepo.FindRoleByNama(role.Nama)
 		if err != nil {
 			// Create if not exists
@@ -135,8 +164,48 @@ func (h *UserServiceImpl) Seed() (seededUsers []Response.UserResponse, serviceEr
 				return nil, Web.NewInternalServiceError(err)
 			}
 			roleIDMap[role.Nama] = createdRole
+			modules, err := h.roleRepo.FindAllModules()
+			if err != nil {
+				log.Printf("Failed to seed role: %s, error: %v\n", role.Nama, err)
+				return nil, Web.NewInternalServiceError(err)
+			}
+			for _, module := range modules {
+				check, err := h.roleRepo.CheckRoleModuleExist(existingRole.ID, module.ID)
+				if !check && err != nil {
+					continue
+				}
+				_, err = h.roleRepo.SaveRoleModule(&Database.RoleModule{
+					RoleID:    existingRole.ID,
+					ModuleID:  module.ID,
+					IsAllowed: true,
+				})
+				if err != nil {
+					log.Printf("Failed to seed role module: %s, error: %v\n", role.Nama, err)
+					return nil, Web.NewInternalServiceError(err)
+				}
+			}
 		} else {
 			roleIDMap[role.Nama] = existingRole.ID
+			modules, err := h.roleRepo.FindAllModules()
+			if err != nil {
+				log.Printf("Failed to seed role: %s, error: %v\n", role.Nama, err)
+				return nil, Web.NewInternalServiceError(err)
+			}
+			for _, module := range modules {
+				check, err := h.roleRepo.CheckRoleModuleExist(existingRole.ID, module.ID)
+				if !check && err != nil {
+					continue
+				}
+				_, err = h.roleRepo.SaveRoleModule(&Database.RoleModule{
+					RoleID:    existingRole.ID,
+					ModuleID:  module.ID,
+					IsAllowed: true,
+				})
+				if err != nil {
+					log.Printf("Failed to seed role module: %s, error: %v\n", role.Nama, err)
+					return nil, Web.NewInternalServiceError(err)
+				}
+			}
 		}
 	}
 	log.Printf("done")
@@ -223,6 +292,7 @@ func (h *UserServiceImpl) Create(request Response.UserCreateRequest) (id int64, 
 		Email:            request.Email,
 		JabatanID:        request.JabatanID,
 		DivisiID:         request.DivisiID,
+		RoleID:           request.RoleID,
 		Password:         request.Password,
 		Nama:             request.Nama,
 		TanggalBergabung: time.Now(),
@@ -246,6 +316,7 @@ func (h *UserServiceImpl) Update(request Response.UserUpdateRequest) (id int64, 
 		Email:            request.Email,
 		JabatanID:        request.JabatanID,
 		DivisiID:         request.DivisiID,
+		RoleID:           request.RoleID,
 		TanggalBergabung: existingUser.TanggalBergabung,
 	})
 	if err != nil {
@@ -360,17 +431,25 @@ func (h *UserServiceImpl) Login(request Domain.LoginRequest) (token Domain.JwtTo
 	return token, nil
 }
 
-func (h *UserServiceImpl) CheckRole(userId int64) (jabatan Database.Jabatan, serviceErr *Web.ServiceErrorDto) {
+func (h *UserServiceImpl) CheckRole(userId int64) (roleResponse Response.RoleResponse, serviceErr *Web.ServiceErrorDto) {
 	user, err := h.userRepo.FindById(userId)
 	if err != nil {
-		return Database.Jabatan{}, Web.NewCustomServiceError("User not found", err, http.StatusNotFound)
+		return Response.RoleResponse{}, Web.NewCustomServiceError("User not found", err, http.StatusNotFound)
 	}
 	fmt.Println(user.JabatanID)
-	jabatan, err = h.jabatanRepo.FindById(user.JabatanID)
+	role, err := h.roleRepo.FindRoleById(user.RoleID)
 	if err != nil {
-		return Database.Jabatan{}, Web.NewCustomServiceError("Jabatan not found", err, http.StatusNotFound)
+		return Response.RoleResponse{}, Web.NewCustomServiceError("Jabatan not found", err, http.StatusNotFound)
 	}
-	return jabatan, nil
+	module, err := h.roleRepo.FindAllModulesByRole(role.ID)
+	if err != nil {
+		return Response.RoleResponse{}, Web.NewCustomServiceError("Module not found", err, http.StatusNotFound)
+	}
+	return Response.RoleResponse{
+		ID:      role.ID,
+		Name:    role.Nama,
+		Modules: module,
+	}, nil
 }
 func (h *UserServiceImpl) TotalUser() (total int64, serviceErr *Web.ServiceErrorDto) {
 	total, err := h.userRepo.TotalUser()
