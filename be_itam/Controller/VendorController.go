@@ -54,7 +54,7 @@ func (h *VendorControllerImpl) Update(c *fiber.Ctx) error {
 	)
 	vendorId, err := c.ParamsInt("vendorId")
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid vendor ID", err))
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.InvalidDataRequest, err))
 	}
 	// Parse request body
 	if err := c.BodyParser(&request); err != nil {
@@ -73,7 +73,7 @@ func (h *VendorControllerImpl) Delete(c *fiber.Ctx) error {
 	// Get vendor ID from URL params
 	vendorId, err := c.ParamsInt("vendorId")
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid vendor ID", err))
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.InvalidDataRequest, err))
 	}
 
 	// Call service to delete the vendor
@@ -88,7 +88,7 @@ func (h *VendorControllerImpl) FindById(c *fiber.Ctx) error {
 	// Get vendor ID from URL params
 	vendorId, err := c.ParamsInt("vendorId")
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid vendor ID", err))
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.InvalidDataRequest, err))
 	}
 
 	// Call service to find the vendor by ID

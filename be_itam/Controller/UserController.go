@@ -75,7 +75,7 @@ func (h *UserControllerImpl) Delete(c *fiber.Ctx) error {
 	// Get user ID from URL params
 	userId, err := c.ParamsInt("userId")
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid user ID", err))
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.InvalidDataRequest, err))
 	}
 
 	// Call service to delete the user
@@ -90,7 +90,7 @@ func (h *UserControllerImpl) FindById(c *fiber.Ctx) error {
 	// Get user ID from URL params
 	userId, err := c.ParamsInt("userId")
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid user ID", err))
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.InvalidDataRequest, err))
 	}
 
 	// Call service to find the user by ID
@@ -137,7 +137,7 @@ func (h *UserControllerImpl) CheckRole(c *fiber.Ctx) error {
 	userId, ok := c.Locals("userID").(int64)
 
 	if !ok || userId == 0 {
-		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse("Invalid user ID", nil))
+		return c.Status(http.StatusBadRequest).JSON(Web.ErrorResponse(Constant.InvalidDataRequest, nil))
 	}
 	// Call service to check the role of the user
 	response, serviceErr := h.service.CheckRole(userId)

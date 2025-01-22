@@ -103,44 +103,47 @@ func (h *AssetLisensiRepositoryImpl) SyncNotification() error {
 
 	// Iterasi untuk setiap DetailAsetLisensi
 	for _, assetLisensi := range assetLisensiList {
-		// Cek apakah sudah ada notifikasi dengan status 'unread' atau 'read' untuk asset ini
-		var existingNotification Database.Notification
-		if err := h.DB.Where("asset_lisensi_id = ?", assetLisensi.ID).First(&existingNotification).Error; err == nil {
-			// Jika notifikasi sudah ada, periksa apakah expired telah diperbarui
-			if assetLisensi.UpdatedAt.After(existingNotification.UpdatedAt) {
-				log.Println("tanggal expired %s > %s", assetLisensi.UpdatedAt, existingNotification.UpdatedAt)
-				log.Println(assetLisensi.UpdatedAt.After(existingNotification.UpdatedAt))
-				// Perbarui status notifikasi yang lama menjadi expired atau read
-				existingNotification.Status = "expired"
-				if err := h.DB.Save(&existingNotification).Error; err != nil {
-					return fmt.Errorf("failed to update existing notification: %v", err)
-				}
-
-				// Buat notifikasi baru dengan status unread
-				notification := &Database.Notification{
-					Message:        fmt.Sprintf("New notification for asset lisensi: %s with number SN %s", assetLisensi.Asset.Merk, assetLisensi.SNPerangkatTerpasang),
-					Status:         "unread", // Status awal adalah unread
-					AssetLisensiID: assetLisensi.ID,
-				}
-
-				if err := h.DB.Model(&Database.Notification{}).Save(notification).Error; err != nil {
-					return fmt.Errorf("failed to create notification: %v", err)
-				}
-			}
-		} else if err == gorm.ErrRecordNotFound {
-			// Jika tidak ada notifikasi, buat yang baru
-			notification := &Database.Notification{
-				Message:        fmt.Sprintf("New notification for asset lisensi: %s with number SN %s", assetLisensi.Asset.Merk, assetLisensi.SNPerangkatTerpasang),
-				Status:         "unread", // Status awal adalah unread
-				AssetLisensiID: assetLisensi.ID,
-			}
-
-			if err := h.DB.Model(&Database.Notification{}).Save(notification).Error; err != nil {
-				return fmt.Errorf("failed to create notification: %v", err)
-			}
+		if err := h.processAssetLisensi(assetLisensi); err != nil {
+			return err
 		}
 	}
 
+	return nil
+}
+
+func (h *AssetLisensiRepositoryImpl) processAssetLisensi(assetLisensi Database.DetailAsetLisensi) error {
+	// Cek apakah sudah ada notifikasi dengan status 'unread' atau 'read' untuk asset ini
+	var existingNotification Database.Notification
+	if err := h.DB.Where("asset_lisensi_id = ?", assetLisensi.ID).Preload("").First(&existingNotification).Error; err == nil {
+		// Jika notifikasi sudah ada, periksa apakah expired telah diperbarui
+		if assetLisensi.UpdatedAt.After(existingNotification.UpdatedAt) {
+			log.Println(assetLisensi.UpdatedAt, existingNotification.UpdatedAt)
+			log.Println(assetLisensi.UpdatedAt.After(existingNotification.UpdatedAt))
+			// Perbarui status notifikasi yang lama menjadi expired atau read
+			existingNotification.Status = "expired"
+			if err := h.DB.Save(&existingNotification).Error; err != nil {
+				return fmt.Errorf("failed to update existing notification: %v", err)
+			}
+			// Buat notifikasi baru dengan status unread
+			return h.createNotification(assetLisensi)
+		}
+	} else if err == gorm.ErrRecordNotFound {
+		// Jika tidak ada notifikasi, buat yang baru
+		return h.createNotification(assetLisensi)
+	}
+	return nil
+}
+
+func (h *AssetLisensiRepositoryImpl) createNotification(assetLisensi Database.DetailAsetLisensi) error {
+	notification := &Database.Notification{
+		Message:        fmt.Sprintf("New notification for asset lisensi: %s with number SN %s", assetLisensi.Asset.Merk, assetLisensi.SNPerangkatTerpasang),
+		Status:         "unread", // Status awal adalah unread
+		AssetLisensiID: assetLisensi.ID,
+	}
+
+	if err := h.DB.Model(&Database.Notification{}).Save(notification).Error; err != nil {
+		return fmt.Errorf("failed to create notification: %v", err)
+	}
 	return nil
 }
 func (h *AssetLisensiRepositoryImpl) GetNotifications(status string) ([]Database.Notification, error) {
