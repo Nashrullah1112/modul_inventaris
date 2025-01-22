@@ -251,11 +251,32 @@ func (h *AssetRepositoryImpl) DetailAsset(id int64) (data Response.DetailAssetRe
 }
 
 func (h *AssetRepositoryImpl) RejectedAsset(id int64) error {
-	err := h.DB.Delete(&Database.DetailAsetPerangkat{}).Error
-	err = h.DB.Delete(&Database.DetailAsetLisensi{}).Error
-	err = h.DB.Delete(&Database.DetaiAsetAplikasi{}).Error
-	err = h.DB.Delete(&Database.DetailAsetHardware{}).Error
-	err = h.DB.Delete(&Database.Asset{}, id).Error
 
-	return err
+	// Hapus data di DetailAsetPerangkat jika ada
+	if err := h.DB.Where("asset_id = ?", id).Delete(&Database.DetailAsetPerangkat{}).Error; err != nil && err != gorm.ErrRecordNotFound {
+		return fmt.Errorf("failed to delete detail perangkat for asset %d: %v", id, err)
+	}
+
+	// Hapus data di DetailAsetLisensi jika ada
+	if err := h.DB.Where("asset_id = ?", id).Delete(&Database.DetailAsetLisensi{}).Error; err != nil && err != gorm.ErrRecordNotFound {
+		return fmt.Errorf("failed to delete detail lisensi for asset %d: %v", id, err)
+	}
+
+	// Hapus data di DetailAsetAplikasi jika ada
+	if err := h.DB.Where("asset_id = ?", id).Delete(&Database.DetaiAsetAplikasi{}).Error; err != nil && err != gorm.ErrRecordNotFound {
+		return fmt.Errorf("failed to delete detail aplikasi for asset %d: %v", id, err)
+	}
+
+	// Hapus data di DetailAsetHardware jika ada
+	if err := h.DB.Where("asset_id = ?", id).Delete(&Database.DetailAsetHardware{}).Error; err != nil && err != gorm.ErrRecordNotFound {
+		return fmt.Errorf("failed to delete detail hardware for asset %d: %v", id, err)
+	}
+
+	// Hapus data di tabel Asset
+	if err := h.DB.Delete(&Database.Asset{}, id).Error; err != nil && err != gorm.ErrRecordNotFound {
+		return fmt.Errorf("failed to delete asset %d: %v", id, err)
+	}
+
+	return nil
+
 }
