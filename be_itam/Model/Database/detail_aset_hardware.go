@@ -14,7 +14,7 @@ type DetailAsetHardware struct {
 	TipeAset                 string    `gorm:"column:tipe_aset;not null" json:"tipe_aset"`
 	TanggalAktivasiPerangkat string    `gorm:"column:tanggal_aktivasi_perangkat;not null" json:"tanggal_aktivasi_perangkat"`
 	HasilPemeriksaan         string    `gorm:"column:hasil_pemeriksaan;not null" json:"hasil_pemeriksaan"`
-	SerialNumber             string    `gorm:"column:serial_number;not null" json:"serial_number"`
+	SerialNumber             string    `gorm:"column:serial_number;not null;unique" json:"serial_number"`
 	Model                    string    `gorm:"column:model;not null" json:"model"`
 	WaktuGaransiMulai        string    `gorm:"column:waktu_garansi_mulai;not null" json:"waktu_garansi_mulai"`
 	WaktuGaransiBerakhir     string    `gorm:"column:waktu_garansi_berakhir;not null" json:"waktu_garansi_berakhir"`
