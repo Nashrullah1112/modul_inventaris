@@ -116,10 +116,6 @@ func (h *AssetAplikasiServiceImpl) FindById(detaiAsetAplikasiId int64) (detaiAse
 	if err != nil {
 		return Response.DetaiAsetAplikasiResponse{}, Web.NewCustomServiceError("DetaiAsetAplikasi not found", err, http.StatusNotFound)
 	}
-	asset, err := h.assetRepo.FindById(data.AssetID)
-	if err != nil {
-		return Response.DetaiAsetAplikasiResponse{}, Web.NewInternalServiceError(err)
-	}
 	// Convert Database.DetaiAsetAplikasi to Response.DetaiAsetAplikasiResponse
 	detaiAsetAplikasi = Response.DetaiAsetAplikasiResponse{
 		Id:                      data.ID,
@@ -134,12 +130,21 @@ func (h *AssetAplikasiServiceImpl) FindById(detaiAsetAplikasiId int64) (detaiAse
 		TanggalKadaluarsa:       data.TanggalKadaluarsa,
 		AssetID:                 data.AssetID,
 		Asset: Response.AssetResponse{
-			Id:           asset.ID,
-			SerialNumber: asset.SerialNumber,
-			Merk:         asset.Merk,
-			Model:        asset.Model,
-			NomorNota:    asset.NomorNota,
-			VendorID:     asset.VendorID,
+			Id:           data.Asset.ID,
+			SerialNumber: data.Asset.SerialNumber,
+			Model:        data.Asset.Model,
+			Merk:         data.Asset.Merk,
+			NomorNota:    data.Asset.NomorNota,
+			VendorID:     data.Asset.VendorID,
+			Vendor: Response.VendorResponse{
+				ID:               data.Asset.Vendor.ID,
+				PIC:              data.Asset.Vendor.PIC,
+				NomorKontak:      data.Asset.Vendor.NomorKontak,
+				LokasiPerusahaan: data.Asset.Vendor.Lokasi,
+				NomorSIUP:        data.Asset.Vendor.NomorSIUP,
+				NomorNIB:         data.Asset.Vendor.NomorNIB,
+				NomorNPWP:        data.Asset.Vendor.NomorNPWP,
+			},
 		},
 	}
 
@@ -155,11 +160,8 @@ func (h *AssetAplikasiServiceImpl) FindAll() (detaiAsetAplikasis []Response.Deta
 
 	// Convert each Database.DetaiAsetAplikasi to Response.DetaiAsetAplikasiResponse
 	for _, d := range data {
-		asset, err := h.assetRepo.FindById(d.AssetID)
-		if err != nil {
-			return []Response.DetaiAsetAplikasiResponse{}, Web.NewInternalServiceError(err)
-		}
-		if asset.Status == "Approved" {
+
+		if d.Asset.Status == "Approved" {
 			detaiAsetAplikasis = append(detaiAsetAplikasis, Response.DetaiAsetAplikasiResponse{
 				Id:                      d.ID,
 				NamaAplikasi:            d.NamaAplikasi,
@@ -173,12 +175,22 @@ func (h *AssetAplikasiServiceImpl) FindAll() (detaiAsetAplikasis []Response.Deta
 				TanggalKadaluarsa:       d.TanggalKadaluarsa,
 				AssetID:                 d.AssetID,
 				Asset: Response.AssetResponse{
-					Id:           asset.ID,
-					SerialNumber: asset.SerialNumber,
-					Model:        asset.Model,
-					Merk:         asset.Merk,
-					NomorNota:    asset.NomorNota,
-					VendorID:     asset.VendorID,
+					Id:           d.Asset.ID,
+					SerialNumber: d.Asset.SerialNumber,
+					Model:        d.Asset.Model,
+					Merk:         d.Asset.Merk,
+					NomorNota:    d.Asset.NomorNota,
+					VendorID:     d.Asset.Vendor.ID,
+					Vendor: Response.VendorResponse{
+						ID:               d.Asset.Vendor.ID,
+						PIC:              d.Asset.Vendor.PIC,
+						Email:            d.Asset.Vendor.Email,
+						NomorKontak:      d.Asset.Vendor.NomorKontak,
+						LokasiPerusahaan: d.Asset.Vendor.Lokasi,
+						NomorSIUP:        d.Asset.Vendor.NomorSIUP,
+						NomorNIB:         d.Asset.Vendor.NomorNIB,
+						NomorNPWP:        d.Asset.Vendor.NomorNPWP,
+					},
 				},
 			})
 		}

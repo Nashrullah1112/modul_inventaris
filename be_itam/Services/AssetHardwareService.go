@@ -119,10 +119,6 @@ func (h *AssetHardwareServiceImpl) FindById(detailAsetHardwareId int64) (detailA
 		return Response.DetailAsetHardwareResponse{}, Web.NewCustomServiceError("Detail Aset Hardware not found", err, http.StatusNotFound)
 	}
 
-	asset, err := h.assetRepo.FindById(data.AssetID)
-	if err != nil {
-		return Response.DetailAsetHardwareResponse{}, Web.NewInternalServiceError(err)
-	}
 	detailAsetHardware = Response.DetailAsetHardwareResponse{
 		Id:                       data.ID,
 		WaktuPenerimaan:          data.WaktuPenerimaan,
@@ -146,11 +142,21 @@ func (h *AssetHardwareServiceImpl) FindById(detailAsetHardwareId int64) (detailA
 		DivisiID:                 data.DivisiID,
 		AssetID:                  data.AssetID,
 		Asset: Response.AssetResponse{
-			Id:           asset.ID,
-			SerialNumber: asset.SerialNumber,
-			Model:        asset.Model,
-			Merk:         asset.Merk,
-			NomorNota:    asset.NomorNota,
+			Id:           data.Asset.ID,
+			SerialNumber: data.Asset.SerialNumber,
+			Model:        data.Asset.Model,
+			Merk:         data.Asset.Merk,
+			NomorNota:    data.Asset.NomorNota,
+			VendorID:     data.Asset.VendorID,
+			Vendor: Response.VendorResponse{
+				ID:               data.Asset.Vendor.ID,
+				PIC:              data.Asset.Vendor.PIC,
+				NomorKontak:      data.Asset.Vendor.NomorKontak,
+				LokasiPerusahaan: data.Asset.Vendor.Lokasi,
+				NomorSIUP:        data.Asset.Vendor.NomorSIUP,
+				NomorNIB:         data.Asset.Vendor.NomorNIB,
+				NomorNPWP:        data.Asset.Vendor.NomorNPWP,
+			},
 		},
 	}
 
@@ -165,11 +171,8 @@ func (h *AssetHardwareServiceImpl) FindAll() (detailAsetHardwares []Response.Det
 
 	// Convert []Database.DetailAsetHardware to []Response.DetailAsetHardwareResponse
 	for _, d := range data {
-		asset, err := h.assetRepo.FindById(d.AssetID)
-		if err != nil {
-			return []Response.DetailAsetHardwareResponse{}, Web.NewInternalServiceError(err)
-		}
-		if asset.Status == "Approved" {
+
+		if d.Asset.Status == "Approved" {
 			detailAsetHardwares = append(detailAsetHardwares, Response.DetailAsetHardwareResponse{
 				Id:                       d.ID,
 				WaktuPenerimaan:          d.WaktuPenerimaan,
@@ -193,11 +196,22 @@ func (h *AssetHardwareServiceImpl) FindAll() (detailAsetHardwares []Response.Det
 				DivisiID:                 d.DivisiID,
 				AssetID:                  d.AssetID,
 				Asset: Response.AssetResponse{
-					Id:           asset.ID,
-					SerialNumber: asset.SerialNumber,
-					Model:        asset.Model,
-					Merk:         asset.Merk,
-					NomorNota:    asset.NomorNota,
+					Id:           d.Asset.ID,
+					SerialNumber: d.Asset.SerialNumber,
+					Model:        d.Asset.Model,
+					Merk:         d.Asset.Merk,
+					NomorNota:    d.Asset.NomorNota,
+					VendorID:     d.Asset.Vendor.ID,
+					Vendor: Response.VendorResponse{
+						ID:               d.Asset.Vendor.ID,
+						PIC:              d.Asset.Vendor.PIC,
+						Email:            d.Asset.Vendor.Email,
+						NomorKontak:      d.Asset.Vendor.NomorKontak,
+						LokasiPerusahaan: d.Asset.Vendor.Lokasi,
+						NomorSIUP:        d.Asset.Vendor.NomorSIUP,
+						NomorNIB:         d.Asset.Vendor.NomorNIB,
+						NomorNPWP:        d.Asset.Vendor.NomorNPWP,
+					},
 				},
 			})
 		}

@@ -145,10 +145,7 @@ func (h *AssetPerangkatServiceImpl) FindById(detailAsetPerangkatId int64) (detai
 	if err != nil {
 		return Response.DetailAsetPerangkatResponse{}, Web.NewCustomServiceError("Detail Aset Perangkat not found", err, http.StatusNotFound)
 	}
-	asset, err := h.assetRepo.FindById(data.AssetID)
-	if err != nil {
-		return Response.DetailAsetPerangkatResponse{}, Web.NewInternalServiceError(err)
-	}
+
 	detailAsetPerangkat = Response.DetailAsetPerangkatResponse{
 		ID:                   data.ID,
 		LokasiPenerima:       data.LokasiPenerima,
@@ -177,12 +174,22 @@ func (h *AssetPerangkatServiceImpl) FindById(detailAsetPerangkatId int64) (detai
 		UserID:               data.UserID,
 		AssetID:              data.AssetID,
 		Asset: Response.AssetResponse{
-			Id:           asset.ID,
-			SerialNumber: asset.SerialNumber,
-			Model:        asset.Model,
-			Merk:         asset.Merk,
-			NomorNota:    asset.NomorNota,
-			VendorID:     asset.VendorID,
+			Id:           data.Asset.ID,
+			SerialNumber: data.Asset.SerialNumber,
+			Model:        data.Asset.Model,
+			Merk:         data.Asset.Merk,
+			NomorNota:    data.Asset.NomorNota,
+			VendorID:     data.Asset.Vendor.ID,
+			Vendor: Response.VendorResponse{
+				ID:               data.Asset.Vendor.ID,
+				PIC:              data.Asset.Vendor.PIC,
+				Email:            data.Asset.Vendor.Email,
+				NomorKontak:      data.Asset.Vendor.NomorKontak,
+				LokasiPerusahaan: data.Asset.Vendor.Lokasi,
+				NomorSIUP:        data.Asset.Vendor.NomorSIUP,
+				NomorNIB:         data.Asset.Vendor.NomorNIB,
+				NomorNPWP:        data.Asset.Vendor.NomorNPWP,
+			},
 		},
 	}
 
@@ -196,11 +203,7 @@ func (h *AssetPerangkatServiceImpl) FindAll() (detailAsetPerangkat []Response.De
 	}
 
 	for _, d := range data {
-		asset, err := h.assetRepo.FindById(d.AssetID)
-		if err != nil {
-			return []Response.DetailAsetPerangkatResponse{}, Web.NewInternalServiceError(err)
-		}
-		if asset.Status == "Approved" {
+		if d.Asset.Status == "Approved" {
 			detailAsetPerangkat = append(detailAsetPerangkat, Response.DetailAsetPerangkatResponse{
 				ID:                   d.ID,
 				LokasiPenerima:       d.LokasiPenerima,
@@ -229,12 +232,22 @@ func (h *AssetPerangkatServiceImpl) FindAll() (detailAsetPerangkat []Response.De
 				UserID:               d.UserID,
 				AssetID:              d.AssetID,
 				Asset: Response.AssetResponse{
-					Id:           asset.ID,
-					SerialNumber: asset.SerialNumber,
-					Model:        asset.Model,
-					Merk:         asset.Merk,
-					NomorNota:    asset.NomorNota,
-					VendorID:     asset.VendorID,
+					Id:           d.Asset.ID,
+					SerialNumber: d.Asset.SerialNumber,
+					Model:        d.Asset.Model,
+					Merk:         d.Asset.Merk,
+					NomorNota:    d.Asset.NomorNota,
+					VendorID:     d.Asset.Vendor.ID,
+					Vendor: Response.VendorResponse{
+						ID:               d.Asset.Vendor.ID,
+						PIC:              d.Asset.Vendor.PIC,
+						Email:            d.Asset.Vendor.Email,
+						NomorKontak:      d.Asset.Vendor.NomorKontak,
+						LokasiPerusahaan: d.Asset.Vendor.Lokasi,
+						NomorSIUP:        d.Asset.Vendor.NomorSIUP,
+						NomorNIB:         d.Asset.Vendor.NomorNIB,
+						NomorNPWP:        d.Asset.Vendor.NomorNPWP,
+					},
 				},
 			})
 		}

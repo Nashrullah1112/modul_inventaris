@@ -67,6 +67,8 @@ func (h *AssetLisensiRepositoryImpl) Delete(id int64) error {
 
 func (h *AssetLisensiRepositoryImpl) FindById(id int64) (data Database.DetailAsetLisensi, err error) {
 	err = h.DB.Model(&Database.DetailAsetLisensi{}).
+		Preload("Asset").
+		Preload("Asset.Vendor").
 		Where("id = ?", id).
 		Take(&data).
 		Error
@@ -75,6 +77,8 @@ func (h *AssetLisensiRepositoryImpl) FindById(id int64) (data Database.DetailAse
 
 func (h *AssetLisensiRepositoryImpl) FindAll() (data []Database.DetailAsetLisensi, err error) {
 	err = h.DB.Model(&Database.DetailAsetLisensi{}).
+		Preload("Asset").
+		Preload("Asset.Vendor").
 		Order("id asc").
 		Find(&data).
 		Error

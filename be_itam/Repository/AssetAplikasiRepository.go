@@ -55,6 +55,8 @@ func (h *AssetAplikasiRepositoryImpl) Delete(id int64) error {
 
 func (h *AssetAplikasiRepositoryImpl) FindById(id int64) (data Database.DetaiAsetAplikasi, err error) {
 	err = h.DB.Model(&Database.DetaiAsetAplikasi{}).
+		Preload("Asset").
+		Preload("Asset.Vendor").
 		Where("id = ?", id).
 		Take(&data).
 		Error
@@ -63,6 +65,8 @@ func (h *AssetAplikasiRepositoryImpl) FindById(id int64) (data Database.DetaiAse
 
 func (h *AssetAplikasiRepositoryImpl) FindAll() (data []Database.DetaiAsetAplikasi, err error) {
 	err = h.DB.Model(&Database.DetaiAsetAplikasi{}).
+		Preload("Asset").
+		Preload("Asset.Vendor").
 		Order("id asc").
 		Find(&data).
 		Error

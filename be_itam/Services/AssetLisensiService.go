@@ -124,10 +124,6 @@ func (h *AssetLisensiServiceImpl) FindById(detailAsetLisensiId int64) (detailAse
 	if err != nil {
 		return Response.DetailAsetLisensiResponse{}, Web.NewCustomServiceError("Detail Aset Lisensi not found", err, http.StatusNotFound)
 	}
-	asset, err := h.assetRepo.FindById(data.AssetID)
-	if err != nil {
-		return Response.DetailAsetLisensiResponse{}, Web.NewInternalServiceError(err)
-	}
 	detailAsetLisensi = Response.DetailAsetLisensiResponse{
 		ID:                       data.ID,
 		WaktuPembelian:           data.WaktuPembelian,
@@ -142,11 +138,22 @@ func (h *AssetLisensiServiceImpl) FindById(detailAsetLisensiId int64) (detailAse
 		TipeLisensi:              data.TipeLisensi,
 		AssetID:                  data.AssetID,
 		Asset: Response.AssetResponse{
-			Id:           asset.ID,
-			SerialNumber: asset.SerialNumber,
-			Model:        asset.Model,
-			Merk:         asset.Merk,
-			NomorNota:    asset.NomorNota,
+			Id:           data.Asset.ID,
+			SerialNumber: data.Asset.SerialNumber,
+			Model:        data.Asset.Model,
+			Merk:         data.Asset.Merk,
+			NomorNota:    data.Asset.NomorNota,
+			VendorID:     data.Asset.VendorID,
+			Vendor: Response.VendorResponse{
+				ID:               data.Asset.Vendor.ID,
+				PIC:              data.Asset.Vendor.PIC,
+				NomorKontak:      data.Asset.Vendor.NomorKontak,
+				Email:            data.Asset.Vendor.Email,
+				NomorSIUP:        data.Asset.Vendor.NomorSIUP,
+				NomorNIB:         data.Asset.Vendor.NomorNIB,
+				NomorNPWP:        data.Asset.Vendor.NomorNPWP,
+				LokasiPerusahaan: data.Asset.Vendor.Lokasi,
+			},
 		},
 	}
 
@@ -160,11 +167,7 @@ func (h *AssetLisensiServiceImpl) FindAll() (detailAsetLisensi []Response.Detail
 	}
 
 	for _, d := range data {
-		asset, err := h.assetRepo.FindById(d.AssetID)
-		if err != nil {
-			return []Response.DetailAsetLisensiResponse{}, Web.NewInternalServiceError(err)
-		}
-		if asset.Status == "Approved" {
+		if d.Asset.Status == "Approved" {
 			detailAsetLisensi = append(detailAsetLisensi, Response.DetailAsetLisensiResponse{
 				ID:                       d.ID,
 				WaktuPembelian:           d.WaktuPembelian,
@@ -179,11 +182,22 @@ func (h *AssetLisensiServiceImpl) FindAll() (detailAsetLisensi []Response.Detail
 				TipeLisensi:              d.TipeLisensi,
 				AssetID:                  d.AssetID,
 				Asset: Response.AssetResponse{
-					Id:           asset.ID,
-					SerialNumber: asset.SerialNumber,
-					Model:        asset.Model,
-					Merk:         asset.Merk,
-					NomorNota:    asset.NomorNota,
+					Id:           d.Asset.ID,
+					SerialNumber: d.Asset.SerialNumber,
+					Model:        d.Asset.Model,
+					Merk:         d.Asset.Merk,
+					NomorNota:    d.Asset.NomorNota,
+					VendorID:     d.Asset.VendorID,
+					Vendor: Response.VendorResponse{
+						ID:               d.Asset.Vendor.ID,
+						PIC:              d.Asset.Vendor.PIC,
+						NomorKontak:      d.Asset.Vendor.NomorKontak,
+						Email:            d.Asset.Vendor.Email,
+						NomorSIUP:        d.Asset.Vendor.NomorSIUP,
+						NomorNIB:         d.Asset.Vendor.NomorNIB,
+						NomorNPWP:        d.Asset.Vendor.NomorNPWP,
+						LokasiPerusahaan: d.Asset.Vendor.Lokasi,
+					},
 				},
 			})
 		}

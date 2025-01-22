@@ -62,6 +62,7 @@ func (h *AssetRepositoryImpl) Delete(id int64) error {
 
 func (h *AssetRepositoryImpl) FindById(id int64) (data Database.Asset, err error) {
 	err = h.DB.Model(&Database.Asset{}).
+		Preload("Vendor").
 		Where("id = ?", id).
 		Take(&data).
 		Error
@@ -109,6 +110,7 @@ func (h *AssetRepositoryImpl) DetailAsset(id int64) (data Response.DetailAssetRe
 	)
 	err = h.DB.Model(&Database.Asset{}).
 		Where("id = ?", id).
+		Preload("Vendor").
 		Find(&asset).
 		Error
 	if err != nil {
@@ -122,14 +124,7 @@ func (h *AssetRepositoryImpl) DetailAsset(id int64) (data Response.DetailAssetRe
 	data.NomorNota = asset.NomorNota
 	data.Status = asset.Status
 
-	err = h.DB.Model(&Database.Vendor{}).
-		Where("id = ?", asset.VendorID).
-		Find(&vendor).
-		Error
-	if err != nil {
-		return data, err
-	}
-	data.Vendor = Response.VendorResponse{
+	data.Vendor = &Response.VendorResponse{
 		ID:               vendor.ID,
 		PIC:              vendor.PIC,
 		Email:            vendor.Email,
